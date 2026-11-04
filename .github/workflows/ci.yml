@@ -27,8 +27,8 @@ jobs:
       run:
         working-directory: kinevor-platform/backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
       - name: Restore
@@ -40,7 +40,7 @@ jobs:
       - name: Pack
         run: dotnet pack Kinevor.Platform.slnx -c Release --no-build -o artifacts/packages
       - name: Upload NuGet packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: platform-nuget
           path: |
@@ -56,8 +56,8 @@ jobs:
       run:
         working-directory: kinevor-platform/web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -67,7 +67,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Upload Angular package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: platform-web
           path: kinevor-platform/web/dist/kinevor-platform-web
@@ -96,12 +96,12 @@ jobs:
       run:
         working-directory: ${{ matrix.service }}/backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
       - name: Restore platform package feed
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: platform-nuget
           path: kinevor-platform/backend/artifacts/packages
@@ -134,12 +134,12 @@ jobs:
       run:
         working-directory: ${{ matrix.service }}/web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
       - name: Restore platform Angular package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: platform-web
           path: kinevor-platform/web/dist/kinevor-platform-web
@@ -180,7 +180,7 @@ jobs:
       run:
         working-directory: ${{ matrix.service }}/mobile/packages/${{ matrix.package }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
