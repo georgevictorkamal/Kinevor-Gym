@@ -1,0 +1,34 @@
+{
+  "name": "@georgevictorkamal/kinevor-public-site-web",
+  "version": "0.1.0",
+  "description": "Public website, plans, trainers, timetable and trial capture UI for Kinevor.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/georgevictorkamal/kinevor.git"
+  },
+  "keywords": [
+    "kinevor",
+    "angular",
+    "public-site",
+    "gym",
+    "fitness"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "rxjs": "^7.8.0"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "author": "George Victor Kamal (https://github.com/georgevictorkamal)",
+  "homepage": "https://github.com/georgevictorkamal/kinevor#readme",
+  "bugs": {
+    "url": "https://github.com/georgevictorkamal/kinevor/issues"
+  }
+}

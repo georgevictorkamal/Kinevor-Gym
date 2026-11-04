@@ -1,0 +1,52 @@
+# Kinevor Payments & Billing Web
+
+Angular 22 screens for invoices, simulated payments, refunds and revenue reporting.
+
+## Registry access (optional)
+
+This package is built inside the monorepo. If you publish it to a private registry, configure the scope and token before installing:
+
+```ini
+@georgevictorkamal:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${KINEVOR_PACKAGES_TOKEN}
+```
+
+## Install
+
+```bash
+npm install @georgevictorkamal/kinevor-payments-billing-web
+```
+
+Peer dependencies: Angular 22, Angular Material 22, RxJS 7.8 and
+`@georgevictorkamal/kinevor-platform-web`.
+
+## Register
+
+```ts
+import { provideBilling } from '@georgevictorkamal/kinevor-payments-billing-web';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideHttpClient(),
+    provideBilling({ apiBaseUrl: 'https://api.example.com/api/v1' }),
+  ],
+});
+```
+
+Register `BILLING_ROUTES` under an authenticated shell. They expose `/billing`,
+`/billing/invoices` and `/billing/invoices/:id`. The host must provide Angular
+Material theming and the Kinevor theme tokens used by the components.
+
+## Replace the transport
+
+Provide a custom `BillingGateway` with `provideBilling({ gateway: MyGateway })`
+to connect the screens to another transport.
+
+## Demo
+
+```bash
+npm run install:local
+npm start
+```
+
+The demo expects the standalone API at `http://localhost:5087`.

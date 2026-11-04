@@ -1,0 +1,36 @@
+{
+  "name": "@georgevictorkamal/kinevor-members-web",
+  "version": "0.1.0",
+  "description": "Member directory, profile, progress, consent and privacy UI for Kinevor.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/georgevictorkamal/kinevor.git"
+  },
+  "keywords": [
+    "kinevor",
+    "angular",
+    "members",
+    "gym",
+    "fitness"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/material": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "@georgevictorkamal/kinevor-platform-web": "^0.1.0",
+    "rxjs": "^7.8.0"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "author": "George Victor Kamal (https://github.com/georgevictorkamal)",
+  "homepage": "https://github.com/georgevictorkamal/kinevor#readme",
+  "bugs": {
+    "url": "https://github.com/georgevictorkamal/kinevor/issues"
+  }
+}

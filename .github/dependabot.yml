@@ -1,0 +1,47 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directories:
+      - "/kinevor-*/backend/src/*"
+      - "/kinevor-*/backend/tests/*"
+      - "/kinevor-*/backend/samples/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    groups:
+      nuget:
+        patterns: ["*"]
+
+  - package-ecosystem: "npm"
+    directories:
+      - "/kinevor-*/web"
+      - "/kinevor-*/web/projects/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    groups:
+      npm:
+        patterns: ["*"]
+
+  - package-ecosystem: "pub"
+    directories:
+      - "/kinevor-*/mobile/packages/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    groups:
+      pub:
+        patterns: ["*"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    groups:
+      actions:
+        patterns: ["*"]

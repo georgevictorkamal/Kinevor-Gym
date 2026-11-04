@@ -1,0 +1,37 @@
+# @georgevictorkamal/kinevor-platform-web
+
+Shared Angular 22 services for Kinevor feature modules: API response envelopes,
+authentication, internationalization, notices and theme state.
+
+## Install
+
+Inside the monorepo, module workspaces bind to this build with
+`npm run install:local`. To install from a registry instead, configure its scope:
+
+```ini
+@georgevictorkamal:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${KINEVOR_PACKAGES_TOKEN}
+```
+
+```bash
+npm install @georgevictorkamal/kinevor-platform-web
+```
+
+## Provide the platform
+
+```ts
+import {
+  provideKinevorHttp,
+  provideKinevorPlatform,
+} from '@georgevictorkamal/kinevor-platform-web';
+
+export const appConfig = {
+  providers: [
+    provideKinevorHttp(),
+    provideKinevorPlatform({ apiBaseUrl: '/api/v1' }),
+  ],
+};
+```
+
+The package requires Angular 22, Angular Material 22 and RxJS 7.8 as peer
+dependencies. Authentication storage and API hosts remain application concerns.
