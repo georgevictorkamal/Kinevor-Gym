@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Package and publish release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Build source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="Kinevor-${GITHUB_REF_NAME}.zip"
+          git archive --format=zip --prefix="Kinevor-${GITHUB_REF_NAME}/" -o "$archive" HEAD
+          sha256="$(sha256sum "$archive" | cut -d' ' -f1)"
+          echo "SHA256=$sha256" >> "$GITHUB_ENV"
+          echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
+          echo "Archive: $archive"
+          echo "SHA-256: $sha256"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "Source archive for Kinevor \`${GITHUB_REF_NAME}\`."
+            echo
+            echo "SHA-256: \`${SHA256}\`"
+            echo
+            echo "---"
+            echo
+            cat CHANGELOG.md
+          } > release-notes.md
+          gh release create "$GITHUB_REF_NAME" "$ARCHIVE" \
+            --title "Kinevor ${GITHUB_REF_NAME}" \
+            --notes-file release-notes.md \
+            --verify-tag

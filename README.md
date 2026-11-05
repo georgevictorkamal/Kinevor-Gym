@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/georgevictorkamal/kinevor/actions/workflows/ci.yml"><img src="https://github.com/georgevictorkamal/kinevor/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/georgevictorkamal/kinevor/releases/latest"><img src="https://img.shields.io/github/v/release/georgevictorkamal/kinevor?label=release&color=blue" alt="Release"></a>
+  <a href="https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml"><img src="https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/georgevictorkamal/Kinevor-Gym/releases/latest"><img src="https://img.shields.io/github/v/release/georgevictorkamal/Kinevor-Gym?label=release&color=blue" alt="Release"></a>
   <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white" alt=".NET 10"></a>
   <a href="https://angular.dev/"><img src="https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white" alt="Angular 22"></a>
   <a href="https://flutter.dev/"><img src="https://img.shields.io/badge/Flutter-3.35+-02569B?logo=flutter&logoColor=white" alt="Flutter"></a>
@@ -293,7 +293,9 @@ The [CI workflow](.github/workflows/ci.yml) runs on every push and pull request:
 
 A separate [CodeQL workflow](.github/workflows/codeql.yml) scans C# and
 TypeScript weekly, and [Dependabot](.github/dependabot.yml) checks NuGet, npm,
-pub and Actions dependencies.
+pub and Actions dependencies. A tag-driven [Release workflow](.github/workflows/release.yml)
+packages the tracked source tree as one zip and publishes it with a GitHub
+release.
 
 ## 📁 Repository Layout
 
@@ -372,9 +374,11 @@ This is a portfolio reference implementation, deliberately scoped:
 
 **George Victor Kamal** — [@georgevictorkamal](https://github.com/georgevictorkamal)
 
-The public repository and package namespace are
-[`georgevictorkamal/kinevor`](https://github.com/georgevictorkamal/kinevor)
-(`@georgevictorkamal/*` on npm).
+The public repository is
+[`georgevictorkamal/Kinevor-Gym`](https://github.com/georgevictorkamal/Kinevor-Gym).
+The Angular packages use the `@georgevictorkamal/*` scope and are built from this
+monorepo; they are not yet published to a public npm registry. See each module's
+`PUBLISHING.md` for the optional GitHub Packages flow.
 
 ## 📄 License
 

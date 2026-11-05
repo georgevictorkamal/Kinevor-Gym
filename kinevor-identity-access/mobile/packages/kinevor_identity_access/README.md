@@ -18,7 +18,7 @@ Flutter identity and access UI and API client for Kinevor.
 dependencies:
   kinevor_identity_access:
     git:
-      url: https://github.com/georgevictorkamal/kinevor.git
+      url: https://github.com/georgevictorkamal/Kinevor-Gym.git
       path: mobile/packages/kinevor_identity_access
       ref: main
 ```

@@ -21,7 +21,7 @@ Flutter staff dashboard, trend and alert inbox UI and API client for Kinevor.
 dependencies:
   kinevor_staff_dashboard:
     git:
-      url: https://github.com/georgevictorkamal/kinevor.git
+      url: https://github.com/georgevictorkamal/Kinevor-Gym.git
       path: mobile/packages/kinevor_staff_dashboard
       ref: main
 ```

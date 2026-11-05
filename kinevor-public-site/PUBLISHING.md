@@ -15,7 +15,7 @@ This module is publish-ready for private GitHub Packages distribution.
 
 ## Prerequisites
 
-- The monorepo exists at `https://github.com/georgevictorkamal/kinevor`.
+- The monorepo exists at `https://github.com/georgevictorkamal/Kinevor-Gym`.
 - `kinevor-platform` `v0.1.0` is published first.
 - A repository secret named `KINEVOR_PACKAGES_TOKEN` is configured. Use a
   classic PAT with `repo`, `read:packages` and `write:packages`.

@@ -10,7 +10,7 @@ This is a reference implementation. Security fixes are applied to the current
 Please report security issues **privately**:
 
 1. Use GitHub's **Report a vulnerability** flow on
-   [georgevictorkamal/kinevor](https://github.com/georgevictorkamal/kinevor)
+   [georgevictorkamal/Kinevor-Gym](https://github.com/georgevictorkamal/Kinevor-Gym)
    (private security advisory), or
 2. Contact the author, [George Victor Kamal](https://github.com/georgevictorkamal).
 

@@ -5,7 +5,7 @@ Angular library and demo, and a Flutter package with a runnable example. Every
 layer is independently consumable, and the demo runs locally from this
 monorepo.
 
-[![CI](https://github.com/georgevictorkamal/kinevor/actions/workflows/ci.yml/badge.svg)](https://github.com/georgevictorkamal/kinevor/actions/workflows/ci.yml)
+[![CI](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml/badge.svg)](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.35%2B-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -241,7 +241,7 @@ Consume the Flutter package from the monorepo by path or git:
 dependencies:
   kinevor_trainers:
     git:
-      url: https://github.com/georgevictorkamal/kinevor.git
+      url: https://github.com/georgevictorkamal/Kinevor-Gym.git
       path: mobile/packages/kinevor_trainers
       ref: main
 ```

@@ -22,7 +22,7 @@ Flutter member check-in, live occupancy and visit-history UI for Kinevor.
 dependencies:
   kinevor_checkins_access:
     git:
-      url: https://github.com/georgevictorkamal/kinevor.git
+      url: https://github.com/georgevictorkamal/Kinevor-Gym.git
       path: mobile/packages/kinevor_checkins_access
       ref: main
 ```

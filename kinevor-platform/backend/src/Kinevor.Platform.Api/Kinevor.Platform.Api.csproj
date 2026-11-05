@@ -4,7 +4,7 @@
     <Description>Shared ASP.NET Core API contracts for Kinevor feature modules: response envelope and authorization policies.</Description>
     <PackageTags>kinevor;platform;aspnetcore;api;authorization</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/georgevictorkamal/kinevor</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/georgevictorkamal/Kinevor-Gym</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

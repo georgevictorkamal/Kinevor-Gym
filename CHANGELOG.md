@@ -3,7 +3,7 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
-## 0.1.0 — 2026-11-04
+## 0.1.0 — 2026-11-05
 
 ### Added
 
@@ -30,6 +30,8 @@ All notable changes to Kinevor are documented here. The repository uses a single
 - CodeQL analysis for C# and TypeScript.
 - Dependabot updates for NuGet, npm, pub and GitHub Actions.
 - Flutter format and `flutter analyze` checks in the mobile CI matrix.
+- Tag-driven release workflow that packages the tracked source tree as one zip
+  and publishes it with a GitHub release.
 - Per-module READMEs, changelogs and publishing guides.
 - Root architecture, security, contributing and code-of-conduct documentation.
 - GitHub issue templates for bugs and feature requests.
@@ -48,9 +50,15 @@ All notable changes to Kinevor are documented here. The repository uses a single
   are now relative and no longer rely on a suppression.
 - Public-site demo no longer enables view transitions, which could stall initial
   and client-side navigation in Angular 22 and leave the router outlet empty.
+- Repository links, package metadata, issue-template links and module docs now
+  use the canonical `georgevictorkamal/Kinevor-Gym` URL.
+- Angular packages are documented as monorepo builds rather than implying they
+  are already available from a public npm registry.
 
 ### Fixed
 
+- Memberships mobile screenshots now resolve from the monorepo instead of the
+  retired standalone module repository.
 - Public plans and trial screens use larger, higher-contrast copy for prices,
   feature lists, form labels and supporting text.
 - The trial aside orbit no longer overrides the aside stacking context, and the

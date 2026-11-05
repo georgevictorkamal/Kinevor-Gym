@@ -15,7 +15,7 @@ The platform publishes the shared packages before any module release.
 
 ## Prerequisites
 
-- The monorepo exists at `https://github.com/georgevictorkamal/kinevor`.
+- The monorepo exists at `https://github.com/georgevictorkamal/Kinevor-Gym`.
 - The NuGet and npm versions are `0.1.0` in `backend/Directory.Build.props`,
   the Angular package and `CHANGELOG.md`.
 - A token with `write:packages` for GitHub Packages, or equivalent access to

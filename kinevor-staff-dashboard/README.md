@@ -5,7 +5,7 @@ Angular library with a runnable web demo, and a Flutter package with a mobile
 demo host. It gives front-desk and operations staff a branch-scoped view of
 membership, revenue, occupancy, activity and alerts from this monorepo.
 
-[![CI](https://github.com/georgevictorkamal/kinevor/actions/workflows/ci.yml/badge.svg)](https://github.com/georgevictorkamal/kinevor/actions/workflows/ci.yml)
+[![CI](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml/badge.svg)](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![Staff dashboard](docs/screenshots/web-dashboard.png)

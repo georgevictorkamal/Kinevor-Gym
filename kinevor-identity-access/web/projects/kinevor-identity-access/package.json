@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/georgevictorkamal/kinevor.git"
+    "url": "https://github.com/georgevictorkamal/Kinevor-Gym.git"
   },
   "keywords": [
     "kinevor",
@@ -29,8 +29,13 @@
     "access": "restricted"
   },
   "author": "George Victor Kamal (https://github.com/georgevictorkamal)",
-  "homepage": "https://github.com/georgevictorkamal/kinevor#readme",
+  "homepage": "https://github.com/georgevictorkamal/Kinevor-Gym#readme",
   "bugs": {
-    "url": "https://github.com/georgevictorkamal/kinevor/issues"
+    "url": "https://github.com/georgevictorkamal/Kinevor-Gym/issues"
+  },
+  "peerDependenciesMeta": {
+    "@georgevictorkamal/kinevor-platform-web": {
+      "optional": true
+    }
   }
 }

@@ -25,7 +25,7 @@ their own transport or cached data source.
 dependencies:
   kinevor_payments_billing:
     git:
-      url: https://github.com/georgevictorkamal/kinevor.git
+      url: https://github.com/georgevictorkamal/Kinevor-Gym.git
       path: mobile/packages/kinevor_payments_billing
       ref: main
 ```

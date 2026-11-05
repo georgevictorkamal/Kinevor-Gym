@@ -30,4 +30,4 @@ All notable changes to this project are documented here. The format follows
 - Playwright screenshot capture for the web and API.
 - Web, Flutter, API and root documentation plus CI and documented release steps.
 
-[0.1.0]: https://github.com/georgevictorkamal/kinevor/blob/main/kinevor-memberships/CHANGELOG.md
+[0.1.0]: https://github.com/georgevictorkamal/Kinevor-Gym/blob/main/kinevor-memberships/CHANGELOG.md

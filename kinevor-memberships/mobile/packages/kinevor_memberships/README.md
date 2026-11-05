@@ -7,7 +7,7 @@ editable strings and a repository boundary for tests or custom transport.
 
 | Dashboard | Plans |
 | --- | --- |
-| ![Dashboard](https://raw.githubusercontent.com/georgevictorkamal/kinevor-memberships/main/docs/screenshots/mobile-membership-dashboard.png) | ![Plans](https://raw.githubusercontent.com/georgevictorkamal/kinevor-memberships/main/docs/screenshots/mobile-plans.png) |
+| ![Dashboard](https://raw.githubusercontent.com/georgevictorkamal/Kinevor-Gym/main/kinevor-memberships/docs/screenshots/mobile-membership-dashboard.png) | ![Plans](https://raw.githubusercontent.com/georgevictorkamal/Kinevor-Gym/main/kinevor-memberships/docs/screenshots/mobile-plans.png) |
 
 ## Install
 
@@ -17,7 +17,7 @@ The package is not published to pub.dev yet. Add it from the repository tag:
 dependencies:
   kinevor_memberships:
     git:
-      url: https://github.com/georgevictorkamal/kinevor.git
+      url: https://github.com/georgevictorkamal/Kinevor-Gym.git
       path: mobile/packages/kinevor_memberships
       ref: main
 ```
