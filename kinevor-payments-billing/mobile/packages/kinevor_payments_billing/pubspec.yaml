@@ -1,6 +1,6 @@
 name: kinevor_payments_billing
 description: Standalone Flutter invoice and payment UI for the Kinevor platform.
-version: 0.1.0
+version: 0.1.1
 publish_to: none
 repository: https://github.com/georgevictorkamal/Kinevor-Gym
 issue_tracker: https://github.com/georgevictorkamal/Kinevor-Gym/issues

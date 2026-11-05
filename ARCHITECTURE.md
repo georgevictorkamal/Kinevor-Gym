@@ -76,7 +76,7 @@ packages:
 
 Backend projects target `net10.0`; the Angular package targets Angular 22.
 
-The platform is versioned (`0.1.0`) and consumed like any other dependency. That
+The platform is versioned (`0.1.1`) and consumed like any other dependency. That
 version boundary is deliberate: it keeps module builds honest about what they
 actually depend on.
 

@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## 0.1.1 - 2026-11-05
+
+### Security
+
+- Updated the platform web development toolchain to Vite 8.3.5 and
+  `@angular-devkit/build-angular` 22.2.6.
+
+### Changed
+
+- Aligned package versions with the Kinevor 0.1.1 monorepo release. No public
+  API changes.
+
 ## 0.1.0 - 2026-10-22
 
 ### Added

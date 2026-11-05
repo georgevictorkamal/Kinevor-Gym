@@ -1,6 +1,6 @@
 {
   "name": "@georgevictorkamal/kinevor-checkins-access-web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Front-desk check-in, eligibility, occupancy and visit-history UI for Kinevor.",
   "license": "MIT",
   "repository": {

@@ -1,6 +1,6 @@
 {
   "name": "@georgevictorkamal/kinevor-payments-billing-web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Invoice, payment, refund and revenue UI for the Kinevor gym platform.",
   "license": "MIT",
   "repository": {

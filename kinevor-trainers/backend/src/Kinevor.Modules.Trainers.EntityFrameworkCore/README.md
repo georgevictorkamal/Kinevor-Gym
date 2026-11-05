@@ -9,7 +9,7 @@ EF Core persistence for `Kinevor.Modules.Trainers`.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.Trainers.EntityFrameworkCore --version 0.1.0
+dotnet add package Kinevor.Modules.Trainers.EntityFrameworkCore --version 0.1.1
 ```
 
 Configure a provider in the host, for example:

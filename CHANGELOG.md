@@ -3,6 +3,20 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
+## 0.1.1 — 2026-11-05
+
+### Security
+
+- Updated the platform web workspace to Vite 8.3.5 and
+  `@angular-devkit/build-angular` 22.2.6, resolving the open Vite and
+  `launch-editor` dependency advisories. No runtime code changed.
+
+### Changed
+
+- Aligned all current package versions to `0.1.1`.
+- Refreshed version references in package guides and architecture docs.
+- Documented the release workflow in the repository layout.
+
 ## 0.1.0 — 2026-11-05
 
 ### Added

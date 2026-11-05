@@ -7,12 +7,12 @@ and simulates delivery without calling any external e-mail or push provider.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.Notifications --version 0.1.0
-dotnet add package Kinevor.Modules.Notifications.EntityFrameworkCore --version 0.1.0
+dotnet add package Kinevor.Modules.Notifications --version 0.1.1
+dotnet add package Kinevor.Modules.Notifications.EntityFrameworkCore --version 0.1.1
 ```
 
 The package depends on `Kinevor.Platform.Api`, `Kinevor.Platform.Application` and
-`Kinevor.Platform.Domain` `0.1.0`.
+`Kinevor.Platform.Domain` `0.1.1`.
 
 ## Register
 

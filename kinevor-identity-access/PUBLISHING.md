@@ -17,7 +17,7 @@ This module is publish-ready for private GitHub Packages distribution.
 ## Prerequisites
 
 - The monorepo exists at `https://github.com/georgevictorkamal/Kinevor-Gym`.
-- `kinevor-platform` `v0.1.0` is published first.
+- `kinevor-platform` `v0.1.1` is published first.
 - A repository secret named `KINEVOR_PACKAGES_TOKEN` is configured. Use a
   classic PAT with `repo`, `read:packages` and `write:packages`.
 - Actions are enabled with read and write workflow permissions.
@@ -28,16 +28,16 @@ sufficient for cross-repository package restore.
 
 ## Release Steps
 
-1. Confirm the version is `0.1.0` in `backend/Directory.Build.props`, the
+1. Confirm the version is `0.1.1` in `backend/Directory.Build.props`, the
    Angular package, the Flutter package and `CHANGELOG.md`.
 2. Run the local verification commands in the root README.
 3. Commit and push `main`.
 4. Create and push the tag:
 
    ```powershell
-   git tag v0.1.0
+   git tag v0.1.1
    git push origin main
-   git push origin v0.1.0
+   git push origin v0.1.1
    ```
 
 5. Publish the packages listed above with `dotnet nuget push` and `npm publish`,
@@ -47,7 +47,7 @@ sufficient for cross-repository package restore.
 
 - Confirm the package versions in the repository Packages tab.
 - Re-run CI from a clean checkout to verify GitHub Packages restore.
-- Do not reuse or move the `v0.1.0` tag. Publish a new patch version for fixes.
+- Do not reuse or move the `v0.1.1` tag. Publish a new patch version for fixes.
 
 ## Consumer Access
 

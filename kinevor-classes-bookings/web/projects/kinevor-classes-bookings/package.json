@@ -1,6 +1,6 @@
 {
   "name": "@georgevictorkamal/kinevor-classes-bookings-web",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Class schedule, booking, waitlist and roster UI for Kinevor.",
   "license": "MIT",
   "repository": {

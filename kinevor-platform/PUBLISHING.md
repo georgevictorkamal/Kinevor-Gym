@@ -16,7 +16,7 @@ The platform publishes the shared packages before any module release.
 ## Prerequisites
 
 - The monorepo exists at `https://github.com/georgevictorkamal/Kinevor-Gym`.
-- The NuGet and npm versions are `0.1.0` in `backend/Directory.Build.props`,
+- The NuGet and npm versions are `0.1.1` in `backend/Directory.Build.props`,
   the Angular package and `CHANGELOG.md`.
 - A token with `write:packages` for GitHub Packages, or equivalent access to
   your registry.
@@ -51,14 +51,14 @@ the commands below from a clean checkout.
 6. Tag the commit if this is a release snapshot:
 
    ```powershell
-   git tag v0.1.0
+   git tag v0.1.1
    git push origin main
-   git push origin v0.1.0
+   git push origin v0.1.1
    ```
 
 ## Verify
 
-- The Packages tab lists three NuGet packages and one npm package at `0.1.0`.
+- The Packages tab lists three NuGet packages and one npm package at `0.1.1`.
 - A clean module checkout restores the packages from GitHub Packages.
 - The npm tarball contains `README.md`, `LICENSE` and `publishConfig` metadata.
 

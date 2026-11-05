@@ -1,6 +1,6 @@
 name: kinevor_identity_access
 description: Standalone Flutter identity and access UI and API client for Kinevor.
-version: 0.1.0
+version: 0.1.1
 publish_to: none
 repository: https://github.com/georgevictorkamal/Kinevor-Gym
 issue_tracker: https://github.com/georgevictorkamal/Kinevor-Gym/issues

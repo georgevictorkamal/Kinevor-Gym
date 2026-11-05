@@ -1,6 +1,6 @@
 name: kinevor_notifications
 description: Standalone Flutter notification inbox, preferences and device UI for Kinevor.
-version: 0.1.0
+version: 0.1.1
 publish_to: none
 repository: https://github.com/georgevictorkamal/Kinevor-Gym
 issue_tracker: https://github.com/georgevictorkamal/Kinevor-Gym/issues

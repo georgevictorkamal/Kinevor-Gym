@@ -5,7 +5,7 @@ Identity and access module for the Kinevor gym platform.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.IdentityAccess --version 0.1.0
+dotnet add package Kinevor.Modules.IdentityAccess --version 0.1.1
 ```
 
 ## What it provides

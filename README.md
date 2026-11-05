@@ -314,7 +314,7 @@ kinevor/
 ├── kinevor-public-site/        backend/ · web/ · docs/
 ├── docs/branding/              logo and brand assets
 ├── docs/screenshots/           portfolio showcase images
-├── .github/workflows/          CI and CodeQL pipelines
+├── .github/workflows/          CI, CodeQL and release pipelines
 ├── ARCHITECTURE.md             design and conventions
 ├── SECURITY.md                 security policy and demo caveats
 ├── CONTRIBUTING.md             how to build, test and contribute
