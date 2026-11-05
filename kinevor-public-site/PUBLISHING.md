@@ -28,7 +28,7 @@ sufficient for cross-repository package restore.
 ## Release Steps
 
 1. Confirm the version is `0.1.1` in `backend/Directory.Build.props`, the
-   Angular package, the Flutter package and `CHANGELOG.md`.
+   Angular package and `CHANGELOG.md`.
 2. Run the local verification commands in the root README.
 3. Commit and push `main`.
 4. Create and push the tag:
@@ -39,8 +39,9 @@ sufficient for cross-repository package restore.
    git push origin v0.1.1
    ```
 
-5. Publish the packages listed above with `dotnet nuget push` and `npm publish`,
-   or add a release workflow. Only the root CI workflow ships with the monorepo.
+5. Publish the packages listed above with `dotnet nuget push` and `npm publish`.
+   The root release workflow attaches the source archive to each tag; registry
+   publishing remains manual.
 
 ## After Publishing
 
@@ -66,5 +67,3 @@ npm consumers need this `.npmrc`:
 @georgevictorkamal:registry=https://npm.pkg.github.com
 //npm.pkg.github.com/:_authToken=${KINEVOR_PACKAGES_TOKEN}
 ```
-
-Flutter consumers should download the archive attached to the GitHub release.

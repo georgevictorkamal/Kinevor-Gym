@@ -21,8 +21,8 @@ The platform publishes the shared packages before any module release.
 - A token with `write:packages` for GitHub Packages, or equivalent access to
   your registry.
 
-Only the root CI workflow ships with the monorepo. Publishing is manual; run
-the commands below from a clean checkout.
+The root workflows handle CI, CodeQL and tag-driven source releases. Registry
+publishing remains manual; run the commands below from a clean checkout.
 
 ## Release steps
 
