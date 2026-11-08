@@ -115,8 +115,9 @@ npm start
 Open `http://localhost:4208`. The demo is configured for the API at
 `http://localhost:5090/api/v1` and CORS is restricted to the demo origin.
 
-`install:local` temporarily points the workspace at the sibling
-`kinevor-platform/web/dist/kinevor-platform-web` package and runs `npm install`.
+`install:local` keeps the permanent `file:` dependency on the sibling
+`kinevor-platform/web/dist/kinevor-platform-web` package and installs it with
+`--install-links`, so it is copied into this workspace's `node_modules`.
 Use `npm install` directly after authenticating to a registry if the platform
 package is available from that feed.
 

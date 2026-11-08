@@ -129,7 +129,9 @@ async function main() {
   ]);
 
   for (const project of projects) {
-    run('dotnet', ['build', project.project, '-c', 'Release']);
+    // Packed platform hashes differ between runs; re-evaluate the module
+    // lockfiles instead of failing NU1403 against a previous pack.
+    run('dotnet', ['build', project.project, '-c', 'Release', '-p:RestoreForceEvaluate=true']);
   }
 
   await mkdir(outputDir, { recursive: true });

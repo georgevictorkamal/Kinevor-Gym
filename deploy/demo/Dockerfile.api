@@ -22,7 +22,8 @@ COPY ${SERVICE}/backend/ ${SERVICE}/backend/
 RUN dotnet publish ${SERVICE}/backend/samples/*/*.csproj \
       -c Release \
       -o /app/publish \
-      /p:UseAppHost=false
+      /p:UseAppHost=false \
+      /p:RestoreForceEvaluate=true
 
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION} AS runtime
 

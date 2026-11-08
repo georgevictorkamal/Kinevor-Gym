@@ -46,8 +46,15 @@ See [the deployment guide](docs/deployment.md).
 Run the suites that cover what you touched:
 
 ```bash
-dotnet test <module>/backend/*.slnx -c Release
+dotnet restore <module>/backend/*.slnx --force-evaluate
+dotnet test <module>/backend/*.slnx -c Release --no-restore
 ```
+
+Module lockfiles are committed for review but intentionally re-evaluate the
+platform package hashes, because a local platform pack is not byte-identical
+between builds. If a restore fails with `NU1403`, re-run it with
+`--force-evaluate` (or `-p:RestoreForceEvaluate=true` for `dotnet build` or
+`dotnet publish`) instead of editing the lockfile.
 
 ```bash
 dotnet test <module>/backend/*.slnx -c Release \

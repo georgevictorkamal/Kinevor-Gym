@@ -241,7 +241,8 @@ Pick a module — **members** is a good starting point:
 
 ```bash
 # API + Swagger → http://localhost:5083
-dotnet run --project kinevor-members/backend/samples/Kinevor.Modules.Members.DemoApi
+dotnet restore kinevor-members/backend/Kinevor.Modules.Members.slnx --force-evaluate
+dotnet run --no-restore --project kinevor-members/backend/samples/Kinevor.Modules.Members.DemoApi
 ```
 
 ```bash
@@ -258,9 +259,10 @@ flutter pub get
 flutter run -d chrome
 ```
 
-> **Tip:** `npm run install:local` binds the module workspace to the sibling
-> platform build, installs dependencies and restores `package.json`. Use the same
-> pattern for any module — see its README for the exact port and routes.
+> **Tip:** `npm run install:local` installs from the module's permanent `file:`
+> dependency on the sibling platform build, copying it with npm's
+> `--install-links`. Use the same pattern for any module — see its README for the
+> exact port and routes.
 
 ### 3. Or run the whole stack with Docker
 
@@ -300,8 +302,9 @@ for horizontal overflow, and fails on serious or critical axe violations.
 
 ```bash
 # Backend (with coverage)
+dotnet restore kinevor-members/backend/Kinevor.Modules.Members.slnx --force-evaluate
 dotnet test kinevor-members/backend/Kinevor.Modules.Members.slnx -c Release \
-  --collect:"XPlat Code Coverage"
+  --no-restore --collect:"XPlat Code Coverage"
 
 # Web
 cd kinevor-members/web && npm run install:local && npm test

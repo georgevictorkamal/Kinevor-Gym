@@ -194,10 +194,11 @@ npm run install:local
 npm start
 ```
 
-`npm run install:local` temporarily points the workspace at the local platform
-build, installs dependencies, restores `package.json`, and removes the generated
-lockfile. If the platform package is published to a registry, authenticate the
-scope in `.npmrc` and use the normal path instead:
+`npm run install:local` keeps the permanent `file:` dependency on the sibling
+platform build, verifies that build exists, and installs with `--install-links`
+so the package is copied into this workspace's `node_modules`. It never rewrites
+`package.json` or the lockfile. If the platform package is published to a
+registry, authenticate the scope in `.npmrc` and use the normal path instead:
 
 ```powershell
 cd web

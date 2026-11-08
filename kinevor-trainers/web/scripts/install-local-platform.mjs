@@ -39,9 +39,12 @@ await access(resolve(platformDir, 'package.json')).catch(() => {
 const useCi = process.argv.includes('--ci');
 const npmCli = process.env.npm_execpath;
 const action = useCi ? 'ci' : 'install';
+// --install-links copies the platform package instead of symlinking it, so
+// Vite resolves its Angular peer dependencies from this workspace. CI only
+// downloads the platform build output and has no platform node_modules.
 const args = npmCli
-  ? [npmCli, action, '--no-audit', '--no-fund']
-  : [action, '--no-audit', '--no-fund'];
+  ? [npmCli, action, '--install-links', '--no-audit', '--no-fund']
+  : [action, '--install-links', '--no-audit', '--no-fund'];
 
 // Node cannot spawn `npm.cmd` directly on Windows (EINVAL). Use the shell for
 // the fallback path; the arguments are fixed strings, not user input.

@@ -30,7 +30,7 @@ Elite).
 ## Commands
 
 ```powershell
-npm run install:local   # link a local kinevor-platform-web build
+npm run install:local   # install against the local platform build
 npm start               # demo on port 4203
 npm test                # library unit tests
 npm run build           # package the library

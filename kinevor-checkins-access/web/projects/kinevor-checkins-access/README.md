@@ -75,7 +75,7 @@ directly.
 ## Development
 
 ```bash
-npm run install:local   # link the local platform web package
+npm run install:local   # install against the local platform build
 npm test                # gateway and facade unit tests
 npm run build:all       # build the library and demo
 npm start               # demo on http://localhost:4205

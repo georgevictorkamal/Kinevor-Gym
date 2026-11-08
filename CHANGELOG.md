@@ -53,10 +53,11 @@ verification, container images, OpenAPI snapshots and verifiable releases.
 - Standardised the toolchain on Node 24, npm 11.21.2, Flutter 3.47.8, .NET 10,
   Angular 22 and TypeScript 6.
 - Module Angular workspaces now declare the built platform package as a permanent
-  `file:` dependency; `install:local` verifies the build and never mutates
-  `package.json`.
+  `file:` dependency; `install:local` verifies the build, installs with
+  `--install-links` and never mutates `package.json`.
 - Committed NuGet and npm lockfiles for every project. Platform restore uses
-  `--locked-mode`; module restore stays unlocked because locally rebuilt
+  `--locked-mode`; module restores re-evaluate the lockfiles
+  (`--force-evaluate` / `-p:RestoreForceEvaluate=true`) because locally rebuilt
   packages are not byte-deterministic.
 - Replaced the public-site and members demos' Material tokens with accessible
   action and accent colours, added labelled loading spinners and fixed global

@@ -126,10 +126,11 @@ jobs:
           name: platform-nuget
           path: kinevor-platform/backend/artifacts/packages
       # Module projects consume locally rebuilt platform packages, whose
-      # content hashes are not byte-deterministic. Restore normally instead of
-      # using --locked-mode; platform restore above remains locked.
+      # content hashes are not byte-deterministic. Committed module lockfiles
+      # would fail NU1403 hash validation, so re-evaluate them on every build.
+      # The platform restore above remains --locked-mode.
       - name: Restore
-        run: dotnet restore *.slnx
+        run: dotnet restore *.slnx --force-evaluate
       - name: Build
         run: dotnet build *.slnx -c Release --no-restore
       - name: Test
@@ -265,12 +266,12 @@ jobs:
         working-directory: kinevor-members/web
         run: npm run install:local -- --ci
       - name: Build public-site backend
-        run: dotnet build kinevor-public-site/backend/Kinevor.Modules.PublicSite.slnx -c Release
+        run: dotnet build kinevor-public-site/backend/Kinevor.Modules.PublicSite.slnx -c Release -p:RestoreForceEvaluate=true
       - name: Build public-site web
         working-directory: kinevor-public-site/web
         run: npm run build:demo
       - name: Build members backend
-        run: dotnet build kinevor-members/backend/Kinevor.Modules.Members.slnx -c Release
+        run: dotnet build kinevor-members/backend/Kinevor.Modules.Members.slnx -c Release -p:RestoreForceEvaluate=true
       - name: Build members web
         working-directory: kinevor-members/web
         run: npm run build:demo

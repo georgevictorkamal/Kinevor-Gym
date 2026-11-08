@@ -55,7 +55,9 @@ What the image definitions do:
 
 - `deploy/demo/Dockerfile.api` packs the platform NuGet packages from the same
   checkout, publishes one `DemoApi` project and runs it on port `8080` inside
-  the container. Host ports map `5081`–`5090` to `8080`.
+  the container. Host ports map `5081`–`5090` to `8080`. The publish passes
+  `/p:RestoreForceEvaluate=true` because each pack has different hashes; the
+  committed module lockfiles would otherwise fail with `NU1403`.
 - `deploy/demo/Dockerfile.web` builds the platform Angular package, installs the
   module workspace with `install:local --ci`, builds the demo and serves the
   static output through nginx. Host ports `4200`–`4208` map to `80`.
@@ -76,9 +78,13 @@ dotnet pack kinevor-platform/backend/Kinevor.Platform.slnx -c Release \
   -o kinevor-platform/backend/artifacts/packages
 cd kinevor-platform/web && npm ci && npm run build && cd ../..
 
+# Restore against the freshly packed platform. Module lockfiles are committed
+# for review, but their platform hashes are re-evaluated on every build.
+dotnet restore kinevor-members/backend/Kinevor.Modules.Members.slnx --force-evaluate
+
 # API + Swagger
 ASPNETCORE_ENVIRONMENT=Development \
-  dotnet run --project kinevor-members/backend/samples/Kinevor.Modules.Members.DemoApi
+  dotnet run --no-restore --project kinevor-members/backend/samples/Kinevor.Modules.Members.DemoApi
 
 # Web demo (second terminal)
 cd kinevor-members/web
@@ -198,7 +204,8 @@ No credentials or live provider accounts are included in the repository.
 | API exits immediately | `ASPNETCORE_ENVIRONMENT` is not `Development` or `Demo` |
 | Browser request blocked by CORS | The page origin is missing from `Cors__AllowedOrigins__*`; include scheme, host and port exactly |
 | `NU1101` for `Kinevor.Platform.*` | Pack the platform into `kinevor-platform/backend/artifacts/packages` first |
-| Module web build cannot resolve the platform package | Run the platform web build, then `npm run install:local` |
+| `NU1403` package content hash validation failed | The module lockfile was evaluated against a different platform pack. Restore or build with `--force-evaluate` / `-p:RestoreForceEvaluate=true`; do not edit the lockfile by hand |
+| Module web build cannot resolve the platform package | Run the platform web build, then `npm run install:local` (it passes `--install-links` so the package is copied, not symlinked) |
 | Stale data after a schema change | Stop the API and delete the module `.db` file, or `docker compose … down --volumes` |
 | Port already in use | Stop the conflicting process or remap the host port in compose |
 | Docker build is slow | The platform is rebuilt per image by design; keep the build cache or run a subset of services |
