@@ -13,11 +13,13 @@ updates:
       nuget:
         patterns: ["*"]
 
+  # Module web workspaces are updated together with the platform. Dependabot
+  # cannot fetch their `file:../../kinevor-platform/web/dist/...` dependency,
+  # so scanning them would fail the whole npm update job.
   - package-ecosystem: "npm"
     directories:
       - "/"
-      - "/kinevor-*/web"
-      - "/kinevor-*/web/projects/*"
+      - "/kinevor-platform/web"
     schedule:
       interval: "weekly"
       day: "monday"
