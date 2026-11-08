@@ -11,7 +11,7 @@ Shared application contracts for Kinevor feature modules.
 ## Install
 
 ```bash
-dotnet add package Kinevor.Platform.Application --version 0.1.1
+dotnet add package Kinevor.Platform.Application --version 0.2.0
 ```
 
 The package references `Kinevor.Platform.Domain` and MediatR 12.4.1.

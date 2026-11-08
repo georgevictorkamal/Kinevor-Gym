@@ -10,7 +10,7 @@
       "prefix": "kinevor",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "project": "projects/kinevor-platform-web/ng-package.json"
           },

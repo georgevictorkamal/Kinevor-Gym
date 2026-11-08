@@ -3,6 +3,89 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
+## 0.2.0 — 2026-11-07
+
+A hardening and showcase release: the ten services keep their independent
+runtime model while gaining a demo environment, HTTP controls, end-to-end
+verification, container images, OpenAPI snapshots and verifiable releases.
+
+### Added
+
+- **Demo environment** — every host calls `EnsureDemoHost()` and refuses to run
+  outside `Development` or `Demo`; seeding follows the same rule.
+- **HTTP hardening** — shared security headers on all APIs, configuration-driven
+  CORS, and per-instance rate limiting for identity (60/min) and the public site
+  (configurable, default 600/min).
+- **Playwright end-to-end suites** — 46 checks across the public site and members
+  demo at 1440×1040 and 390×844, covering navigation, forms, horizontal overflow
+  and serious/critical axe accessibility violations.
+- **.NET coverage** — `coverlet.collector` in every test project, with Cobertura
+  reports uploaded per service in CI.
+- **Docker demo stack** — `deploy/demo/` contains generic API and web Dockerfiles,
+  an nginx SPA configuration and a Compose stack for all ten APIs and nine web
+  demos, each with its own SQLite volume and CORS origins.
+- **OpenAPI snapshots** — `docs/openapi/` contains generated documents for all ten
+  APIs, an index and `npm run openapi:export`.
+- **Release integrity** — the release workflow now publishes an SPDX SBOM
+  workflow artifact and a signed `actions/attest-build-provenance` attestation
+  alongside the single source zip.
+- **CI workflow** — repository hygiene, backend coverage, web/mobile matrices,
+  Playwright, dependency review, OpenSSF Scorecard and a single `CI success`
+  gate.
+- **Repository tooling** — `scripts/verify-repo.mjs`,
+  `scripts/bump-version.mjs`, `scripts/reset-demos.mjs`, `scripts/serve-static.mjs`
+  and root npm scripts for `verify`, `e2e`, `openapi:export`, `demo:up` and
+  `demo:down`.
+- **Public-site SEO** — canonical and robots metadata, Open Graph/Twitter tags,
+  JSON-LD `ExerciseGym`, web manifest, icons, `robots.txt`, `sitemap.xml` and an
+  Open Graph image.
+- **Runtime API configuration** — every demo web app reads `config.js` at runtime
+  instead of baking the API origin into the bundle.
+- **Documentation** — deployment guide, four ADRs and refreshed README,
+  architecture, security and contributing guides.
+
+### Changed
+
+- Aligned every package, project, manifest and lockfile to `0.2.0`.
+- Switched the platform Angular package builder to `@angular/build:ng-packagr`,
+  removed `@angular/platform-browser-dynamic` from all ten web workspaces and
+  updated `@angular/build` to 22.2.6.
+- Standardised the toolchain on Node 24, npm 11.21.2, Flutter 3.47.8, .NET 10,
+  Angular 22 and TypeScript 6.
+- Module Angular workspaces now declare the built platform package as a permanent
+  `file:` dependency; `install:local` verifies the build and never mutates
+  `package.json`.
+- Committed NuGet and npm lockfiles for every project. Platform restore uses
+  `--locked-mode`; module restore stays unlocked because locally rebuilt
+  packages are not byte-deterministic.
+- Replaced the public-site and members demos' Material tokens with accessible
+  action and accent colours, added labelled loading spinners and fixed global
+  form-field, select and paginator contrast.
+- Rewrote the CI and release workflows for coverage, E2E, Scorecard, SBOM and
+  provenance.
+
+### Fixed
+
+- Public site and members demo now report **zero serious or critical axe
+  violations** and no page-level horizontal overflow at both target viewports.
+- Members Material buttons, form labels, selects, checkboxes and paginators meet
+  contrast requirements in light and dark sections.
+- Mobile menu and footer link naming is unambiguous for screen readers.
+- `install:local` works when invoked directly with `node` on Windows instead of
+  failing with `spawnSync npm.cmd EINVAL`.
+- Public-site rate limiting no longer causes false 429 responses during parallel
+  end-to-end tests.
+- Platform and module lockfiles were regenerated after dependency updates,
+  keeping restore deterministic and vulnerability-free.
+
+### Security
+
+- Demo authentication is now gated on an explicit environment check.
+- All APIs send browser security headers.
+- CORS is configurable per deployment and defaults to localhost only.
+- Rate limits reduce accidental abuse of the public demo endpoints.
+- Release assets carry an SBOM and a signed provenance attestation.
+
 ## 0.1.1 — 2026-11-05
 
 ### Security

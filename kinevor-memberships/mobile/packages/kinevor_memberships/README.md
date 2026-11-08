@@ -30,7 +30,7 @@ dependencies:
     path: ../kinevor-memberships/mobile/packages/kinevor_memberships
 ```
 
-Requires Dart 3.9+ and Flutter 3.35+.
+Requires Dart 3.9+ and Flutter 3.47.8.
 
 ## Register
 
@@ -100,7 +100,7 @@ The default client calls the Kinevor self-service API:
 Responses must use the platform `ApiResponse<T>` envelope. The current-cover
 endpoint may return `null` data when the member has no cover. Extra headers are
 attached to every request, which supports a host token or the demo API's
-development-only trust headers.
+demo-only trust headers.
 
 Lifecycle rules are enforced by the API:
 

@@ -102,7 +102,7 @@ The commands below use PowerShell; on macOS or Linux use forward slashes.
 
 - .NET SDK 10 (the solution uses `.slnx`) and the ASP.NET Core 10 runtime.
 - Node.js 22.12+ and npm 11+.
-- Flutter 3.35+ (the repository is verified with Flutter 3.47.8).
+- Flutter 3.47.8 (pinned in `.fvmrc`).
 
 ### 1. Build the platform packages
 
@@ -314,7 +314,7 @@ kinevor-identity-access/
 
 ## Security
 
-These demo hosts refuse to start outside Development and use SQLite. For a real
+These demo hosts refuse to start outside Development and Demo and use SQLite. For a real
 host, issue a strong random signing key, serve the API over HTTPS, restrict CORS
 to known origins, and keep refresh tokens out of logs. Swagger and seeded
 credentials are available in Development only. Do not commit connection

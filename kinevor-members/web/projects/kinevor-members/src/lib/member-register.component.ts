@@ -172,7 +172,7 @@ import { MembersFacade } from './members.facade';
                 [disabled]="facade.actionLoading() || !isValid()"
               >
                 @if (facade.actionLoading()) {
-                  <mat-spinner diameter="18" class="btn-spinner" />
+                  <mat-spinner diameter="18" class="btn-spinner" aria-hidden="true" />
                 }
                 Register member
               </button>

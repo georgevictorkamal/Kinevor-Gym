@@ -11,7 +11,7 @@ Shared domain kernel for Kinevor feature modules.
 ## Install
 
 ```bash
-dotnet add package Kinevor.Platform.Domain --version 0.1.1
+dotnet add package Kinevor.Platform.Domain --version 0.2.0
 ```
 
 Outside the monorepo, consumers need the GitHub Packages NuGet source configured for the

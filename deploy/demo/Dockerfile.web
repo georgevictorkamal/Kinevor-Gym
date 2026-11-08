@@ -1,0 +1,36 @@
+# Build a Kinevor module Angular demo image.
+#
+# Both the platform library and the module demo are built from the same source
+# revision. The module installs its dependencies with `install:local --ci` so
+# the lockfile and the local platform binding are honoured.
+ARG NODE_VERSION=24
+
+FROM node:${NODE_VERSION}-bookworm AS build
+
+ARG SERVICE
+
+ENV npm_config_audit=false \
+    npm_config_fund=false
+
+WORKDIR /src
+
+COPY package.json package-lock.json ./
+COPY kinevor-platform/web/ kinevor-platform/web/
+RUN cd kinevor-platform/web \
+ && npm ci \
+ && npm run build
+
+COPY ${SERVICE}/web/ ${SERVICE}/web/
+RUN cd ${SERVICE}/web \
+ && npm run install:local -- --ci \
+ && npm run build:demo
+
+FROM nginx:1.29-alpine AS runtime
+
+COPY deploy/demo/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /src/${SERVICE}/web/dist/demo/browser /usr/share/nginx/html
+
+EXPOSE 80
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=5s --retries=5 \
+  CMD wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1

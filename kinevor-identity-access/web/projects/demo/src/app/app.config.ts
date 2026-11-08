@@ -7,6 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter } from '@angular/router';
 import { provideIdentityAccess } from '@georgevictorkamal/kinevor-identity-access-web';
 import { appRoutes } from './app.routes';
+import { apiBaseUrl } from './runtime-config';
 
 /** Demo application configuration: router and identity feature. */
 export const appConfig: ApplicationConfig = {
@@ -15,6 +16,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(appRoutes),
     provideAnimationsAsync(),
-    provideIdentityAccess({ apiBaseUrl: 'http://localhost:5082/api/v1' }),
+    provideIdentityAccess({ apiBaseUrl }),
   ],
 };

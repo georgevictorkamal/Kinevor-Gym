@@ -1,0 +1,75 @@
+{
+  "generatedFrom": "Kinevor DemoApi hosts (Development environment)",
+  "documents": [
+    {
+      "service": "kinevor-checkins-access",
+      "title": "Kinevor Check-ins & Access Module API",
+      "version": "v1",
+      "paths": 12,
+      "file": "docs/openapi/checkins-access.json"
+    },
+    {
+      "service": "kinevor-classes-bookings",
+      "title": "Kinevor Classes & Bookings Module API",
+      "version": "v1",
+      "paths": 10,
+      "file": "docs/openapi/classes-bookings.json"
+    },
+    {
+      "service": "kinevor-identity-access",
+      "title": "Kinevor Identity & Access Module API",
+      "version": "v1",
+      "paths": 6,
+      "file": "docs/openapi/identity-access.json"
+    },
+    {
+      "service": "kinevor-members",
+      "title": "Kinevor Members Module API",
+      "version": "v1",
+      "paths": 12,
+      "file": "docs/openapi/members.json"
+    },
+    {
+      "service": "kinevor-memberships",
+      "title": "Kinevor Memberships Module API",
+      "version": "v1",
+      "paths": 17,
+      "file": "docs/openapi/memberships.json"
+    },
+    {
+      "service": "kinevor-notifications",
+      "title": "Kinevor Notifications Module API",
+      "version": "v1",
+      "paths": 18,
+      "file": "docs/openapi/notifications.json"
+    },
+    {
+      "service": "kinevor-payments-billing",
+      "title": "Kinevor Payments & Billing Module API",
+      "version": "v1",
+      "paths": 17,
+      "file": "docs/openapi/payments-billing.json"
+    },
+    {
+      "service": "kinevor-public-site",
+      "title": "Kinevor Public Site API",
+      "version": "v1",
+      "paths": 12,
+      "file": "docs/openapi/public-site.json"
+    },
+    {
+      "service": "kinevor-staff-dashboard",
+      "title": "Kinevor Staff Dashboard API",
+      "version": "v1",
+      "paths": 4,
+      "file": "docs/openapi/staff-dashboard.json"
+    },
+    {
+      "service": "kinevor-trainers",
+      "title": "Kinevor Trainers Module API",
+      "version": "v1",
+      "paths": 3,
+      "file": "docs/openapi/trainers.json"
+    }
+  ]
+}

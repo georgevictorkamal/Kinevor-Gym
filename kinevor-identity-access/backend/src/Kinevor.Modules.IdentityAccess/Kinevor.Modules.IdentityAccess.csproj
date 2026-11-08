@@ -9,9 +9,9 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Kinevor.Platform.Api" Version="0.1.1" />
-    <PackageReference Include="Kinevor.Platform.Application" Version="0.1.1" />
-    <PackageReference Include="Kinevor.Platform.Domain" Version="0.1.1" />
+    <PackageReference Include="Kinevor.Platform.Api" Version="0.2.0" />
+    <PackageReference Include="Kinevor.Platform.Application" Version="0.2.0" />
+    <PackageReference Include="Kinevor.Platform.Domain" Version="0.2.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
   </ItemGroup>

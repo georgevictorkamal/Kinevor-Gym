@@ -94,10 +94,27 @@ html[dir='rtl'] .flip-rtl { transform: scaleX(-1); }
 ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: var(--radius-pill); }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent-pressed); }
 
+:root {
+  --color-action-fill: #c9261b;
+  --color-action-hover: #a8320d;
+  --color-action-pressed: #8f2a0c;
+}
+
+.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-outlined-button,
+.mat-mdc-unelevated-button, .mat-mdc-text-button {
+  --mat-button-text-label-text-color: var(--color-text);
+  --mat-button-outlined-label-text-color: var(--color-text);
+  --mat-button-protected-label-text-color: var(--color-on-accent);
+  --mat-button-filled-label-text-color: var(--color-on-accent);
+  --mat-button-tonal-label-text-color: var(--color-text);
+  min-height: var(--touch-min);
+  border-radius: var(--radius-input);
+  font-weight: 600;
+}
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-unelevated-button.mat-primary,
 .mat-mdc-filled-button.mat-primary {
-  background: var(--color-accent-fill) !important;
+  background: var(--color-action-fill) !important;
   color: var(--color-on-accent) !important;
 }
 .mat-mdc-raised-button.mat-primary .mdc-button__label,
@@ -108,42 +125,41 @@ html[dir='rtl'] .flip-rtl { transform: scaleX(-1); }
 .mat-mdc-raised-button.mat-primary:hover,
 .mat-mdc-unelevated-button.mat-primary:hover,
 .mat-mdc-filled-button.mat-primary:hover {
-  background: var(--color-accent-hover) !important;
+  background: var(--color-action-hover) !important;
 }
 .mat-mdc-raised-button.mat-primary:active,
 .mat-mdc-unelevated-button.mat-primary:active {
-  background: var(--color-accent-pressed) !important;
+  background: var(--color-action-pressed) !important;
 }
 .mat-mdc-outlined-button.mat-primary,
 .mat-mdc-outlined-button.mat-accent {
-  color: var(--color-accent-text) !important;
-  --mdc-outlined-button-outline-color: var(--color-accent-text) !important;
+  --mat-button-outlined-label-text-color: var(--color-accent-text);
+  --mat-button-outlined-outline-color: var(--color-accent-text);
 }
 .mat-mdc-text-button.mat-primary,
 .mat-mdc-text-button.mat-accent,
 .mat-mdc-button.mat-primary {
-  color: var(--color-accent-text) !important;
+  --mat-button-text-label-text-color: var(--color-accent-text);
 }
 .mat-mdc-outlined-button:not(.mat-primary):not(.mat-accent) {
-  --mdc-outlined-button-outline-color: var(--color-border) !important;
-}
-.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-outlined-button,
-.mat-mdc-unelevated-button, .mat-mdc-text-button {
-  min-height: var(--touch-min);
-  border-radius: var(--radius-input);
-  font-weight: 600;
+  --mat-button-outlined-outline-color: var(--color-border);
 }
 .mat-mdc-icon-button { width: var(--touch-min); height: var(--touch-min); }
 .mat-mdc-menu-item { min-height: var(--touch-min); }
 
 .mat-mdc-form-field {
-  --mdc-outlined-text-field-outline-color: var(--color-border);
-  --mdc-outlined-text-field-label-text-color: var(--color-text-muted);
-  --mdc-outlined-text-field-input-text-color: var(--color-text);
-  --mdc-outlined-text-field-hover-outline-color: var(--color-text-muted);
-  --mdc-outlined-text-field-focus-outline-color: var(--color-accent-hover);
-  --mdc-outlined-text-field-error-label-text-color: var(--color-error);
-  --mdc-outlined-text-field-error-focus-label-text-color: var(--color-error);
+  --mat-form-field-outlined-outline-color: var(--color-border);
+  --mat-form-field-outlined-label-text-color: var(--color-text-muted);
+  --mat-form-field-outlined-hover-label-text-color: var(--color-text);
+  --mat-form-field-outlined-focus-label-text-color: var(--color-accent-text);
+  --mat-form-field-outlined-input-text-color: var(--color-text);
+  --mat-form-field-outlined-input-text-placeholder-color: var(--color-text-muted);
+  --mat-form-field-outlined-hover-outline-color: var(--color-text-muted);
+  --mat-form-field-outlined-focus-outline-color: var(--color-accent-hover);
+  --mat-form-field-outlined-error-label-text-color: var(--color-error);
+  --mat-form-field-outlined-error-focus-label-text-color: var(--color-error);
+  --mat-form-field-enabled-select-arrow-color: var(--color-text-muted);
+  --mat-form-field-focus-select-arrow-color: var(--color-accent-text);
   font-size: 16px;
 }
 .mat-mdc-form-field .mat-mdc-text-field-wrapper { background: transparent; }
@@ -161,9 +177,19 @@ mat-error::before {
 }
 .mat-mdc-form-field-infix { min-height: var(--input-height); }
 .mat-mdc-select-panel { background: var(--color-surface-raised); }
-.mat-mdc-option { color: var(--color-text); }
+.mat-mdc-select {
+  --mat-select-enabled-trigger-text-color: var(--color-text);
+  --mat-select-placeholder-text-color: var(--color-text-muted);
+  --mat-select-enabled-arrow-color: var(--color-text-muted);
+  --mat-select-focused-arrow-color: var(--color-accent-text);
+}
+.mat-mdc-option {
+  --mat-option-label-text-color: var(--color-text);
+  --mat-option-selected-state-label-text-color: var(--color-accent-text);
+}
 .mat-mdc-option:hover { background: var(--color-accent-soft); }
 .mat-mdc-option.mdc-list-item--selected { color: var(--color-accent-text); }
+.mat-mdc-checkbox { --mat-checkbox-label-text-color: var(--color-text); }
 
 .mat-mdc-card, .gym-card, .card {
   background: var(--color-surface-raised) !important;
@@ -184,7 +210,14 @@ mat-error::before {
 .mat-mdc-tab.mdc-tab--active { color: var(--color-accent-text) !important; }
 .mat-mdc-tab-body-wrapper { background: transparent !important; }
 .mat-mdc-tab .mdc-tab__content { min-height: var(--touch-min); }
-.mat-mdc-paginator { background: var(--color-surface) !important; color: var(--color-text) !important; border-radius: var(--radius-card); }
+.mat-mdc-paginator {
+  --mat-paginator-container-text-color: var(--color-text);
+  --mat-paginator-enabled-icon-color: var(--color-text);
+  --mat-paginator-disabled-icon-color: var(--color-text-muted);
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  border-radius: var(--radius-card);
+}
 .mat-mdc-paginator .mat-mdc-paginator-page-size-label, .mat-mdc-paginator .mat-mdc-paginator-page-size-unit { color: var(--color-text-muted) !important; }
 .mat-mdc-progress-bar { --mdc-linear-progress-active-indicator-color: var(--color-accent-fill); --mdc-linear-progress-track-color: var(--color-border); }
 .mat-mdc-spinner { --mat-spinner-color: var(--color-accent-fill); }

@@ -1,0 +1,27 @@
+{
+  "name": "kinevor",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Kinevor gym-management platform: ten independent services in one repository.",
+  "license": "MIT",
+  "packageManager": "npm@11.21.2",
+  "engines": {
+    "node": ">=24",
+    "npm": ">=11"
+  },
+  "scripts": {
+    "verify": "node scripts/verify-repo.mjs",
+    "bump": "node scripts/bump-version.mjs",
+    "reset:demos": "node scripts/reset-demos.mjs",
+    "e2e": "playwright test",
+    "e2e:update": "playwright test --update-snapshots",
+    "e2e:report": "playwright show-report",
+    "openapi:export": "node scripts/export-openapi.mjs",
+    "demo:up": "docker compose -f deploy/demo/docker-compose.yml up --build",
+    "demo:down": "docker compose -f deploy/demo/docker-compose.yml down --remove-orphans"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.0"
+  }
+}

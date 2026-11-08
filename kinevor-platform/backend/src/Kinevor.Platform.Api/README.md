@@ -9,7 +9,7 @@ Shared ASP.NET Core contracts for Kinevor feature modules.
 ## Install
 
 ```bash
-dotnet add package Kinevor.Platform.Api --version 0.1.1
+dotnet add package Kinevor.Platform.Api --version 0.2.0
 ```
 
 The package references `Kinevor.Platform.Application` and the ASP.NET Core

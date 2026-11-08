@@ -15,6 +15,7 @@ updates:
 
   - package-ecosystem: "npm"
     directories:
+      - "/"
       - "/kinevor-*/web"
       - "/kinevor-*/web/projects/*"
     schedule:
@@ -23,6 +24,17 @@ updates:
     open-pull-requests-limit: 1
     groups:
       npm:
+        patterns: ["*"]
+
+  - package-ecosystem: "docker"
+    directories:
+      - "/deploy/demo"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 1
+    groups:
+      docker:
         patterns: ["*"]
 
   - package-ecosystem: "pub"

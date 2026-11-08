@@ -8,6 +8,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter } from '@angular/router';
 import { provideStaffDashboard } from '@georgevictorkamal/kinevor-staff-dashboard-web';
 import { appRoutes } from './app.routes';
+import { apiBaseUrl } from './runtime-config';
 import { demoApiInterceptor } from './demo-api.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -17,6 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([demoApiInterceptor])),
-    provideStaffDashboard({ apiBaseUrl: 'http://localhost:5089/api/v1' }),
+    provideStaffDashboard({ apiBaseUrl }),
   ],
 };

@@ -348,7 +348,7 @@ import { formatShortDate, formatTime, toDateInputValue } from './public-site.uti
       margin-top: 4px;
       border: 0;
       border-radius: 9px;
-      background: var(--kx-ember);
+      background: var(--kx-ember-action);
       color: #fff9f1;
       font: inherit;
       font-size: 14px;
@@ -357,7 +357,7 @@ import { formatShortDate, formatTime, toDateInputValue } from './public-site.uti
       transition: background .18s, transform .18s;
     }
 
-    .submit-button:hover:not(:disabled) { background: var(--kx-ember-deep); transform: translateY(-1px); }
+    .submit-button:hover:not(:disabled) { background: var(--kx-ember-action-hover); transform: translateY(-1px); }
     .submit-button:disabled { opacity: .6; cursor: wait; }
     .submit-button .material-icons { font-size: 18px; }
     .form-footnote { margin: -3px 0 0; color: var(--kx-muted); font-size: 11px; line-height: 1.5; text-align: center; }

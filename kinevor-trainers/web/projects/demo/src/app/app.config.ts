@@ -8,6 +8,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter } from '@angular/router';
 import { provideTrainers } from '@georgevictorkamal/kinevor-trainers-web';
 import { appRoutes } from './app.routes';
+import { apiBaseUrl } from './runtime-config';
 import { demoApiInterceptor } from './demo-api.interceptor';
 
 /** Demo application configuration: router, HTTP and trainers feature. */
@@ -18,6 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideHttpClient(withInterceptors([demoApiInterceptor])),
     provideAnimationsAsync(),
-    provideTrainers({ apiBaseUrl: 'http://localhost:5081/api/v1' }),
+    provideTrainers({ apiBaseUrl }),
   ],
 };

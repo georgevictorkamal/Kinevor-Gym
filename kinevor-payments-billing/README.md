@@ -138,7 +138,7 @@ The commands below use PowerShell; on macOS or Linux use forward slashes.
 
 - .NET SDK 10.0.100+ (pinned by `global.json`) and an ASP.NET Core 10.0+ runtime.
 - Node.js 22.12+ and npm 11+.
-- Flutter 3.35+ (the repository is verified with Flutter 3.47.8).
+- Flutter 3.47.8 (pinned in `.fvmrc`).
 
 ### 1. Build the platform packages
 
@@ -184,7 +184,7 @@ member:
 | Maya Thompson | `11111111-1111-1111-1111-111111111111` | 178.95 | 52.95 | 2 |
 | Sofia Rossi | `33333333-3333-3333-3333-333333333333` | 0.00 | 0.00 | 0 |
 
-The demo trusts development-only headers:
+The demo trusts demo role headers (Development and Demo only):
 
 | Header | Purpose | Example |
 | --- | --- | --- |

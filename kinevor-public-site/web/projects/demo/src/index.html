@@ -10,8 +10,62 @@
       name="description"
       content="Kinevor is a coach-led strength and movement gym with three New York locations, considered programming and a free first session."
     >
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="/">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="preload" href="fonts/Sora-Variable.ttf" as="font" type="font/ttf" crossorigin>
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Kinevor">
+    <meta property="og:title" content="Kinevor - Strength has a home">
+    <meta
+      property="og:description"
+      content="Coach-led strength, conditioning and recovery across three New York neighbourhoods. Book a free first session."
+    >
+    <meta property="og:url" content="https://kinevor.example/">
+    <meta property="og:image" content="https://kinevor.example/og-image.png">
+    <meta property="og:image:width" content="1280">
+    <meta property="og:image:height" content="640">
+    <meta property="og:image:alt" content="The Kinevor public website landing page">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kinevor - Strength has a home">
+    <meta
+      name="twitter:description"
+      content="Coach-led strength, conditioning and recovery across three New York neighbourhoods. Book a free first session."
+    >
+    <meta name="twitter:image" content="https://kinevor.example/og-image.png">
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ExerciseGym",
+        "name": "Kinevor",
+        "description": "Coach-led strength, conditioning and recovery across three New York neighbourhoods.",
+        "url": "https://kinevor.example/",
+        "telephone": "+1-212-555-0123",
+        "email": "hello@kinevorgym.com",
+        "image": "https://kinevor.example/og-image.png",
+        "logo": "https://kinevor.example/icons/icon-512.png",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "123 Main Street",
+          "addressLocality": "New York",
+          "addressRegion": "NY",
+          "postalCode": "10013",
+          "addressCountry": "US"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "New York"
+        },
+        "sameAs": ["https://github.com/georgevictorkamal/Kinevor-Gym"]
+      }
+    </script>
+    <script src="config.js"></script>
   </head>
   <body>
     <demo-root></demo-root>

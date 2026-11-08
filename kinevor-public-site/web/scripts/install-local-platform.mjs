@@ -1,10 +1,19 @@
-import { access, readFile, rm, writeFile } from 'node:fs/promises';
+import { access } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dirname, relative, resolve } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = resolve(here, '..');
+const platformDir = resolve(
+  webRoot,
+  '..',
+  '..',
+  'kinevor-platform',
+  'web',
+  'dist',
+  'kinevor-platform-web',
+);
 
 const npmMajor = Number(
   process.env.npm_config_user_agent?.match(/\bnpm\/(\d+)/)?.[1] ?? 0,
@@ -17,48 +26,35 @@ if (npmMajor > 0 && npmMajor < 11) {
   process.exit(1);
 }
 
-const packageFile = resolve(webRoot, 'package.json');
-const platformDir = resolve(
-  webRoot,
-  '..',
-  '..',
-  'kinevor-platform',
-  'web',
-  'dist',
-  'kinevor-platform-web',
-);
-
 await access(resolve(platformDir, 'package.json')).catch(() => {
   console.error(
     'Local platform package not found. Build it first:\n'
       + '  cd ../../kinevor-platform/web\n'
-      + '  npm install\n'
+      + '  npm ci\n'
       + '  npm run build',
   );
   process.exit(1);
 });
 
-const original = await readFile(packageFile, 'utf8');
-const manifest = JSON.parse(original);
-const specifier = `file:${relative(webRoot, platformDir).replaceAll('\\', '/')}`;
-manifest.dependencies['@georgevictorkamal/kinevor-platform-web'] = specifier;
+const useCi = process.argv.includes('--ci');
+const npmCli = process.env.npm_execpath;
+const action = useCi ? 'ci' : 'install';
+const args = npmCli
+  ? [npmCli, action, '--no-audit', '--no-fund']
+  : [action, '--no-audit', '--no-fund'];
 
-await writeFile(packageFile, `${JSON.stringify(manifest, null, 2)}\n`);
-
-try {
-  const npmCli = process.env.npm_execpath;
-  const command = npmCli ? process.execPath : (process.platform === 'win32' ? 'npm.cmd' : 'npm');
-  const args = npmCli
-    ? [npmCli, 'install', '--no-audit', '--no-fund', '--install-links']
-    : ['install', '--no-audit', '--no-fund', '--install-links'];
-  const result = spawnSync(command, args, { cwd: webRoot, stdio: 'inherit' });
-  if (result.error) {
-    console.error(result.error.message);
-    process.exitCode = 1;
-  } else if (result.status !== 0) {
-    process.exitCode = result.status ?? 1;
-  }
-} finally {
-  await writeFile(packageFile, original);
-  await rm(resolve(webRoot, 'package-lock.json'), { force: true });
+// Node cannot spawn `npm.cmd` directly on Windows (EINVAL). Use the shell for
+// the fallback path; the arguments are fixed strings, not user input.
+const result = npmCli
+  ? spawnSync(process.execPath, args, { cwd: webRoot, stdio: 'inherit' })
+  : spawnSync('npm', args, {
+      cwd: webRoot,
+      stdio: 'inherit',
+      shell: process.platform === 'win32',
+    });
+if (result.error) {
+  console.error(result.error.message);
+  process.exitCode = 1;
+} else if (result.status !== 0) {
+  process.exitCode = result.status ?? 1;
 }

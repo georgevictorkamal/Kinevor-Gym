@@ -48,7 +48,7 @@ runApp(
 ```
 
 The package does not authenticate staff. Supply an `http.Client` or headers from
-the host's authentication stack. The demo host uses the API's development-only
+the host's authentication stack. The demo host uses the API's demo-only
 `X-Demo-Role` and `X-Demo-User` trust headers.
 
 ## Screens

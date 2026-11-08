@@ -8,6 +8,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter } from '@angular/router';
 import { provideCheckInsAccess } from '@georgevictorkamal/kinevor-checkins-access-web';
 import { appRoutes } from './app.routes';
+import { apiBaseUrl } from './runtime-config';
 import { demoApiInterceptor } from './demo-api.interceptor';
 
 /** Demo application configuration: router, demo identity and the check-ins feature. */
@@ -18,6 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([demoApiInterceptor])),
-    provideCheckInsAccess('http://localhost:5086/api/v1'),
+    provideCheckInsAccess(apiBaseUrl),
   ],
 };

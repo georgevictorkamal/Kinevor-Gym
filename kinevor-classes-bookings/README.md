@@ -126,7 +126,7 @@ The commands below use PowerShell; on macOS or Linux use forward slashes.
 
 - .NET SDK 10 (the solution uses `.slnx`) and the ASP.NET Core 10 runtime.
 - Node.js 22.12+ and npm 11+.
-- Flutter 3.35+ (the repository is verified with Flutter 3.47.8).
+- Flutter 3.47.8 (pinned in `.fvmrc`).
 
 ### 1. Build the platform packages
 
@@ -170,7 +170,7 @@ database and seeds twelve sessions on first run:
 Maya Thompson is the primary self-service member
 (`11111111-1111-1111-1111-111111111111`) with seeded upcoming and past bookings.
 
-The demo trusts development-only headers:
+The demo trusts demo role headers (Development and Demo only):
 
 | Header | Purpose | Example |
 | --- | --- | --- |

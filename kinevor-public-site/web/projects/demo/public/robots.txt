@@ -1,0 +1,5 @@
+# Replace https://kinevor.example with the deployed origin before launch.
+User-agent: *
+Allow: /
+
+Sitemap: https://kinevor.example/sitemap.xml

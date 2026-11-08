@@ -11,6 +11,7 @@ import {
   providePublicSite,
 } from '@georgevictorkamal/kinevor-public-site-web';
 import { appRoutes } from './app.routes';
+import { apiBaseUrl } from './runtime-config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,7 +27,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideHttpClient(withFetch()),
     providePublicSite({
-      apiBaseUrl: 'http://localhost:5090/api/v1',
+      apiBaseUrl: apiBaseUrl,
     }),
   ],
 };

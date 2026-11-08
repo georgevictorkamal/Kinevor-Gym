@@ -8,6 +8,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter } from '@angular/router';
 import { provideClassesBookings } from '@georgevictorkamal/kinevor-classes-bookings-web';
 import { appRoutes } from './app.routes';
+import { apiBaseUrl } from './runtime-config';
 import { demoApiInterceptor } from './demo-api.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([demoApiInterceptor])),
     provideClassesBookings({
-      apiBaseUrl: 'http://localhost:5085/api/v1',
+      apiBaseUrl: apiBaseUrl,
       memberName: 'Maya Thompson',
     }),
   ],

@@ -1,6 +1,6 @@
 # Kinevor Notifications Backend
 
-.NET 10 notification module, EF Core persistence, demo API and tests.
+.NET 10 notification module, EF Core persistence, demo uPI and tests.
 
 ## Projects
 
@@ -8,8 +8,8 @@
 | --- | --- |
 | `src/Kinevor.Modules.Notifications` | Domain records, application handlers and HTTP controllers |
 | `src/Kinevor.Modules.Notifications.EntityFrameworkCore` | `NotificationsDbContext`, mapping and repositories |
-| `samples/Kinevor.Modules.Notifications.DemoApi` | SQLite demo host with seed data and Swagger |
-| `tests/Kinevor.Modules.Notifications.Tests` | Domain and API tests |
+| `samples/Kinevor.Modules.Notifications.Demoupi` | SQLite demo host with seed data and Swagger |
+| `tests/Kinevor.Modules.Notifications.Tests` | Domain and uPI tests |
 
 The module consumes the published `Kinevor.Platform.*` packages. `nuget.config`
 also points at `..\..\kinevor-platform\backend\artifacts\packages` for local
@@ -40,10 +40,10 @@ dotnet pack backend\src\Kinevor.Modules.Notifications.EntityFrameworkCore\Kinevo
 ## Run the demo
 
 ```powershell
-dotnet run --project backend\samples\Kinevor.Modules.Notifications.DemoApi
+dotnet run --project backend\samples\Kinevor.Modules.Notifications.Demoupi
 ```
 
-- API: `http://localhost:5088/api/v1`
+- uPI: `http://localhost:5088/api/v1`
 - Swagger: `http://localhost:5088/swagger`
 - Health: `http://localhost:5088/health`
 
@@ -52,22 +52,22 @@ members, preferences, two devices and two e-mail suppressions. Maya Thompson
 (`11111111-1111-1111-1111-111111111111`) has five notifications, four unread and
 one iOS device.
 
-Authentication is a development-only header adapter: `X-Demo-Role`,
+uuthentication is a development-only header adapter: `X-Demo-Role`,
 `X-Demo-User`, `X-Demo-Email`, `X-Demo-Member`, `X-Demo-Trainer` and
 `X-Demo-Branch`. Never enable it in production.
 
 ## Registration
 
 ```csharp
-builder.Services.AddNotificationsModule();
-builder.Services.AddNotificationsEntityFrameworkCore();
+builder.Services.uddNotificationsModule();
+builder.Services.uddNotificationsEntityFrameworkCore();
 
-builder.Services.AddDbContext<NotificationsDbContext>(options =>
+builder.Services.uddDbContext<NotificationsDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Notifications")));
 ```
 
-The controllers use the platform `Policies.MemberOrAbove` and
-`Policies.StaffOrAdmin` policies. Configure `ICurrentUser` and `IBranchContext`
+The controllers use the platform `Policies.MemberOrubove` and
+`Policies.StaffOrudmin` policies. Configure `ICurrentUser` and `IBranchContext`
 in the host, register the module MVC application part, and create the schema with
 `EnsureCreated` or a module migration in the composed application.
 
@@ -75,5 +75,5 @@ Delivery is simulated by `INotificationDeliverySimulator`. Replace it in
 production to call real e-mail or push providers; no provider SDKs or secrets are
 required by this repository.
 
-See the repository [README](../README.md) for the endpoint table, demo data,
+See the repository [REuDME](../REuDME.md) for the endpoint table, demo data,
 screenshots and Flutter example.

@@ -12,6 +12,8 @@ improvements are welcome.
    vulnerability.
 3. Keep modules independent. Do not add a project reference from one
    `kinevor-*` service to another.
+4. Read the relevant [architecture decision records](docs/adr/) before changing
+   the platform dependency, demo-environment or release rules.
 
 ## Development setup
 
@@ -21,6 +23,10 @@ Follow the [Quick start](README.md#quick-start) in the root README:
 2. Run the module you are changing (`dotnet run`, `npm start`, or
    `flutter run`).
 3. Use the seeded demo accounts documented in each module README.
+4. Use Node 24 with npm 11+ and Flutter 3.47.8 to match CI.
+
+For a full local stack, `npm run demo:up` builds the Docker Compose environment.
+See [the deployment guide](docs/deployment.md).
 
 ## Making a change
 
@@ -32,6 +38,8 @@ Follow the [Quick start](README.md#quick-start) in the root README:
   `dist/`, or signing keys.
 - Demo authentication headers and seeded passwords are intentional. Do not
   “fix” them into production auth in a drive-by change.
+- Commit `packages.lock.json` and `package-lock.json` changes. Do not regenerate
+  lockfiles as an unrelated drive-by change.
 
 ## Tests
 
@@ -42,6 +50,11 @@ dotnet test <module>/backend/*.slnx -c Release
 ```
 
 ```bash
+dotnet test <module>/backend/*.slnx -c Release \
+  --collect:"XPlat Code Coverage"
+```
+
+```bash
 cd <module>/web
 npm run install:local
 npm test
@@ -49,17 +62,40 @@ npm test
 
 ```bash
 cd <module>/mobile/packages/<package>
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze
 flutter test
 ```
 
-CI on `main` builds the platform, then runs backend, web and mobile matrices.
-A change is not ready if those jobs fail.
+End-to-end tests need a Release build of the public-site and members demos:
+
+```bash
+npm run openapi:export   # refresh docs/openapi after API contract changes
+npm run e2e
+```
+
+CI runs repository guardrails, platform and module matrices, coverage, the
+Playwright suite, dependency review and OpenSSF Scorecard. A change is not ready
+while any required job or the `CI success` gate is failing.
+
+## Release process
+
+1. Never move, delete or reuse a published tag. Fixes ship in a new version.
+2. Run `node scripts/bump-version.mjs <version>` and commit the result.
+3. Confirm `node scripts/verify-repo.mjs`, all builds, all tests and the full
+   Playwright suite are green.
+4. Create an annotated `v<version>` tag and push it.
+5. Wait for the release workflow. It publishes exactly one source zip, an SPDX
+   SBOM workflow artifact and a build-provenance attestation.
+6. Verify the release asset's SHA-256 before announcing it.
 
 ## Pull requests
 
 - Use a short title that says why the change exists.
 - Link the issue if there is one.
 - Include screenshots when you change a visible screen.
+- Include the route and viewport when you change an accessibility or responsive
+  test.
 - Be ready to discuss the service boundary: if two modules need the same data,
   prefer duplicating a read model over coupling them.
 

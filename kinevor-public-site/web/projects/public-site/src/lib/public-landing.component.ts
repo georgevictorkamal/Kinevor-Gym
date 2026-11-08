@@ -44,7 +44,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
                   <span>JM</span><span>SK</span><span>AR</span><span>+</span>
                 </div>
                 <div>
-                  <div class="proof-stars" aria-label="Rated 4.9 out of 5">
+                  <div class="proof-stars" role="img" aria-label="Rated 4.9 out of 5">
                     @for (star of [1, 2, 3, 4, 5]; track star) {
                       <span class="material-icons" aria-hidden="true">star</span>
                     }
@@ -516,7 +516,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
 
     .proof-faces span:nth-child(2) { background: #56392c; }
     .proof-faces span:nth-child(3) { background: #423d2c; }
-    .proof-faces span:nth-child(4) { background: var(--kx-ember); color: #fff; }
+    .proof-faces span:nth-child(4) { background: var(--kx-ember-action); color: #fff; }
 
     .proof-stars { display: flex; gap: 2px; color: var(--kx-acid); }
     .proof-stars .material-icons { font-size: 12px; }
@@ -676,7 +676,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
       justify-content: center;
       flex: none;
       border-radius: 11px;
-      background: var(--kx-ember);
+      background: var(--kx-ember-action);
       color: #fff8ef;
     }
 
@@ -812,7 +812,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
       line-height: 1.45;
     }
 
-    .point-number { color: var(--kx-ember); font-size: 9px; font-weight: 750; letter-spacing: .12em; }
+    .point-number { color: var(--kx-ember-text); font-size: 9px; font-weight: 750; letter-spacing: .12em; }
 
     .intro-actions {
       display: flex;
@@ -912,7 +912,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
       right: 18px;
       padding: 5px 10px;
       border-radius: 999px;
-      background: var(--kx-ember);
+      background: var(--kx-ember-action);
       color: #fff8ef;
       font-size: 8px;
       font-weight: 700;
@@ -921,7 +921,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
     }
 
     .plan-tier {
-      color: var(--kx-ember);
+      color: var(--kx-ember-text);
       font-size: 9px;
       font-weight: 750;
       letter-spacing: .14em;
@@ -937,7 +937,8 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
     }
 
     .plan-top p { min-height: 56px; margin: 0; color: var(--kx-muted); font-size: 11px; line-height: 1.6; }
-    .plan-featured .plan-top p { color: rgba(251, 246, 238, .5); }
+    .plan-featured .plan-tier { color: var(--kx-ember); }
+    .plan-featured .plan-top p { color: rgba(251, 246, 238, .58); }
 
     .plan-price {
       display: flex;
@@ -951,7 +952,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
     .plan-featured .plan-price { border-color: rgba(255, 255, 255, .14); }
     .plan-amount { font-size: 40px; font-weight: 780; letter-spacing: -.06em; line-height: 1; }
     .plan-period { color: var(--kx-muted); font-size: 9px; }
-    .plan-featured .plan-period { color: rgba(251, 246, 238, .4); }
+    .plan-featured .plan-period { color: rgba(251, 246, 238, .6); }
 
     .plan-features {
       display: flex;
@@ -1011,6 +1012,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
       align-items: center;
     }
 
+    .schedule-copy .kx-eyebrow { color: var(--kx-ember); }
     .schedule-copy .kx-section-title { margin-top: 18px; }
     .schedule-lede { max-width: 38ch; margin: 22px 0 27px; color: rgba(251, 246, 238, .48); font-size: 12px; line-height: 1.7; }
 
@@ -1029,7 +1031,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
       border-top: 1px solid rgba(255, 255, 255, .1);
     }
 
-    .schedule-branches span { color: rgba(251, 246, 238, .28); font-size: 8px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
+    .schedule-branches span { color: rgba(251, 246, 238, .62); font-size: 8px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
 
     .schedule-list { display: flex; flex-direction: column; }
 
@@ -1052,14 +1054,14 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
     .schedule-date strong { color: var(--kx-cream); font-size: 11px; font-weight: 600; }
 
     .schedule-main { min-width: 0; }
-    .schedule-category { color: rgba(251, 246, 238, .28); font-size: 7px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .schedule-category { color: rgba(251, 246, 238, .62); font-size: 7px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
     .schedule-main h3 { margin: 3px 0 3px; color: var(--kx-cream); font-size: 17px; font-weight: 700; letter-spacing: -.02em; }
-    .schedule-main p { margin: 0; color: rgba(251, 246, 238, .37); font-size: 9px; }
+    .schedule-main p { margin: 0; color: rgba(251, 246, 238, .62); font-size: 9px; }
 
     .schedule-time { display: flex; flex-direction: column; align-items: flex-end; }
     .schedule-time strong { color: var(--kx-cream); font-size: 13px; font-weight: 650; }
-    .schedule-time span { color: rgba(251, 246, 238, .32); font-size: 8px; }
-    .schedule-index { position: absolute; right: -2px; bottom: 5px; color: rgba(255, 255, 255, .06); font-size: 31px; font-weight: 800; }
+    .schedule-time span { color: rgba(251, 246, 238, .62); font-size: 8px; }
+    .schedule-index { position: absolute; right: -2px; bottom: 5px; color: rgba(255, 255, 255, .35); font-size: 31px; font-weight: 800; }
 
     .coaches-section { background: var(--kx-paper); }
 
@@ -1118,7 +1120,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
 
     .coach-body { padding: 18px 18px 19px; }
     .coach-body h3 { margin: 0; font-size: 15px; font-weight: 750; letter-spacing: -.025em; }
-    .coach-role { display: block; margin-top: 2px; color: var(--kx-ember); font-size: 8px; font-weight: 650; letter-spacing: .03em; }
+    .coach-role { display: block; margin-top: 2px; color: var(--kx-ember-text); font-size: 8px; font-weight: 650; letter-spacing: .03em; }
     .coach-body p { display: -webkit-box; overflow: hidden; margin: 12px 0 14px; color: var(--kx-muted); font-size: 9px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
     .coach-tags { display: flex; flex-wrap: wrap; gap: 5px; }
     .coach-tags span { padding: 4px 7px; border: 1px solid var(--kx-line); border-radius: 999px; color: var(--kx-muted); font-size: 7px; font-weight: 600; }
@@ -1153,7 +1155,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
     }
 
     .faq-item summary::-webkit-details-marker { display: none; }
-    .faq-count { color: var(--kx-ember); font-size: 8px; font-weight: 750; letter-spacing: .1em; }
+    .faq-count { color: var(--kx-ember-text); font-size: 8px; font-weight: 750; letter-spacing: .1em; }
     .faq-toggle { margin-left: auto; color: var(--kx-muted); transition: transform .2s ease; }
     .faq-item[open] .faq-toggle { transform: rotate(45deg); color: var(--kx-ember); }
 
@@ -1174,7 +1176,7 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
       min-height: 370px;
       margin-block: 72px;
       border-radius: 28px;
-      background: var(--kx-ember);
+      background: var(--kx-ember-action);
       color: #fff8ef;
     }
 
@@ -1200,12 +1202,12 @@ import { formatMoney, formatShortDate, formatTime, initials } from './public-sit
     .cta-ring-two { top: 75px; right: 67px; width: 105px; height: 105px; border-color: rgba(255, 248, 239, .16); }
 
     .final-cta-copy { padding: clamp(34px, 5vw, 58px); }
-    .final-cta .kx-eyebrow { color: rgba(255, 248, 239, .7); }
+    .final-cta .kx-eyebrow { color: #fff8ef; }
     .final-cta h2 { margin: 20px 0 15px; font-size: clamp(34px, 4vw, 52px); font-weight: 800; letter-spacing: -.055em; line-height: 1; }
-    .final-cta p { max-width: 46ch; margin: 0; color: rgba(255, 248, 239, .72); font-size: 12px; line-height: 1.7; }
+    .final-cta p { max-width: 46ch; margin: 0; color: #fff8ef; font-size: 12px; line-height: 1.7; }
 
     .final-actions { display: flex; align-items: center; gap: 24px; margin-top: 29px; flex-wrap: wrap; }
-    .final-phone { color: rgba(255, 248, 239, .8); font-size: 11px; font-weight: 650; text-decoration: none; border-bottom: 1px solid rgba(255, 248, 239, .35); padding-bottom: 4px; }
+    .final-phone { color: #fff8ef; font-size: 11px; font-weight: 650; text-decoration: none; border-bottom: 1px solid rgba(255, 248, 239, .55); padding-bottom: 4px; }
     .final-phone:hover { color: #fff; }
 
     .skeleton-hero { height: 650px; }

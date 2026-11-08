@@ -1,6 +1,6 @@
 name: kinevor_members
 description: Standalone Flutter member profile, progress and privacy UI for Kinevor.
-version: 0.1.1
+version: 0.2.0
 publish_to: none
 repository: https://github.com/georgevictorkamal/Kinevor-Gym
 issue_tracker: https://github.com/georgevictorkamal/Kinevor-Gym/issues

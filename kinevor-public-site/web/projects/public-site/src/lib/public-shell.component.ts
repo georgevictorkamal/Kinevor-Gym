@@ -125,9 +125,12 @@ import { PublicSiteFacade } from './public-site.facade';
       --kx-paper: #f7f2e9;
       --kx-paper-deep: #eee5d8;
       --kx-surface: #fffaf2;
-      --kx-muted: #6f675c;
+      --kx-muted: #665e54;
       --kx-line: rgba(23, 20, 15, .14);
       --kx-ember: #f04f24;
+      --kx-ember-text: #a8320d;
+      --kx-ember-action: #c93a12;
+      --kx-ember-action-hover: #a8320d;
       --kx-ember-deep: #cf3e16;
       --kx-acid: #d8ef78;
       --kx-night: #12100e;
@@ -270,8 +273,8 @@ import { PublicSiteFacade } from './public-site.facade';
 
     .kx-btn:hover { transform: translateY(-2px); }
 
-    .kx-btn-ember { background: var(--kx-ember); color: #fff8ef; }
-    .kx-btn-ember:hover { background: var(--kx-ember-deep); }
+    .kx-btn-ember { background: var(--kx-ember-action); color: #fff8ef; }
+    .kx-btn-ember:hover { background: var(--kx-ember-action-hover); }
     .kx-btn .material-icons { font-size: 16px; }
 
     .menu-button {
@@ -351,7 +354,7 @@ import { PublicSiteFacade } from './public-site.facade';
 
     .footer-label {
       margin-bottom: 7px;
-      color: rgba(251, 246, 238, .36);
+      color: rgba(251, 246, 238, .62);
       font-size: 10px;
       font-weight: 700;
       letter-spacing: .16em;
@@ -369,7 +372,7 @@ import { PublicSiteFacade } from './public-site.facade';
 
     .footer-column small {
       margin-top: -6px;
-      color: rgba(251, 246, 238, .34);
+      color: rgba(251, 246, 238, .58);
       font-size: 10px;
     }
 
@@ -381,7 +384,7 @@ import { PublicSiteFacade } from './public-site.facade';
       gap: 20px;
       padding-block: 22px;
       border-top: 1px solid rgba(255, 255, 255, .08);
-      color: rgba(251, 246, 238, .3);
+      color: rgba(251, 246, 238, .58);
       font-size: 10px;
     }
 

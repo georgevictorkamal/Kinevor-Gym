@@ -45,7 +45,7 @@ runApp(MaterialApp(
 
 The package does not authenticate the member. Supply an `http.Client` or headers
 from the host's authentication stack. The demo host uses the API's
-development-only `X-Demo-Role` and `X-Demo-Member` trust headers.
+demo-only `X-Demo-Role` and `X-Demo-Member` trust headers.
 
 ## Screens
 

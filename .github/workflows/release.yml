@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 concurrency:
   group: release-${{ github.ref }}
@@ -16,11 +18,21 @@ jobs:
   release:
     name: Package and publish release
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Generate source SBOM
+        uses: anchore/sbom-action@v0.24.3
+        with:
+          path: .
+          format: spdx-json
+          output-file: Kinevor-${{ github.ref_name }}.spdx.json
+          artifact-name: sbom-${{ github.ref_name }}
+          upload-artifact: true
+          upload-release-assets: false
 
       - name: Build source archive
         shell: bash
@@ -34,6 +46,11 @@ jobs:
           echo "Archive: $archive"
           echo "SHA-256: $sha256"
 
+      - name: Attest source archive provenance
+        uses: actions/attest-build-provenance@v4.2.2
+        with:
+          subject-path: ${{ env.ARCHIVE }}
+
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -44,6 +61,13 @@ jobs:
             echo "Source archive for Kinevor \`${GITHUB_REF_NAME}\`."
             echo
             echo "SHA-256: \`${SHA256}\`"
+            echo
+            echo "The workflow also publishes a signed build-provenance attestation"
+            echo "and an SPDX SBOM artifact. Verify the download with:"
+            echo
+            echo '```bash'
+            echo "gh attestation verify ${ARCHIVE} --repo ${GITHUB_REPOSITORY}"
+            echo '```'
             echo
             echo "---"
             echo

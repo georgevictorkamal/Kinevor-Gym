@@ -1,0 +1,295 @@
+name: kinevor-demo
+
+# Local, self-contained demo stack. Every service keeps its own container,
+# port, SQLite file and configuration; nothing is orchestrated between them.
+#
+#   docker compose -f deploy/demo/docker-compose.yml up --build
+#
+# Building all nineteen images takes a while. To start only the public site
+# and the members showcase:
+#
+#   docker compose -f deploy/demo/docker-compose.yml up --build \
+#     kinevor-public-site-api kinevor-public-site-web \
+#     kinevor-members-api kinevor-members-web
+
+x-api-environment: &api-environment
+  ASPNETCORE_ENVIRONMENT: Demo
+  ASPNETCORE_URLS: http://+:8080
+
+x-api-build: &api-build
+  context: ../..
+  dockerfile: deploy/demo/Dockerfile.api
+
+x-web-build: &web-build
+  context: ../..
+  dockerfile: deploy/demo/Dockerfile.web
+
+services:
+  kinevor-trainers-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-trainers
+    environment:
+      <<: *api-environment
+      ConnectionStrings__Trainers: Data Source=/data/trainers-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4200
+      Cors__AllowedOrigins__1: http://127.0.0.1:4200
+    ports:
+      - "5081:8080"
+    volumes:
+      - trainers-data:/data
+    restart: unless-stopped
+
+  kinevor-trainers-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-trainers
+    depends_on:
+      - kinevor-trainers-api
+    ports:
+      - "4200:80"
+    restart: unless-stopped
+
+  kinevor-identity-access-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-identity-access
+    environment:
+      <<: *api-environment
+      ConnectionStrings__Identity: Data Source=/data/identity-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4201
+      Cors__AllowedOrigins__1: http://127.0.0.1:4201
+    ports:
+      - "5082:8080"
+    volumes:
+      - identity-data:/data
+    restart: unless-stopped
+
+  kinevor-identity-access-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-identity-access
+    depends_on:
+      - kinevor-identity-access-api
+    ports:
+      - "4201:80"
+    restart: unless-stopped
+
+  kinevor-members-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-members
+    environment:
+      <<: *api-environment
+      ConnectionStrings__Members: Data Source=/data/members-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4202
+      Cors__AllowedOrigins__1: http://127.0.0.1:4202
+    ports:
+      - "5083:8080"
+    volumes:
+      - members-data:/data
+    restart: unless-stopped
+
+  kinevor-members-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-members
+    depends_on:
+      - kinevor-members-api
+    ports:
+      - "4202:80"
+    restart: unless-stopped
+
+  kinevor-memberships-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-memberships
+    environment:
+      <<: *api-environment
+      ConnectionStrings__Memberships: Data Source=/data/memberships-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4203
+      Cors__AllowedOrigins__1: http://127.0.0.1:4203
+    ports:
+      - "5084:8080"
+    volumes:
+      - memberships-data:/data
+    restart: unless-stopped
+
+  kinevor-memberships-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-memberships
+    depends_on:
+      - kinevor-memberships-api
+    ports:
+      - "4203:80"
+    restart: unless-stopped
+
+  kinevor-classes-bookings-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-classes-bookings
+    environment:
+      <<: *api-environment
+      ConnectionStrings__ClassesBookings: Data Source=/data/classes-bookings-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4204
+      Cors__AllowedOrigins__1: http://127.0.0.1:4204
+    ports:
+      - "5085:8080"
+    volumes:
+      - classes-data:/data
+    restart: unless-stopped
+
+  kinevor-classes-bookings-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-classes-bookings
+    depends_on:
+      - kinevor-classes-bookings-api
+    ports:
+      - "4204:80"
+    restart: unless-stopped
+
+  kinevor-checkins-access-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-checkins-access
+    environment:
+      <<: *api-environment
+      ConnectionStrings__CheckInsAccess: Data Source=/data/checkins-access-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4205
+      Cors__AllowedOrigins__1: http://127.0.0.1:4205
+    ports:
+      - "5086:8080"
+    volumes:
+      - checkins-data:/data
+    restart: unless-stopped
+
+  kinevor-checkins-access-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-checkins-access
+    depends_on:
+      - kinevor-checkins-access-api
+    ports:
+      - "4205:80"
+    restart: unless-stopped
+
+  kinevor-payments-billing-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-payments-billing
+    environment:
+      <<: *api-environment
+      ConnectionStrings__PaymentsBilling: Data Source=/data/payments-billing-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4206
+      Cors__AllowedOrigins__1: http://127.0.0.1:4206
+    ports:
+      - "5087:8080"
+    volumes:
+      - payments-data:/data
+    restart: unless-stopped
+
+  kinevor-payments-billing-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-payments-billing
+    depends_on:
+      - kinevor-payments-billing-api
+    ports:
+      - "4206:80"
+    restart: unless-stopped
+
+  kinevor-notifications-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-notifications
+    environment:
+      <<: *api-environment
+      ConnectionStrings__Notifications: Data Source=/data/notifications-demo.db
+    ports:
+      - "5088:8080"
+    volumes:
+      - notifications-data:/data
+    restart: unless-stopped
+
+  kinevor-staff-dashboard-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-staff-dashboard
+    environment:
+      <<: *api-environment
+      ConnectionStrings__StaffDashboard: Data Source=/data/staff-dashboard-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4207
+      Cors__AllowedOrigins__1: http://127.0.0.1:4207
+    ports:
+      - "5089:8080"
+    volumes:
+      - staff-dashboard-data:/data
+    restart: unless-stopped
+
+  kinevor-staff-dashboard-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-staff-dashboard
+    depends_on:
+      - kinevor-staff-dashboard-api
+    ports:
+      - "4207:80"
+    restart: unless-stopped
+
+  kinevor-public-site-api:
+    build:
+      <<: *api-build
+      args:
+        SERVICE: kinevor-public-site
+    environment:
+      <<: *api-environment
+      ConnectionStrings__PublicSite: Data Source=/data/publicsite-demo.db
+      Cors__AllowedOrigins__0: http://localhost:4208
+      Cors__AllowedOrigins__1: http://127.0.0.1:4208
+    ports:
+      - "5090:8080"
+    volumes:
+      - public-site-data:/data
+    restart: unless-stopped
+
+  kinevor-public-site-web:
+    build:
+      <<: *web-build
+      args:
+        SERVICE: kinevor-public-site
+    depends_on:
+      - kinevor-public-site-api
+    ports:
+      - "4208:80"
+    restart: unless-stopped
+
+volumes:
+  trainers-data:
+  identity-data:
+  members-data:
+  memberships-data:
+  classes-data:
+  checkins-data:
+  payments-data:
+  notifications-data:
+  staff-dashboard-data:
+  public-site-data:

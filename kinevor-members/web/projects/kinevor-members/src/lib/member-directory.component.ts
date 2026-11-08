@@ -120,7 +120,7 @@ import { MembersFacade } from './members.facade';
 
       @if (loading()) {
         <div class="table-loading" role="status">
-          <mat-spinner diameter="48" />
+          <mat-spinner diameter="48" aria-label="Loading members" />
           <span>Loading members…</span>
         </div>
       }

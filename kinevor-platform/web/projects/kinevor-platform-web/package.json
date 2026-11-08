@@ -1,6 +1,6 @@
 {
   "name": "@georgevictorkamal/kinevor-platform-web",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Shared Angular building blocks for Kinevor modules: API envelopes, auth, i18n, notices and theming.",
   "license": "MIT",
   "repository": {

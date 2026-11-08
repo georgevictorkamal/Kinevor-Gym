@@ -104,7 +104,7 @@ The commands below use PowerShell; on macOS or Linux use forward slashes.
 
 - .NET SDK 10 (the solution uses `.slnx`) and the ASP.NET Core 10 runtime.
 - Node.js 22.12+ and npm 11+.
-- Flutter 3.35+ only when working with the companion mobile package.
+- Flutter 3.47.8 only when working with the companion mobile package.
 
 ### 1. Build the platform packages
 
@@ -136,7 +136,7 @@ a SQLite database and seeds three branches:
 | Kinevor Gym - Downtown | Manchester | 180 | 149 |
 | Kinevor Gym - Westside | Leeds | 150 | 96 |
 
-The demo trusts development-only headers:
+The demo trusts demo role headers (Development and Demo only):
 
 | Header | Purpose | Example |
 | --- | --- | --- |
@@ -197,7 +197,7 @@ flutter pub get
 flutter run -d windows --dart-define=KINEVOR_API_BASE_URL=http://localhost:5089/api/v1
 ```
 
-The demo sends the development-only `Staff` role, e-mail and subject headers.
+The demo sends the demo-only `Staff` role, e-mail and subject headers.
 Use `flutter run -d chrome` for the web build or
 `http://10.0.2.2:5089/api/v1` on an Android emulator. The 7/30-day range and the
 branch selector update the same query parameters as the Angular facade.

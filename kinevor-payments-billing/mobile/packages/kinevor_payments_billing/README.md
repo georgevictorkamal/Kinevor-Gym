@@ -121,7 +121,7 @@ flutter run -d chrome `
   --dart-define=KINEVOR_API_BASE_URL=http://localhost:5087/api/v1
 ```
 
-The example sends the development-only `X-Demo-Role`, `X-Demo-Member` and
+The example sends the demo-only `X-Demo-Role`, `X-Demo-Member` and
 `X-Demo-Email` headers. Never use those headers in production.
 
 ## Test

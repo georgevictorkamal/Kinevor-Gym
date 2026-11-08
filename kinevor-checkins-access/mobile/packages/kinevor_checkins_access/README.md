@@ -49,7 +49,7 @@ runApp(
 
 The package does not authenticate the member. Supply headers or an
 `http.Client` from the host's authentication stack. The demo host uses the API's
-development-only `X-Demo-Role`, `X-Demo-Member` and `X-Demo-Email` trust headers.
+demo-only `X-Demo-Role`, `X-Demo-Member` and `X-Demo-Email` trust headers.
 
 ## Screens
 

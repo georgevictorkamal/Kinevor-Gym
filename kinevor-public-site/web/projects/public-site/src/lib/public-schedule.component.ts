@@ -209,12 +209,12 @@ function mondayOf(date: Date): Date {
     .hero-copy { max-width: 51ch; margin: 27px 0 0; color: rgba(251,246,238,.49); font-size: 12px; line-height: 1.75; }
 
     .hero-summary { position: relative; padding: 26px; border: 1px solid rgba(255,255,255,.13); border-radius: 21px; background: rgba(255,255,255,.04); backdrop-filter: blur(14px); }
-    .summary-top { display: flex; align-items: center; gap: 7px; color: rgba(251,246,238,.35); font-size: 7px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .summary-top { display: flex; align-items: center; gap: 7px; color: rgba(251,246,238,.62); font-size: 7px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
     .live-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--kx-acid); box-shadow: 0 0 0 4px rgba(217,255,79,.08); }
     .hero-summary strong { display: block; margin-top: 25px; font-size: 68px; font-weight: 820; letter-spacing: -.075em; line-height: .75; }
-    .hero-summary > span { display: block; margin-top: 10px; color: rgba(251,246,238,.37); font-size: 9px; line-height: 1.5; }
+    .hero-summary > span { display: block; margin-top: 10px; color: rgba(251,246,238,.62); font-size: 9px; line-height: 1.5; }
     .summary-rule { height: 1px; margin: 21px 0 14px; background: rgba(255,255,255,.1); }
-    .hero-summary p { margin: 0; color: rgba(251,246,238,.35); font-size: 8px; line-height: 1.65; }
+    .hero-summary p { margin: 0; color: rgba(251,246,238,.62); font-size: 8px; line-height: 1.65; }
 
     .calendar-section { padding-block: 24px 92px; background: var(--kx-paper); }
 
@@ -234,8 +234,8 @@ function mondayOf(date: Date): Date {
     .day-weekday { font-size: 7px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
     .day-number { margin: 4px 0 9px; color: var(--kx-ink); font-size: 27px; font-weight: 780; letter-spacing: -.05em; line-height: 1; }
     .day-count { font-size: 7px; font-weight: 600; }
-    .day-active { background: var(--kx-night); color: rgba(251,246,238,.38); }
-    .day-active:hover { background: var(--kx-night); color: rgba(251,246,238,.65); }
+    .day-active { background: var(--kx-night); color: rgba(251,246,238,.68); }
+    .day-active:hover { background: var(--kx-night); color: rgba(251,246,238,.85); }
     .day-active .day-number { color: var(--kx-ember); }
     .day-active .day-weekday { color: var(--kx-acid); }
 
@@ -257,7 +257,7 @@ function mondayOf(date: Date): Date {
 
     .session-kicker { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; }
     .category-pill, .intensity-pill { padding: 3px 7px; border-radius: 999px; font-size: 7px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
-    .category-pill { background: rgba(240,79,36,.1); color: var(--kx-ember); }
+    .category-pill { background: rgba(240,79,36,.1); color: var(--kx-ember-text); }
     .category-pill.strength { background: rgba(44,63,81,.1); color: #38566d; }
     .category-pill.recovery { background: rgba(76,102,75,.12); color: #4d684b; }
     .category-pill.conditioning { background: rgba(171,118,29,.12); color: #8f6118; }

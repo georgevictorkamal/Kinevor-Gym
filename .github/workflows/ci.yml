@@ -19,6 +19,18 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
 jobs:
+  hygiene:
+    name: Repository hygiene
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: Verify architecture, versions and release guardrails
+        run: node scripts/verify-repo.mjs
+
   platform-backend:
     name: Platform · backend
     runs-on: ubuntu-latest
@@ -32,11 +44,11 @@ jobs:
         with:
           dotnet-version: '10.0.x'
       - name: Restore
-        run: dotnet restore Kinevor.Platform.slnx
+        run: dotnet restore Kinevor.Platform.slnx --locked-mode
       - name: Build
         run: dotnet build Kinevor.Platform.slnx -c Release --no-restore
       - name: Test
-        run: dotnet test Kinevor.Platform.slnx -c Release --no-build
+        run: dotnet test Kinevor.Platform.slnx -c Release --no-build --collect:"XPlat Code Coverage" --results-directory artifacts/coverage
       - name: Pack
         run: dotnet pack Kinevor.Platform.slnx -c Release --no-build -o artifacts/packages
       - name: Upload NuGet packages
@@ -47,6 +59,14 @@ jobs:
             kinevor-platform/backend/artifacts/packages/*.nupkg
             kinevor-platform/backend/artifacts/packages/*.snupkg
           retention-days: 1
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-platform
+          path: kinevor-platform/backend/artifacts/coverage/**/coverage.cobertura.xml
+          if-no-files-found: warn
+          retention-days: 7
 
   platform-web:
     name: Platform · web
@@ -105,12 +125,23 @@ jobs:
         with:
           name: platform-nuget
           path: kinevor-platform/backend/artifacts/packages
+      # Module projects consume locally rebuilt platform packages, whose
+      # content hashes are not byte-deterministic. Restore normally instead of
+      # using --locked-mode; platform restore above remains locked.
       - name: Restore
         run: dotnet restore *.slnx
       - name: Build
         run: dotnet build *.slnx -c Release --no-restore
       - name: Test
-        run: dotnet test *.slnx -c Release --no-build
+        run: dotnet test *.slnx -c Release --no-build --collect:"XPlat Code Coverage" --results-directory artifacts/coverage
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ matrix.service }}
+          path: ${{ matrix.service }}/backend/artifacts/coverage/**/coverage.cobertura.xml
+          if-no-files-found: warn
+          retention-days: 7
 
   module-web:
     name: Web · ${{ matrix.service }}
@@ -144,7 +175,7 @@ jobs:
           name: platform-web
           path: kinevor-platform/web/dist/kinevor-platform-web
       - name: Install with local platform binding
-        run: npm run install:local
+        run: npm run install:local -- --ci
       - name: Test
         run: npm test
       - name: Build library and demo
@@ -194,3 +225,130 @@ jobs:
         run: flutter analyze
       - name: Test
         run: flutter test
+
+  e2e:
+    name: E2E · public site and members
+    needs: [platform-backend, platform-web]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            kinevor-public-site/web/package-lock.json
+            kinevor-members/web/package-lock.json
+      - name: Restore platform NuGet feed
+        uses: actions/download-artifact@v8
+        with:
+          name: platform-nuget
+          path: kinevor-platform/backend/artifacts/packages
+      - name: Restore platform Angular package
+        uses: actions/download-artifact@v8
+        with:
+          name: platform-web
+          path: kinevor-platform/web/dist/kinevor-platform-web
+      - name: Install root tooling
+        run: npm ci
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Install public-site web
+        working-directory: kinevor-public-site/web
+        run: npm run install:local -- --ci
+      - name: Install members web
+        working-directory: kinevor-members/web
+        run: npm run install:local -- --ci
+      - name: Build public-site backend
+        run: dotnet build kinevor-public-site/backend/Kinevor.Modules.PublicSite.slnx -c Release
+      - name: Build public-site web
+        working-directory: kinevor-public-site/web
+        run: npm run build:demo
+      - name: Build members backend
+        run: dotnet build kinevor-members/backend/Kinevor.Modules.Members.slnx -c Release
+      - name: Build members web
+        working-directory: kinevor-members/web
+        run: npm run build:demo
+      - name: Run Playwright
+        run: npx playwright test
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v5.0.0
+        with:
+          fail-on-severity: high
+
+  scorecard:
+    name: OpenSSF Scorecard
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+      security-events: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Run Scorecard analysis
+        uses: ossf/scorecard-action@v2.5.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+      - name: Upload Scorecard SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: results.sarif
+
+  ci-success:
+    name: CI success
+    if: always()
+    needs:
+      - hygiene
+      - platform-backend
+      - platform-web
+      - module-backend
+      - module-web
+      - module-mobile
+      - e2e
+      - dependency-review
+      - scorecard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify every required job passed
+        env:
+          RESULTS: ${{ join(needs.*.result, ',') }}
+        run: |
+          echo "Job results: ${RESULTS}"
+          if echo "${RESULTS}" | grep -Eq '(failure|cancelled)'; then
+            echo "One or more required jobs failed or were cancelled."
+            exit 1
+          fi

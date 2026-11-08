@@ -1,0 +1,50 @@
+# Build a Kinevor module API image.
+#
+# The platform NuGet packages are packed from the same source revision so the
+# module restores the exact contracts in the checkout, never a cached release.
+ARG DOTNET_VERSION=10.0
+
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_VERSION} AS build
+
+ARG SERVICE
+
+ENV DOTNET_NOLOGO=true \
+    DOTNET_CLI_TELEMETRY_OPTOUT=true
+
+WORKDIR /src
+
+COPY kinevor-platform/backend/ kinevor-platform/backend/
+RUN dotnet pack kinevor-platform/backend/Kinevor.Platform.slnx \
+      -c Release \
+      -o kinevor-platform/backend/artifacts/packages
+
+COPY ${SERVICE}/backend/ ${SERVICE}/backend/
+RUN dotnet publish ${SERVICE}/backend/samples/*/*.csproj \
+      -c Release \
+      -o /app/publish \
+      /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION} AS runtime
+
+ENV ASPNETCORE_ENVIRONMENT=Demo \
+    ASPNETCORE_URLS=http://+:8080 \
+    DOTNET_NOLOGO=true
+
+WORKDIR /app
+
+COPY --from=build /app/publish/ ./
+COPY deploy/demo/entrypoint-api.sh /usr/local/bin/entrypoint-api.sh
+
+RUN chmod +x /usr/local/bin/entrypoint-api.sh \
+ && mkdir -p /data \
+ && chown -R $APP_UID /data
+
+USER $APP_UID
+
+VOLUME ["/data"]
+EXPOSE 8080
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
+  CMD ["bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8080"]
+
+ENTRYPOINT ["/usr/local/bin/entrypoint-api.sh"]

@@ -5,7 +5,7 @@ Class scheduling, capacity, booking and waitlist module for the Kinevor gym plat
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.ClassesBookings --version 0.1.1
+dotnet add package Kinevor.Modules.ClassesBookings --version 0.2.0
 ```
 
 ## What it provides

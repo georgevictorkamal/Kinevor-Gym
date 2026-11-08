@@ -60,15 +60,16 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var allowedOrigins = builder.Configuration.GetAllowedOrigins("http://localhost:4207");
+
 builder.Services.AddCors(options => options.AddPolicy("web", policy =>
-    policy.WithOrigins("http://localhost:4207")
+    policy.WithOrigins(allowedOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod()));
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-    throw new InvalidOperationException("The Kinevor demo API only runs in Development.");
+app.EnsureDemoHost();
 
 await using (var scope = app.Services.CreateAsyncScope())
 {
@@ -77,6 +78,7 @@ await using (var scope = app.Services.CreateAsyncScope())
     await DemoDataSeeder.SeedAsync(db);
 }
 
+app.UseKinevorSecurityHeaders();
 app.UseCors("web");
 app.UseMiddleware<ApiExceptionMiddleware>();
 app.UseSwagger();

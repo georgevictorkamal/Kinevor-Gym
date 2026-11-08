@@ -69,15 +69,20 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<DemoAuthorizeOperationFilter>();
 });
 
+var allowedOrigins = builder.Configuration.GetAllowedOrigins("http://localhost:4208", "http://127.0.0.1:4208");
+
 builder.Services.AddCors(options => options.AddPolicy("web", policy =>
-    policy.WithOrigins("http://localhost:4208", "http://127.0.0.1:4208")
+    policy.WithOrigins(allowedOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod()));
 
+builder.Services.AddKinevorRateLimiting(
+    permitLimit: builder.Configuration.GetValue("RateLimiting:PermitLimit", 600),
+    windowSeconds: builder.Configuration.GetValue("RateLimiting:WindowSeconds", 60));
+
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-    throw new InvalidOperationException("The Kinevor demo API only runs in Development.");
+app.EnsureDemoHost();
 
 await using (var scope = app.Services.CreateAsyncScope())
 {
@@ -87,6 +92,8 @@ await using (var scope = app.Services.CreateAsyncScope())
     await DemoDataSeeder.SeedAsync(db, timeProvider);
 }
 
+app.UseKinevorSecurityHeaders();
+app.UseRateLimiter();
 app.UseCors("web");
 app.UseMiddleware<ApiExceptionMiddleware>();
 app.UseSwagger();

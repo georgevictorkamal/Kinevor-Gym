@@ -132,7 +132,7 @@ The commands below use PowerShell; on macOS or Linux use forward slashes.
 ### Prerequisites
 
 - .NET SDK 10 (the solution uses `.slnx`) and the ASP.NET Core 10 runtime.
-- Flutter 3.35+ (the repository is verified with Flutter 3.47.8).
+- Flutter 3.47.8 (pinned in `.fvmrc`).
 - Node.js is not required to build or test the repository.
 
 ### 1. Build the platform packages
@@ -166,7 +166,7 @@ suppressions on first run:
 | Daniel Okafor | `22222222-2222-2222-2222-222222222222` | 1 notification, 1 Android device |
 | Sofia Rossi | `33333333-3333-3333-3333-333333333333` | 1 failed e-mail notification |
 
-The demo trusts development-only headers:
+The demo trusts demo role headers (Development and Demo only):
 
 | Header | Purpose | Example |
 | --- | --- | --- |

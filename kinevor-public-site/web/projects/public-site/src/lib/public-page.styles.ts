@@ -19,7 +19,7 @@ export const PUBLIC_PAGE_STYLES = `
     align-items: center;
     gap: 10px;
     margin: 0;
-    color: var(--kx-ember, #f04f24);
+    color: var(--kx-ember-text, #a8320d);
     font-size: 11px;
     font-weight: 700;
     letter-spacing: .18em;
@@ -79,11 +79,11 @@ export const PUBLIC_PAGE_STYLES = `
   .kx-btn .material-icons { font-size: 17px; }
 
   .kx-btn-ember {
-    background: var(--kx-ember, #f04f24);
+    background: var(--kx-ember-action, #c93a12);
     color: #fff8ef;
   }
 
-  .kx-btn-ember:hover { background: var(--kx-ember-deep, #cf3e16); }
+  .kx-btn-ember:hover { background: var(--kx-ember-action-hover, #a8320d); }
 
   .kx-btn-dark {
     background: var(--kx-ink, #17140f);
@@ -97,8 +97,8 @@ export const PUBLIC_PAGE_STYLES = `
   }
 
   .kx-btn-ghost:hover {
-    border-color: var(--kx-ember, #f04f24);
-    color: var(--kx-ember, #f04f24);
+    border-color: var(--kx-ember-text, #a8320d);
+    color: var(--kx-ember-text, #a8320d);
   }
 
   .kx-chip {
@@ -175,7 +175,7 @@ export const PUBLIC_PAGE_STYLES = `
     text-decoration: none;
   }
 
-  .kx-link-arrow:hover { color: var(--kx-ember, #f04f24); }
+  .kx-link-arrow:hover { color: var(--kx-ember-text, #a8320d); }
   .kx-link-arrow .material-icons { font-size: 17px; transition: transform .2s ease; }
   .kx-link-arrow:hover .material-icons { transform: translateX(4px); }
 

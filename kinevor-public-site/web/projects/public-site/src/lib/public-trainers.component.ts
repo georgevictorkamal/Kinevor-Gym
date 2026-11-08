@@ -286,7 +286,7 @@ import { initials } from './public-site.utils';
 
     .coach-content { display: flex; flex-direction: column; justify-content: center; }
     .coach-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
-    .coach-role { color: var(--kx-ember); font-size: 8px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .coach-role { color: var(--kx-ember-text); font-size: 8px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
     .coach-title-row h2 { margin: 6px 0 0; font-size: clamp(29px, 3vw, 39px); font-weight: 780; letter-spacing: -.05em; line-height: 1.05; }
     .coach-branch { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; border: 1px solid var(--kx-line); border-radius: 999px; color: var(--kx-muted); font-size: 8px; white-space: nowrap; }
     .coach-branch .material-icons { color: var(--kx-ember); font-size: 13px; }
@@ -308,14 +308,14 @@ import { initials } from './public-site.utils';
 
     .method-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 44px; }
     .method-grid article { min-height: 235px; padding: 24px; border: 1px solid var(--kx-line); border-radius: 18px; background: var(--kx-surface); }
-    .method-number { display: block; color: var(--kx-ember); font-size: 8px; font-weight: 750; letter-spacing: .12em; }
+    .method-number { display: block; color: var(--kx-ember-text); font-size: 8px; font-weight: 750; letter-spacing: .12em; }
     .method-grid h3 { margin: 68px 0 9px; font-size: 18px; font-weight: 750; letter-spacing: -.025em; }
     .method-grid p { margin: 0; color: var(--kx-muted); font-size: 9px; line-height: 1.65; }
 
     .method-quote { display: grid; grid-template-columns: auto 1fr auto; gap: 24px; align-items: center; margin-top: 40px; padding: 31px 35px; border-radius: 20px; background: var(--kx-ink); color: var(--kx-cream); }
     .quote-mark { color: var(--kx-ember); font-family: Georgia, serif; font-size: 62px; line-height: .5; }
     .method-quote blockquote { max-width: 46ch; margin: 0; font-size: 15px; font-weight: 500; letter-spacing: -.015em; line-height: 1.5; }
-    .quote-credit { color: rgba(251, 246, 238, .3); font-size: 8px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .quote-credit { color: rgba(251, 246, 238, .62); font-size: 8px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
 
     .trainer-cta { padding-block: 76px; background: var(--kx-paper); }
     .trainer-cta-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: end; }

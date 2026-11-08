@@ -254,9 +254,10 @@ import { formatMoney } from './public-site.utils';
     }
 
     .plan-head { position: relative; }
-    .plan-count { display: block; color: var(--kx-line); font-size: 32px; font-weight: 800; letter-spacing: -.06em; line-height: 1; }
-    .plan-featured .plan-count { color: rgba(255, 255, 255, .11); }
-    .plan-tier { display: block; margin-top: 17px; color: var(--kx-ember); font-size: 10px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+    .plan-count { display: block; color: #8f8678; font-size: 32px; font-weight: 800; letter-spacing: -.06em; line-height: 1; }
+    .plan-featured .plan-count { color: rgba(251, 246, 238, .55); }
+    .plan-tier { display: block; margin-top: 17px; color: var(--kx-ember-text); font-size: 10px; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+    .plan-featured .plan-tier { color: var(--kx-ember); }
 
     .plan-badge {
       position: absolute;
@@ -264,7 +265,7 @@ import { formatMoney } from './public-site.utils';
       right: 0;
       padding: 4px 8px;
       border-radius: 999px;
-      background: var(--kx-ember);
+      background: var(--kx-ember-action);
       color: #fff8ef;
       font-size: 10px;
       font-weight: 750;

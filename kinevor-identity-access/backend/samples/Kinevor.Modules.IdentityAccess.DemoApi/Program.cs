@@ -91,25 +91,30 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var allowedOrigins = builder.Configuration.GetAllowedOrigins("http://localhost:4201");
+
 builder.Services.AddCors(options => options.AddPolicy("web", policy =>
-    policy.WithOrigins("http://localhost:4201")
+    policy.WithOrigins(allowedOrigins)
         .AllowAnyHeader()
         .AllowAnyMethod()));
 
+builder.Services.AddKinevorRateLimiting(permitLimit: 60, windowSeconds: 60);
+
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-    throw new InvalidOperationException("The Kinevor demo API only runs in Development.");
+app.EnsureDemoHost();
 
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
     var hasher = scope.ServiceProvider.GetRequiredService<Kinevor.Modules.IdentityAccess.Application.IPasswordHasher>();
     await db.Database.EnsureCreatedAsync();
-    if (app.Environment.IsDevelopment())
+    if (app.Environment.IsDemoOrDevelopment())
         await DemoDataSeeder.SeedAsync(db, hasher);
 }
 
+app.UseKinevorSecurityHeaders();
+app.UseRateLimiter();
 app.UseCors("web");
 app.UseMiddleware<ApiExceptionMiddleware>();
 app.UseSwagger();

@@ -1,6 +1,6 @@
 {
   "name": "@georgevictorkamal/kinevor-staff-dashboard-web",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Executive staff dashboard UI for Kinevor: KPIs, branch trends, activity and operational alerts.",
   "license": "MIT",
   "repository": {

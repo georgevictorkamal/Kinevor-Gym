@@ -37,7 +37,7 @@ import { MemberSelfServiceFacade } from './member-self-service.facade';
     <div class="page-container">
       @if (loading()) {
         <div class="table-loading" role="status">
-          <mat-spinner diameter="52" />
+          <mat-spinner diameter="52" aria-label="Loading your member profile" />
           <span>Loading your member profile…</span>
         </div>
       }

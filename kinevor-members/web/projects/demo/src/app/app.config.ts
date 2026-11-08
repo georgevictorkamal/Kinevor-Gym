@@ -8,6 +8,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideRouter } from '@angular/router';
 import { provideMembers } from '@georgevictorkamal/kinevor-members-web';
 import { appRoutes } from './app.routes';
+import { apiBaseUrl } from './runtime-config';
 import { demoApiInterceptor } from './demo-api.interceptor';
 
 /** Demo application configuration: router, HTTP headers and the members feature. */
@@ -18,6 +19,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(appRoutes),
     provideAnimationsAsync(),
     provideHttpClient(withInterceptors([demoApiInterceptor])),
-    provideMembers({ apiBaseUrl: 'http://localhost:5083/api/v1' }),
+    provideMembers({ apiBaseUrl }),
   ],
 };
