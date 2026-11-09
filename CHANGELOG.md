@@ -3,6 +3,14 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
+## Unreleased
+
+### Changed
+
+- Refreshed the Kinevor brand mark across the README, public-site demo, identity
+  demo and check-ins favicon with the metallic K/arrow emblem. Source masters
+  live in `docs/branding/`.
+
 ## 0.2.0 — 2026-11-07
 
 A hardening and showcase release: the ten services keep their independent
