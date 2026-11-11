@@ -1,7 +1,7 @@
 name: kinevor_classes_bookings_example
 description: Demo host for the Kinevor classes and bookings Flutter package.
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.2.0+1
 
 environment:
   sdk: '>=3.9.0 <4.0.0'

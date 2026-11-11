@@ -13,6 +13,7 @@ Describe the change and the user-facing or architectural outcome.
 
 - [ ] Relevant tests pass locally.
 - [ ] `git diff --check` reports no whitespace errors.
+- [ ] Changelog updated for user-visible changes.
 - [ ] Documentation links and screenshots resolve.
 - [ ] No generated output, databases, secrets or package artifacts are included.
 

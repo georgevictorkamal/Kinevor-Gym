@@ -75,5 +75,5 @@ Delivery is simulated by `INotificationDeliverySimulator`. Replace it in
 production to call real e-mail or push providers; no provider SDKs or secrets are
 required by this repository.
 
-See the repository [REuDME](../REuDME.md) for the endpoint table, demo data,
+See the repository [README](../README.md) for the endpoint table, demo data,
 screenshots and Flutter example.

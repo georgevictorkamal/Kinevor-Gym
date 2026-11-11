@@ -326,8 +326,8 @@ job. Modules do not need a published registry to build.
   authenticated member and hide other subscriptions as `404`.
 - **Thin clients.** The Angular facade owns loading state; the Flutter package
   injects a repository so hosts can swap the HTTP implementation.
-- **Demo auth is explicit.** Trust headers exist only in Development and are sent
-  by the demo interceptor/client.
+- **Demo auth is explicit.** Trust headers exist only in Development and Demo,
+  and are sent by the demo interceptor/client.
 - **Visual contract in tests.** Playwright and Flutter goldens make layout,
   typography and icon regressions visible.
 

@@ -116,7 +116,7 @@ Material 3 and golden tests) and API (ASP.NET Core 10 with MediatR CQRS).
 | **Screenshots** | 57 captured from the running applications |
 | **CI** | Hygiene, backend/web/mobile matrices, coverage, E2E, CodeQL, dependency review, Scorecard |
 
-## 🖼️ Screenshots
+## 🖼 Screenshots
 
 | Public site | Staff dashboard |
 | --- | --- |
