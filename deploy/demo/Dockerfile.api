@@ -27,7 +27,9 @@ RUN dotnet publish ${SERVICE}/backend/samples/*/*.csproj \
 
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_VERSION} AS runtime
 
-ENV ASPNETCORE_ENVIRONMENT=Demo \
+# Demo is opt-in: Compose sets ASPNETCORE_ENVIRONMENT=Demo. A bare image run
+# starts in Production, where the shared guard refuses to start the demo host.
+ENV ASPNETCORE_ENVIRONMENT=Production \
     ASPNETCORE_URLS=http://+:8080 \
     DOTNET_NOLOGO=true
 

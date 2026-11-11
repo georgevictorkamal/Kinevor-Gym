@@ -12,6 +12,8 @@ All notable changes to Kinevor are documented here. The repository uses a single
   live in `docs/branding/`.
 - Pinned every GitHub Actions workflow step to a commit SHA and aligned the nine
   Flutter example manifests to `0.2.0+1`.
+- Defaulted the demo API image to `Production`; Compose opts into `Demo`
+  explicitly so a bare `docker run` fails closed.
 
 ### Fixed
 
@@ -19,12 +21,14 @@ All notable changes to Kinevor are documented here. The repository uses a single
   are not reachable from other network interfaces by default.
 - Corrected the demo trust-header scope in the check-ins, classes, members,
   memberships, payments and staff-dashboard READMEs.
-- Fixed the README screenshots anchor and the notifications backend README link.
+- Fixed the README screenshots anchor, the notifications backend README link and
+  the CONTRIBUTING quick-start anchor.
 
 ### Added
 
 - Added `.github/CODEOWNERS` and a changelog checklist to the pull request
   template.
+- Added verifier guardrails for loopback Compose ports and SHA-pinned Actions.
 
 ## 0.2.0 — 2026-11-07
 

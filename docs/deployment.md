@@ -60,7 +60,8 @@ What the image definitions do:
 
 - `deploy/demo/Dockerfile.api` packs the platform NuGet packages from the same
   checkout, publishes one `DemoApi` project and runs it on port `8080` inside
-  the container. Host ports `127.0.0.1:5081`–`5090` map to `8080`. The publish passes
+  the container. The image defaults to `Production`; Compose opts into `Demo`.
+  Host ports `127.0.0.1:5081`–`5090` map to `8080`. The publish passes
   `/p:RestoreForceEvaluate=true` because each pack has different hashes; the
   committed module lockfiles would otherwise fail with `NU1403`.
 - `deploy/demo/Dockerfile.web` builds the platform Angular package, installs the

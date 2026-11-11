@@ -17,7 +17,7 @@ improvements are welcome.
 
 ## Development setup
 
-Follow the [Quick start](README.md#quick-start) in the root README:
+Follow the [Quick start](README.md#-quick-start) in the root README:
 
 1. Pack the platform NuGet packages and build the Angular platform library.
 2. Run the module you are changing (`dotnet run`, `npm start`, or

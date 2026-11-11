@@ -302,6 +302,47 @@ check('Docker demo stack covers every runnable surface', () => {
   return `${apiModules.length} APIs, ${webModules.length} web demos`;
 });
 
+check('Docker demo ports bind to loopback', () => {
+  const compose = read('deploy/demo/docker-compose.yml');
+  const mappings = [...compose.matchAll(/^\s+- "([^"]+)"\s*$/gm)].map(
+    (match) => match[1],
+  );
+  assert(mappings.length > 0, 'no published ports found');
+  const exposed = mappings.filter((mapping) => !mapping.startsWith('127.0.0.1:'));
+  assert(exposed.length === 0, `non-loopback mappings: ${exposed.join(', ')}`);
+  return `${mappings.length} mappings on 127.0.0.1`;
+});
+
+check('demo API image defaults to Production', () => {
+  const dockerfile = read('deploy/demo/Dockerfile.api');
+  const compose = read('deploy/demo/docker-compose.yml');
+  assert(
+    /ENV\s+ASPNETCORE_ENVIRONMENT=Production\b/.test(dockerfile),
+    'Dockerfile.api must default to Production',
+  );
+  assert(
+    /ASPNETCORE_ENVIRONMENT:\s*Demo\b/.test(compose),
+    'Compose must opt into Demo explicitly',
+  );
+  return 'Production default, Compose opts into Demo';
+});
+
+check('GitHub Actions are pinned to commit SHAs', () => {
+  const workflows = files.filter((file) => /^\.github\/workflows\/[^/]+\.ya?ml$/.test(file));
+  const references = workflows.flatMap((file) =>
+    [...read(file).matchAll(/^\s*-?\s*uses:\s*(\S+)/gm)].map((match) => ({
+      file,
+      ref: match[1],
+    })),
+  );
+  const unpinned = references.filter(({ ref }) => !/@[0-9a-f]{40}$/.test(ref));
+  assert(
+    unpinned.length === 0,
+    `unpinned actions: ${unpinned.map(({ file, ref }) => `${file}: ${ref}`).join(', ')}`,
+  );
+  return `${references.length} action references pinned`;
+});
+
 check('release workflow publishes integrity metadata', () => {
   const workflow = read('.github/workflows/release.yml');
   assert(
