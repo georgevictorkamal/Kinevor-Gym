@@ -8,6 +8,10 @@ and the configuration each service needs when you host it yourself.
 > `ASPNETCORE_ENVIRONMENT` is `Development` or `Demo`. The demo authentication
 > headers, seeded accounts and SQLite files are not production controls. See
 > [SECURITY.md](../SECURITY.md) before exposing anything publicly.
+>
+> **Loopback by default.** `docker-compose.yml` publishes every host port on
+> `127.0.0.1` only. Do not change that binding unless you intend to expose the
+> demo authentication headers to the network.
 
 ## Port map
 
@@ -24,7 +28,8 @@ and the configuration each service needs when you host it yourself.
 | staff dashboard | 5089 | 4207 |
 | public site | 5090 | 4208 |
 
-Every API exposes `/health` and Swagger at `/swagger` in the demo environment.
+All host ports bind to `127.0.0.1` in the Compose stack. Every API exposes
+`/health` and Swagger at `/swagger` in the demo environment.
 Each service owns a separate SQLite database; nothing is shared at runtime.
 
 ## Option A — Docker Compose
@@ -55,12 +60,12 @@ What the image definitions do:
 
 - `deploy/demo/Dockerfile.api` packs the platform NuGet packages from the same
   checkout, publishes one `DemoApi` project and runs it on port `8080` inside
-  the container. Host ports map `5081`–`5090` to `8080`. The publish passes
+  the container. Host ports `127.0.0.1:5081`–`5090` map to `8080`. The publish passes
   `/p:RestoreForceEvaluate=true` because each pack has different hashes; the
   committed module lockfiles would otherwise fail with `NU1403`.
 - `deploy/demo/Dockerfile.web` builds the platform Angular package, installs the
   module workspace with `install:local --ci`, builds the demo and serves the
-  static output through nginx. Host ports `4200`–`4208` map to `80`.
+  static output through nginx. Host ports `127.0.0.1:4200`–`4208` map to `80`.
 - `deploy/demo/nginx.conf` adds SPA route fallback and a `/healthz` probe.
 - `deploy/demo/docker-compose.yml` gives each service its own container,
   database volume and CORS origin. There is no gateway, message bus or shared

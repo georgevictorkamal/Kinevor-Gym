@@ -278,9 +278,9 @@ builds the example without external package dependencies.
   loading state, branch selection and range changes. The demo is only a shell.
 - **Severity is part of the ordering.** Alerts are ordered critical first, then
   by due date. The overview always shows the highest-priority six.
-- **Demo auth is isolated.** Trust headers exist only in the Development demo
-  host; production hosts must supply the platform authentication and
-  authorization stack.
+- **Demo auth is isolated.** Trust headers exist only in Development and Demo;
+  production hosts must supply the platform authentication and authorization
+  stack.
 - **Visual contract in tests.** Playwright screenshots make layout, typography
   and density regressions visible between releases.
 

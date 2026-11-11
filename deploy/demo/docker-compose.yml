@@ -11,6 +11,9 @@ name: kinevor-demo
 #   docker compose -f deploy/demo/docker-compose.yml up --build \
 #     kinevor-public-site-api kinevor-public-site-web \
 #     kinevor-members-api kinevor-members-web
+#
+# Demo trust headers are enabled in this stack, so every published port binds
+# to 127.0.0.1. Change the bind address only if you understand the exposure.
 
 x-api-environment: &api-environment
   ASPNETCORE_ENVIRONMENT: Demo
@@ -36,7 +39,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4200
       Cors__AllowedOrigins__1: http://127.0.0.1:4200
     ports:
-      - "5081:8080"
+      - "127.0.0.1:5081:8080"
     volumes:
       - trainers-data:/data
     restart: unless-stopped
@@ -49,7 +52,7 @@ services:
     depends_on:
       - kinevor-trainers-api
     ports:
-      - "4200:80"
+      - "127.0.0.1:4200:80"
     restart: unless-stopped
 
   kinevor-identity-access-api:
@@ -63,7 +66,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4201
       Cors__AllowedOrigins__1: http://127.0.0.1:4201
     ports:
-      - "5082:8080"
+      - "127.0.0.1:5082:8080"
     volumes:
       - identity-data:/data
     restart: unless-stopped
@@ -76,7 +79,7 @@ services:
     depends_on:
       - kinevor-identity-access-api
     ports:
-      - "4201:80"
+      - "127.0.0.1:4201:80"
     restart: unless-stopped
 
   kinevor-members-api:
@@ -90,7 +93,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4202
       Cors__AllowedOrigins__1: http://127.0.0.1:4202
     ports:
-      - "5083:8080"
+      - "127.0.0.1:5083:8080"
     volumes:
       - members-data:/data
     restart: unless-stopped
@@ -103,7 +106,7 @@ services:
     depends_on:
       - kinevor-members-api
     ports:
-      - "4202:80"
+      - "127.0.0.1:4202:80"
     restart: unless-stopped
 
   kinevor-memberships-api:
@@ -117,7 +120,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4203
       Cors__AllowedOrigins__1: http://127.0.0.1:4203
     ports:
-      - "5084:8080"
+      - "127.0.0.1:5084:8080"
     volumes:
       - memberships-data:/data
     restart: unless-stopped
@@ -130,7 +133,7 @@ services:
     depends_on:
       - kinevor-memberships-api
     ports:
-      - "4203:80"
+      - "127.0.0.1:4203:80"
     restart: unless-stopped
 
   kinevor-classes-bookings-api:
@@ -144,7 +147,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4204
       Cors__AllowedOrigins__1: http://127.0.0.1:4204
     ports:
-      - "5085:8080"
+      - "127.0.0.1:5085:8080"
     volumes:
       - classes-data:/data
     restart: unless-stopped
@@ -157,7 +160,7 @@ services:
     depends_on:
       - kinevor-classes-bookings-api
     ports:
-      - "4204:80"
+      - "127.0.0.1:4204:80"
     restart: unless-stopped
 
   kinevor-checkins-access-api:
@@ -171,7 +174,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4205
       Cors__AllowedOrigins__1: http://127.0.0.1:4205
     ports:
-      - "5086:8080"
+      - "127.0.0.1:5086:8080"
     volumes:
       - checkins-data:/data
     restart: unless-stopped
@@ -184,7 +187,7 @@ services:
     depends_on:
       - kinevor-checkins-access-api
     ports:
-      - "4205:80"
+      - "127.0.0.1:4205:80"
     restart: unless-stopped
 
   kinevor-payments-billing-api:
@@ -198,7 +201,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4206
       Cors__AllowedOrigins__1: http://127.0.0.1:4206
     ports:
-      - "5087:8080"
+      - "127.0.0.1:5087:8080"
     volumes:
       - payments-data:/data
     restart: unless-stopped
@@ -211,7 +214,7 @@ services:
     depends_on:
       - kinevor-payments-billing-api
     ports:
-      - "4206:80"
+      - "127.0.0.1:4206:80"
     restart: unless-stopped
 
   kinevor-notifications-api:
@@ -223,7 +226,7 @@ services:
       <<: *api-environment
       ConnectionStrings__Notifications: Data Source=/data/notifications-demo.db
     ports:
-      - "5088:8080"
+      - "127.0.0.1:5088:8080"
     volumes:
       - notifications-data:/data
     restart: unless-stopped
@@ -239,7 +242,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4207
       Cors__AllowedOrigins__1: http://127.0.0.1:4207
     ports:
-      - "5089:8080"
+      - "127.0.0.1:5089:8080"
     volumes:
       - staff-dashboard-data:/data
     restart: unless-stopped
@@ -252,7 +255,7 @@ services:
     depends_on:
       - kinevor-staff-dashboard-api
     ports:
-      - "4207:80"
+      - "127.0.0.1:4207:80"
     restart: unless-stopped
 
   kinevor-public-site-api:
@@ -266,7 +269,7 @@ services:
       Cors__AllowedOrigins__0: http://localhost:4208
       Cors__AllowedOrigins__1: http://127.0.0.1:4208
     ports:
-      - "5090:8080"
+      - "127.0.0.1:5090:8080"
     volumes:
       - public-site-data:/data
     restart: unless-stopped
@@ -279,7 +282,7 @@ services:
     depends_on:
       - kinevor-public-site-api
     ports:
-      - "4208:80"
+      - "127.0.0.1:4208:80"
     restart: unless-stopped
 
 volumes:

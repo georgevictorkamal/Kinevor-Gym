@@ -10,6 +10,21 @@ All notable changes to Kinevor are documented here. The repository uses a single
 - Refreshed the Kinevor brand mark across the README, public-site demo, identity
   demo and check-ins favicon with the metallic K/arrow emblem. Source masters
   live in `docs/branding/`.
+- Pinned every GitHub Actions workflow step to a commit SHA and aligned the nine
+  Flutter example manifests to `0.2.0+1`.
+
+### Fixed
+
+- Bound all Docker Compose demo ports to `127.0.0.1` so the demo trust headers
+  are not reachable from other network interfaces by default.
+- Corrected the demo trust-header scope in the check-ins, classes, members,
+  memberships, payments and staff-dashboard READMEs.
+- Fixed the README screenshots anchor and the notifications backend README link.
+
+### Added
+
+- Added `.github/CODEOWNERS` and a changelog checklist to the pull request
+  template.
 
 ## 0.2.0 — 2026-11-07
 
