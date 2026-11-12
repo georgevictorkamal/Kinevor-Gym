@@ -304,9 +304,9 @@ check('Docker demo stack covers every runnable surface', () => {
 
 check('Docker demo ports bind to loopback', () => {
   const compose = read('deploy/demo/docker-compose.yml');
-  const mappings = [...compose.matchAll(/^\s+- "([^"]+)"\s*$/gm)].map(
-    (match) => match[1],
-  );
+  const mappings = [...compose.matchAll(
+    /^\s+-\s+"?((?:\d{1,3}(?:\.\d{1,3}){3}:)?\d+:\d+)"?\s*$/gm,
+  )].map((match) => match[1]);
   assert(mappings.length > 0, 'no published ports found');
   const exposed = mappings.filter((mapping) => !mapping.startsWith('127.0.0.1:'));
   assert(exposed.length === 0, `non-loopback mappings: ${exposed.join(', ')}`);
