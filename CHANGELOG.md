@@ -28,7 +28,8 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 - Added `.github/CODEOWNERS` and a changelog checklist to the pull request
   template.
-- Added verifier guardrails for loopback Compose ports and SHA-pinned Actions.
+- Added verifier guardrails for loopback Compose ports (quoted or unquoted) and
+  SHA-pinned Actions.
 
 ## 0.2.0 — 2026-11-07
 
