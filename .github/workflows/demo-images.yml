@@ -1,0 +1,95 @@
+name: Demo images
+
+# Builds the ten API and nine web demo images from deploy/demo/docker-compose.yml and publishes them to
+# GitHub Container Registry, so the demo stack can be started with a pull instead of a local build:
+#   docker compose -f deploy/demo/docker-compose.yml -f deploy/demo/docker-compose.images.yml up --no-build --pull always
+# Tag pushes publish :<version> and :latest. Manual runs publish :dev.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: demo-images-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  matrix:
+    name: Resolve images from compose
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.list.outputs.services }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - id: list
+        name: List services and their build settings
+        run: |
+          services=$(docker compose -f deploy/demo/docker-compose.yml config --format json \
+            | jq -c '[.services | to_entries[] | {service: .key, dockerfile: .value.build.dockerfile, svc: .value.build.args.SERVICE}]')
+          echo "$services" | jq .
+          echo "services=$services" >> "$GITHUB_OUTPUT"
+
+  publish:
+    name: Publish ${{ matrix.service }}
+    needs: matrix
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.matrix.outputs.services) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        name: Compute image name and tags
+        env:
+          SERVICE: ${{ matrix.service }}
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          image="ghcr.io/${owner}/${SERVICE}"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            version="${GITHUB_REF_NAME#v}"
+            tags="${image}:${version}"$'\n'"${image}:latest"
+          else
+            tags="${image}:dev"
+          fi
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          { echo "tags<<EOF"; echo "$tags"; echo "EOF"; } >> "$GITHUB_OUTPUT"
+      - id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          build-args: SERVICE=${{ matrix.svc }}
+          push: true
+          provenance: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.title=${{ matrix.service }}
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ steps.meta.outputs.image }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true

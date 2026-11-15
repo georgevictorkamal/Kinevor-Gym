@@ -89,12 +89,14 @@ while any required job or the `CI success` gate is failing.
 
 1. Never move, delete or reuse a published tag. Fixes ship in a new version.
 2. Run `node scripts/bump-version.mjs <version>` and commit the result.
-3. Confirm `node scripts/verify-repo.mjs`, all builds, all tests and the full
+3. Re-pack the platform packages and run `dotnet restore --force-evaluate` on
+   every module solution so the committed NuGet lockfiles match the new version.
+4. Confirm `node scripts/verify-repo.mjs`, all builds, all tests and the full
    Playwright suite are green.
-4. Create an annotated `v<version>` tag and push it.
-5. Wait for the release workflow. It publishes exactly one source zip, an SPDX
+5. Create an annotated `v<version>` tag and push it.
+6. Wait for the release workflow. It publishes exactly one source zip, an SPDX
    SBOM workflow artifact and a build-provenance attestation.
-6. Verify the release asset's SHA-256 before announcing it.
+7. Verify the release asset's SHA-256 before announcing it.
 
 ## Pull requests
 

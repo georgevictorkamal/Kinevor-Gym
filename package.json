@@ -1,6 +1,6 @@
 {
   "name": "kinevor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "description": "Kinevor gym-management platform: ten independent services in one repository.",
   "license": "MIT",
@@ -18,6 +18,8 @@
     "e2e:report": "playwright show-report",
     "openapi:export": "node scripts/export-openapi.mjs",
     "demo:up": "docker compose -f deploy/demo/docker-compose.yml up --build",
+    "demo:up:showcase": "docker compose -f deploy/demo/docker-compose.yml up --build kinevor-public-site-api kinevor-public-site-web kinevor-members-api kinevor-members-web",
+    "demo:images": "docker compose -f deploy/demo/docker-compose.yml -f deploy/demo/docker-compose.images.yml up --no-build --pull always",
     "demo:down": "docker compose -f deploy/demo/docker-compose.yml down --remove-orphans"
   },
   "devDependencies": {

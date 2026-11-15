@@ -8,9 +8,7 @@ name: kinevor-demo
 # Building all nineteen images takes a while. To start only the public site
 # and the members showcase:
 #
-#   docker compose -f deploy/demo/docker-compose.yml up --build \
-#     kinevor-public-site-api kinevor-public-site-web \
-#     kinevor-members-api kinevor-members-web
+#   npm run demo:up:showcase
 #
 # Demo trust headers are enabled in this stack, so every published port binds
 # to 127.0.0.1. Change the bind address only if you understand the exposure.

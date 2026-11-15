@@ -52,6 +52,10 @@ yarn-error.log*
 *.tmp
 *.bak
 
+# Demo recordings (the README GIF is tracked; raw tours are not)
+docs/media/*.webm
+docs/media/.tmp-*/
+
 # OS and editors
 .DS_Store
 Thumbs.db

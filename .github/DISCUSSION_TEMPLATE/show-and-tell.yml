@@ -1,0 +1,19 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Built something with Kinevor, extended a module or adapted the architecture? Share it here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What did you build?
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link (repository, demo or article)
+  - type: textarea
+    id: learned
+    attributes:
+      label: What worked well, and what would you change?

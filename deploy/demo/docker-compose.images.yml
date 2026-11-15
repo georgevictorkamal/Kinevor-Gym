@@ -1,0 +1,43 @@
+# Layer over docker-compose.yml to run prebuilt images instead of building from source:
+#   docker compose -f deploy/demo/docker-compose.yml -f deploy/demo/docker-compose.images.yml up --no-build --pull always
+# Pick a release with KINEVOR_VERSION (for example KINEVOR_VERSION=0.2.1); the default is "latest".
+# Ports, environment and volumes still come from docker-compose.yml, so everything stays loopback-only.
+services:
+  kinevor-trainers-api:
+    image: ghcr.io/georgevictorkamal/kinevor-trainers-api:${KINEVOR_VERSION:-latest}
+  kinevor-trainers-web:
+    image: ghcr.io/georgevictorkamal/kinevor-trainers-web:${KINEVOR_VERSION:-latest}
+  kinevor-identity-access-api:
+    image: ghcr.io/georgevictorkamal/kinevor-identity-access-api:${KINEVOR_VERSION:-latest}
+  kinevor-identity-access-web:
+    image: ghcr.io/georgevictorkamal/kinevor-identity-access-web:${KINEVOR_VERSION:-latest}
+  kinevor-members-api:
+    image: ghcr.io/georgevictorkamal/kinevor-members-api:${KINEVOR_VERSION:-latest}
+  kinevor-members-web:
+    image: ghcr.io/georgevictorkamal/kinevor-members-web:${KINEVOR_VERSION:-latest}
+  kinevor-memberships-api:
+    image: ghcr.io/georgevictorkamal/kinevor-memberships-api:${KINEVOR_VERSION:-latest}
+  kinevor-memberships-web:
+    image: ghcr.io/georgevictorkamal/kinevor-memberships-web:${KINEVOR_VERSION:-latest}
+  kinevor-classes-bookings-api:
+    image: ghcr.io/georgevictorkamal/kinevor-classes-bookings-api:${KINEVOR_VERSION:-latest}
+  kinevor-classes-bookings-web:
+    image: ghcr.io/georgevictorkamal/kinevor-classes-bookings-web:${KINEVOR_VERSION:-latest}
+  kinevor-checkins-access-api:
+    image: ghcr.io/georgevictorkamal/kinevor-checkins-access-api:${KINEVOR_VERSION:-latest}
+  kinevor-checkins-access-web:
+    image: ghcr.io/georgevictorkamal/kinevor-checkins-access-web:${KINEVOR_VERSION:-latest}
+  kinevor-payments-billing-api:
+    image: ghcr.io/georgevictorkamal/kinevor-payments-billing-api:${KINEVOR_VERSION:-latest}
+  kinevor-payments-billing-web:
+    image: ghcr.io/georgevictorkamal/kinevor-payments-billing-web:${KINEVOR_VERSION:-latest}
+  kinevor-notifications-api:
+    image: ghcr.io/georgevictorkamal/kinevor-notifications-api:${KINEVOR_VERSION:-latest}
+  kinevor-staff-dashboard-api:
+    image: ghcr.io/georgevictorkamal/kinevor-staff-dashboard-api:${KINEVOR_VERSION:-latest}
+  kinevor-staff-dashboard-web:
+    image: ghcr.io/georgevictorkamal/kinevor-staff-dashboard-web:${KINEVOR_VERSION:-latest}
+  kinevor-public-site-api:
+    image: ghcr.io/georgevictorkamal/kinevor-public-site-api:${KINEVOR_VERSION:-latest}
+  kinevor-public-site-web:
+    image: ghcr.io/georgevictorkamal/kinevor-public-site-web:${KINEVOR_VERSION:-latest}

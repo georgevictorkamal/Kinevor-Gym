@@ -1,0 +1,25 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ideas are welcome. For small, well-defined changes a [feature request](https://github.com/georgevictorkamal/Kinevor-Gym/issues/new?template=feature.yml) may be faster.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What do you have in mind?
+    validations:
+      required: true
+  - type: dropdown
+    id: help
+    attributes:
+      label: Would you like to help build it?
+      options:
+        - "Yes, I can open a pull request"
+        - "Yes, with guidance"
+        - "No, I just have the idea"

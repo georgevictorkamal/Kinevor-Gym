@@ -3,7 +3,11 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
-## Unreleased
+## 0.2.1 — 2026-11-15
+
+A growth and demo release: all 19 demo images publish to GHCR, the demo stack
+can run without a local build, and the repository ships the community scaffolding
+needed for a public launch.
 
 ### Changed
 
@@ -14,6 +18,8 @@ All notable changes to Kinevor are documented here. The repository uses a single
   Flutter example manifests to `0.2.0+1`.
 - Defaulted the demo API image to `Production`; Compose opts into `Demo`
   explicitly so a bare `docker run` fails closed.
+- Promoted the one-command demo in the README and added `npm run demo:up:showcase`
+  for the public-site and members subset.
 
 ### Fixed
 
@@ -30,6 +36,13 @@ All notable changes to Kinevor are documented here. The repository uses a single
   template.
 - Added verifier guardrails for loopback Compose ports (quoted or unquoted) and
   SHA-pinned Actions.
+- Added `SUPPORT.md`, `CITATION.cff`, `.github/release.yml`, a launch plan and a
+  starter-issue seeding script.
+- Added CodeQL, OpenSSF Scorecard, PRs welcome and good first issue badges plus
+  "Why Kinevor" and "Contribute" sections to the README.
+- Added a `Demo images` workflow that publishes all 19 demo images to GHCR with
+  build attestations, a `npm run demo:images` overlay for pulling them instead of
+  building, a demo recorder script and Discussion templates.
 
 ## 0.2.0 — 2026-11-07
 

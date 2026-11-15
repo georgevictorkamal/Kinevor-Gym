@@ -42,9 +42,7 @@ for the build cache and images.
 npm run demo:up
 
 # Start only the public site and members showcase
-docker compose -f deploy/demo/docker-compose.yml up --build \
-  kinevor-public-site-api kinevor-public-site-web \
-  kinevor-members-api kinevor-members-web
+npm run demo:up:showcase
 
 # Stop and keep the SQLite volumes
 npm run demo:down
@@ -75,6 +73,25 @@ What the image definitions do:
 The web demos read their API origin from `config.js` at runtime. The compose
 stack keeps the default `http://localhost:508x/api/v1` values, so the browser
 must reach the API host ports directly.
+
+### Prebuilt images
+
+Tagged releases publish all 19 demo images to GitHub Container Registry
+(`ghcr.io/georgevictorkamal/<service>`). Layer the overlay over the base file and
+skip the build:
+
+```bash
+npm run demo:images
+
+# Pin a specific release
+KINEVOR_VERSION=0.2.1 npm run demo:images
+```
+
+Ports, environment and volumes still come from `docker-compose.yml`, so
+everything stays bound to `127.0.0.1` and the images keep their fail-closed
+`Production` default. The images are published by
+`.github/workflows/demo-images.yml`; manual runs publish a `:dev` tag, while
+version tags publish `:<version>` and `:latest`.
 
 ## Option B — Local processes
 

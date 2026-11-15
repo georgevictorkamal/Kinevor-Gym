@@ -1,0 +1,36 @@
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for asking. Please check the [README](https://github.com/georgevictorkamal/Kinevor-Gym/blob/main/README.md) and the [deployment guide](https://github.com/georgevictorkamal/Kinevor-Gym/blob/main/docs/deployment.md) first.
+  - type: dropdown
+    id: module
+    attributes:
+      label: Which module is this about?
+      options:
+        - Platform kernel
+        - identity-access
+        - members
+        - memberships
+        - classes-bookings
+        - check-ins-access
+        - payments-billing
+        - notifications
+        - trainers
+        - staff-dashboard
+        - public-site
+        - Docker / CI / release
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: What are you trying to do?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, .NET SDK, Node and Docker versions, and how you started the stack.
