@@ -294,15 +294,15 @@ single-service builds and production hardening.
 | Flutter visuals | Golden layouts | `flutter_test` golden files |
 | End-to-end | Routing, forms, navigation, horizontal overflow, axe accessibility | Playwright + `@axe-core/playwright` |
 
-Verified totals on 2026-11-07:
+Verified totals on 2026-11-15:
 
 | Suite | Tests |
 | --- | ---: |
-| .NET (platform + 10 services) | 208 |
+| .NET (platform + 10 services) | 209 |
 | Angular (9 libraries) | 99 |
 | Flutter (9 packages) | 128 |
 | Playwright (public site + members, desktop and mobile) | 46 |
-| **Total** | **481** |
+| **Total** | **482** |
 
 .NET suites collect Cobertura coverage with `coverlet.collector`; CI uploads one
 report per service. Playwright audits the public site (`/`, `/plans`,

@@ -25,6 +25,11 @@ needed for a public launch.
 
 - Bound all Docker Compose demo ports to `127.0.0.1` so the demo trust headers
   are not reachable from other network interfaces by default.
+- Fixed demo authentication in all ten API hosts so the Compose stack's `Demo`
+  environment accepts the documented `X-Demo-*` headers; only `Development` was
+  accepted before.
+- Fixed `deploy/demo/Dockerfile.web` so the service build argument survives into
+  the runtime stage and the image copies the intended Angular demo build.
 - Corrected the demo trust-header scope in the check-ins, classes, members,
   memberships, payments and staff-dashboard READMEs.
 - Fixed the README screenshots anchor, the notifications backend README link and
@@ -43,6 +48,8 @@ needed for a public launch.
 - Added a `Demo images` workflow that publishes all 19 demo images to GHCR with
   build attestations, a `npm run demo:images` overlay for pulling them instead of
   building, a demo recorder script and Discussion templates.
+- Added a README demo GIF recorded from the running public-site and members
+  showcase.
 
 ## 0.2.0 — 2026-11-07
 

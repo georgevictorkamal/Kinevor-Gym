@@ -27,6 +27,8 @@ RUN cd ${SERVICE}/web \
 
 FROM nginx:1.29-alpine AS runtime
 
+ARG SERVICE
+
 COPY deploy/demo/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /src/${SERVICE}/web/dist/demo/browser /usr/share/nginx/html
 

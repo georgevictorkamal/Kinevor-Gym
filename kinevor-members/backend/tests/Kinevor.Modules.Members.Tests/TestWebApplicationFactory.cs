@@ -5,7 +5,9 @@ using Microsoft.Data.Sqlite;
 namespace Kinevor.Modules.Members.Tests;
 
 /// <summary>Hosts the demo API against a unique temporary SQLite database.</summary>
-public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
+/// <param name="environment">The host environment to run the demo API in.</param>
+public sealed class TestWebApplicationFactory(string environment = "Development")
+    : WebApplicationFactory<Program>
 {
     private readonly string _databasePath =
         Path.Combine(Path.GetTempPath(), $"kinevor-members-{Guid.NewGuid():N}.db");
@@ -14,7 +16,7 @@ public sealed class TestWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Members", $"Data Source={_databasePath}");
-        builder.UseEnvironment("Development");
+        builder.UseEnvironment(environment);
     }
 
     /// <summary>Clears pooled connections before deleting the temporary database.</summary>

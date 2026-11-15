@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
+using Kinevor.Platform.Api;
 
 namespace Kinevor.Modules.Memberships.DemoApi.Authentication;
 
@@ -26,8 +27,8 @@ public sealed class DemoAuthenticationHandler(
     /// <summary>Builds a principal from the demo headers, or returns no result when they are absent.</summary>
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        if (!string.Equals(environment.EnvironmentName, "Development", StringComparison.OrdinalIgnoreCase))
-            return Task.FromResult(AuthenticateResult.Fail("Demo authentication is disabled outside Development."));
+        if (!environment.IsDemoOrDevelopment())
+            return Task.FromResult(AuthenticateResult.Fail("Demo authentication is disabled outside Development and Demo."));
 
         var role = Request.Headers["X-Demo-Role"].FirstOrDefault();
         if (string.IsNullOrWhiteSpace(role))

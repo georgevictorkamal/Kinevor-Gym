@@ -27,6 +27,20 @@ public class MembersApiTests
         Assert.Equal(5, data.GetProperty("items").GetArrayLength());
     }
 
+    /// <summary>The Compose demo runs in Demo, where demo headers must still authenticate.</summary>
+    [Fact]
+    public async Task List_AuthenticatesDemoHeadersInDemoEnvironment()
+    {
+        using var factory = new TestWebApplicationFactory("Demo");
+        using var client = factory.CreateClient();
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/v1/members");
+        request.Headers.Add("X-Demo-Role", "Staff");
+
+        var response = await client.SendAsync(request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     /// <summary>Members cannot access the staff directory.</summary>
     [Fact]
     public async Task List_ForbidsMembers()

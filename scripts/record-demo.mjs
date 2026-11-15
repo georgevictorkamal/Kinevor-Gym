@@ -5,9 +5,10 @@
 //   npx playwright install chromium      # once, if you have not already
 //   node scripts/record-demo.mjs         # writes docs/media/demo-*.webm
 //
-// Then convert one tour to a GIF (keep it under roughly 8 MB so the README stays fast):
-//   ffmpeg -i docs/media/demo-public-site.webm \
-//     -vf "fps=10,scale=900:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" \
+// Then combine the tours into a GIF (keep it under roughly 8 MB so the README stays fast):
+//   ffmpeg -ss 0.8 -t 11 -i docs/media/demo-public-site.webm \
+//          -ss 0.8 -t 7.5 -i docs/media/demo-members.webm \
+//     -filter_complex "[0:v]fps=8,scale=820:-1:flags=lanczos,setpts=PTS-STARTPTS[p1];[1:v]fps=8,scale=820:-1:flags=lanczos,setpts=PTS-STARTPTS[p2];[p1][p2]concat=n=2:v=1:a=0,split[s0][s1];[s0]palettegen=max_colors=144:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" \
 //     -loop 0 docs/media/demo.gif
 //
 // Routes and ports mirror the Playwright e2e specs and deploy/demo/docker-compose.yml.
