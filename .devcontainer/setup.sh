@@ -35,6 +35,12 @@ add_flutter_to_path() {
     | sudo tee /etc/profile.d/kinevor-flutter.sh >/dev/null
 }
 
+# The module backends consume the platform as NuGet packages from a local
+# feed, so it must exist before C# Dev Kit restores the solution.
+echo "Packing the shared platform packages..."
+dotnet pack kinevor-platform/backend/Kinevor.Platform.slnx -c Release --nologo \
+  -o kinevor-platform/backend/artifacts/packages
+
 if [ "${KINEVOR_SKIP_FLUTTER:-0}" = "1" ]; then
   echo "Skipping Flutter (KINEVOR_SKIP_FLUTTER=1)."
 else
@@ -63,5 +69,8 @@ else
 fi
 
 echo
+echo "C# projects restore from kinevor-platform/backend/artifacts/packages."
+echo "If C# Dev Kit restored before the feed existed, reload the window to"
+echo "trigger a fresh solution restore (Command Palette: 'Reload Window')."
 echo "Start the showcase with: npm run demo:up:showcase"
 echo "Or the full stack with:  npm run demo:up"
