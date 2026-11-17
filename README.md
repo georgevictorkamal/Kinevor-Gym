@@ -37,16 +37,37 @@
   <img src="docs/media/demo.gif" alt="A 20-second tour of the Kinevor public site and members app" width="820">
 </p>
 
-## 🚀 Try it in one command
+## 🚀 Try Kinevor
+
+**Zero install — open it in Codespaces.** The devcontainer installs .NET 10,
+Node 24, Flutter 3.47.8, Docker Compose, the repository tooling and the demo
+port forwards. Use a 4-core machine for the full stack, or run the showcase
+subset.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/georgevictorkamal/Kinevor-Gym)
+
+**No build — pull the release images.** Tagged releases publish all 19 demo
+images to GitHub Container Registry:
 
 ```bash
 git clone https://github.com/georgevictorkamal/Kinevor-Gym.git
 cd Kinevor-Gym
+npm run demo:images
+```
+
+Pin a release with `KINEVOR_VERSION=0.2.1 npm run demo:images`. On PowerShell,
+set `$env:KINEVOR_VERSION = "0.2.1"` first.
+
+**Build from source.** The full stack compiles ten API and nine static web
+images in Docker:
+
+```bash
 npm run demo:up
 ```
 
-Then open **http://localhost:4208** (public site), **http://localhost:4202**
-(members) or **http://localhost:4207** (staff dashboard).
+Open **http://localhost:4208** (public site), **http://localhost:4202**
+(members) or **http://localhost:4207** (staff dashboard). Everything binds to
+`127.0.0.1` only.
 
 For a smaller showcase that starts only the public site and members services:
 
@@ -54,25 +75,10 @@ For a smaller showcase that starts only the public site and members services:
 npm run demo:up:showcase
 ```
 
-The first build needs Docker with Compose v2 and about 8 GB of disk; later runs
-reuse cached layers. Everything binds to `127.0.0.1` only. See the
+The first local build needs Docker with Compose v2 and about 8 GB of disk; later
+runs reuse cached layers. The published images target `linux/amd64`; on Apple
+Silicon, `npm run demo:up` builds natively instead. See the
 [deployment guide](docs/deployment.md) for the port map and production caveats.
-
-No local toolchain? Open the repository in
-[GitHub Codespaces](https://codespaces.new/georgevictorkamal/Kinevor-Gym). The
-devcontainer installs .NET 10, Node 24, Flutter 3.47.8, Docker Compose, the
-repository tooling and the demo port forwards. Use a 4-core machine for the
-full stack, or run the showcase subset.
-
-Prefer not to build anything? Tagged releases publish all 19 demo images to
-GitHub Container Registry:
-
-```bash
-npm run demo:images
-```
-
-Pin a release with `KINEVOR_VERSION=0.2.1 npm run demo:images`. On PowerShell,
-set `$env:KINEVOR_VERSION = "0.2.1"` first.
 
 ## 💡 Why Kinevor
 
@@ -325,7 +331,8 @@ npm run demo:up
 ```
 
 This builds ten API images and nine static web images from the same checkout.
-APIs answer on `5081`–`5090`, web demos on `4200`–`4208`. See the
+APIs answer on `5081`–`5090`, web demos on `4200`–`4208`. To skip the build,
+`npm run demo:images` starts the published release images instead. See the
 [deployment guide](docs/deployment.md) for the port map, a smaller showcase
 command and production caveats.
 
