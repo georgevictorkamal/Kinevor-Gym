@@ -23,6 +23,9 @@ All notable changes to Kinevor are documented here. The repository uses a single
   every account into memory.
 - Corrected the documented PBKDF2 iteration count to 600,000 and refreshed the
   README test totals.
+- The devcontainer setup now packs the shared platform packages before
+  anything else, so C# Dev Kit can restore the solution on first open instead
+  of failing with NU1301 against a missing local feed.
 
 ## 0.2.1 — 2026-11-15
 
