@@ -1,0 +1,83 @@
+{
+  "name": "Kinevor",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      "version": "10.0"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "24"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_NOLOGO": "1",
+    "NUGET_XMLDOC_MODE": "skip"
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "16gb",
+    "storage": "32gb"
+  },
+  "forwardPorts": [
+    4200,
+    4201,
+    4202,
+    4203,
+    4204,
+    4205,
+    4206,
+    4207,
+    4208,
+    5081,
+    5082,
+    5083,
+    5084,
+    5085,
+    5086,
+    5087,
+    5088,
+    5089,
+    5090
+  ],
+  "portsAttributes": {
+    "4200": { "label": "Trainers web", "onAutoForward": "silent" },
+    "4201": { "label": "Identity web", "onAutoForward": "silent" },
+    "4202": { "label": "Members web", "onAutoForward": "notify" },
+    "4203": { "label": "Memberships web", "onAutoForward": "silent" },
+    "4204": { "label": "Classes & bookings web", "onAutoForward": "silent" },
+    "4205": { "label": "Check-ins web", "onAutoForward": "silent" },
+    "4206": { "label": "Payments web", "onAutoForward": "silent" },
+    "4207": { "label": "Staff dashboard web", "onAutoForward": "notify" },
+    "4208": { "label": "Public site", "onAutoForward": "openBrowser" },
+    "5081": { "label": "Trainers API", "onAutoForward": "silent" },
+    "5082": { "label": "Identity API", "onAutoForward": "silent" },
+    "5083": { "label": "Members API", "onAutoForward": "silent" },
+    "5084": { "label": "Memberships API", "onAutoForward": "silent" },
+    "5085": { "label": "Classes & bookings API", "onAutoForward": "silent" },
+    "5086": { "label": "Check-ins API", "onAutoForward": "silent" },
+    "5087": { "label": "Payments API", "onAutoForward": "silent" },
+    "5088": { "label": "Notifications API", "onAutoForward": "silent" },
+    "5089": { "label": "Staff dashboard API", "onAutoForward": "silent" },
+    "5090": { "label": "Public site API", "onAutoForward": "silent" }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "silent"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "angular.ng-template",
+        "dbaeumer.vscode-eslint",
+        "dart-code.flutter",
+        "redhat.vscode-yaml",
+        "bierner.markdown-mermaid"
+      ]
+    }
+  }
+}

@@ -3,6 +3,16 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
+## Unreleased
+
+### Added
+
+- Added a GitHub Codespaces devcontainer with .NET 10, Node 24, Flutter 3.47.8,
+  Docker Compose, the repository tooling and forwarded demo ports.
+- Added a production-readiness guide covering authentication, PostgreSQL
+  migrations, distributed rate limiting, observability and supply-chain
+  hardening.
+
 ## 0.2.1 — 2026-11-15
 
 A growth and demo release: all 19 demo images publish to GHCR, the demo stack

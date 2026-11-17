@@ -93,6 +93,11 @@ everything stays bound to `127.0.0.1` and the images keep their fail-closed
 `.github/workflows/demo-images.yml`; manual runs publish a `:dev` tag, while
 version tags publish `:<version>` and `:latest`.
 
+The published images target `linux/amd64`. On Apple Silicon, Docker Desktop
+runs them through emulation; a local `npm run demo:up` build is native. See
+[production readiness](production-readiness.md) before choosing a multi-arch
+build strategy.
+
 ## Option B — Local processes
 
 ```bash
@@ -169,6 +174,9 @@ Cloud Run, Kubernetes or a plain VM. Because services do not call each other,
 each one can scale, fail and deploy independently. No gateway is required.
 
 ## Production hardening
+
+For a concrete, service-by-service migration path with configuration examples,
+see [production readiness](production-readiness.md). The short version:
 
 The demo stack is intentionally simple. Before using it for real traffic:
 

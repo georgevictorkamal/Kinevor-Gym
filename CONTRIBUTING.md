@@ -17,7 +17,12 @@ improvements are welcome.
 
 ## Development setup
 
-Follow the [Quick start](README.md#-quick-start) in the root README:
+The fastest start is [GitHub Codespaces](https://codespaces.new/georgevictorkamal/Kinevor-Gym):
+the devcontainer installs .NET 10, Node 24, Flutter 3.47.8, Docker Compose and
+the repository tooling, then forwards the demo ports. Use a 4-core machine for
+the full stack; the showcase subset is lighter.
+
+For a local setup, follow the [Quick start](README.md#-quick-start) in the root README:
 
 1. Pack the platform NuGet packages and build the Angular platform library.
 2. Run the module you are changing (`dotnet run`, `npm start`, or
