@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml"><img src="https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/georgevictorkamal/Kinevor-Gym/releases/latest"><img src="https://img.shields.io/github/v/release/georgevictorkamal/Kinevor-Gym?label=release&color=blue" alt="Release"></a>
-  <a href="https://codespaces.new/georgevictorkamal/Kinevor-Gym"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>
+  <a href="https://codespaces.new/georgevictorkamal/Kinevor-Gym"><img src="https://img.shields.io/badge/Open_in-GitHub_Codespaces-24292F?logo=github&logoColor=white" alt="Open in GitHub Codespaces"></a>
   <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white" alt=".NET 10"></a>
   <a href="https://angular.dev/"><img src="https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white" alt="Angular 22"></a>
   <a href="https://flutter.dev/"><img src="https://img.shields.io/badge/Flutter-3.47.8-02569B?logo=flutter&logoColor=white" alt="Flutter"></a>
