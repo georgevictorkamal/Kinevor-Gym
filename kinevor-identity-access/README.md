@@ -46,7 +46,7 @@ Flutter clients are thin presentation layers over a typed gateway/repository.
 
 ## Features
 
-- E-mail/password login with PBKDF2-HMAC-SHA256 (120,000 iterations).
+- E-mail/password login with PBKDF2-HMAC-SHA256 (600,000 iterations, rehashed on login when lower).
 - HS256 JWT access tokens with configurable issuer, audience and lifetime.
 - Opaque refresh tokens stored as SHA-256 hashes, rotated on every exchange and
   revoked on logout.

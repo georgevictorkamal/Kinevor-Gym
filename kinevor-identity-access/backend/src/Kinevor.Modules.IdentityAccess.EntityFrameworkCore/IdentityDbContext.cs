@@ -40,4 +40,18 @@ public sealed class IdentityDbContext(DbContextOptions<IdentityDbContext> option
 
         return base.SaveChangesAsync(cancellationToken);
     }
+
+    /// <summary>Persists pending changes, returning false on an optimistic-concurrency conflict.</summary>
+    public async Task<bool> TrySaveChangesAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            await SaveChangesAsync(ct);
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return false;
+        }
+    }
 }

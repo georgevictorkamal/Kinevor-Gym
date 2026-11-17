@@ -1,5 +1,6 @@
 ﻿using Kinevor.Modules.IdentityAccess.Application;
 using Kinevor.Modules.IdentityAccess.Domain;
+using Kinevor.Platform.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kinevor.Modules.IdentityAccess.EntityFrameworkCore;
@@ -10,10 +11,12 @@ public sealed class UserAccountRepository(IdentityDbContext db) : IUserAccountRe
     /// <summary>Finds an account by normalised e-mail.</summary>
     public async Task<UserAccount?> GetByEmailAsync(string email, CancellationToken ct = default)
     {
-        var normalised = (email ?? string.Empty).Trim().ToLowerInvariant();
-        var accounts = await db.UserAccounts.ToListAsync(ct);
-        return accounts.FirstOrDefault(account =>
-            string.Equals(account.Email.Value, normalised, StringComparison.Ordinal));
+        var parsed = Email.Create(email);
+        if (parsed.IsFailure)
+            return null;
+
+        var target = parsed.Value;
+        return await db.UserAccounts.FirstOrDefaultAsync(account => account.Email == target, ct);
     }
 
     /// <summary>Finds an account by id.</summary>
@@ -40,4 +43,14 @@ public sealed class RefreshTokenRepository(IdentityDbContext db) : IRefreshToken
 
     /// <summary>Tracks a new refresh token.</summary>
     public void Add(RefreshToken token) => db.RefreshTokens.Add(token);
+
+    /// <summary>Revokes every unrevoked refresh token for the account.</summary>
+    public async Task RevokeAllForUserAsync(Guid userId, DateTime now, CancellationToken ct = default)
+    {
+        var active = await db.RefreshTokens
+            .Where(token => token.UserId == userId && token.RevokedAt == null)
+            .ToListAsync(ct);
+        foreach (var token in active)
+            token.Revoke(now);
+    }
 }

@@ -27,6 +27,14 @@ public class RefreshTokenHandler(
             ?? throw new AuthenticationFailedException("Invalid refresh token.");
 
         var now = timeProvider.GetUtcNow().UtcDateTime;
+        if (stored.RevokedAt is not null)
+        {
+            // A revoked token being presented again means it leaked: end every session for the account.
+            await refreshTokens.RevokeAllForUserAsync(stored.UserId, now, ct);
+            await unitOfWork.SaveChangesAsync(ct);
+            throw new AuthenticationFailedException("Refresh token is expired or revoked.");
+        }
+
         if (!stored.IsActive(now))
             throw new AuthenticationFailedException("Refresh token is expired or revoked.");
 
@@ -38,7 +46,8 @@ public class RefreshTokenHandler(
         stored.Revoke(now);
         var session = AuthSessionFactory.Issue(account, tokens, now);
         refreshTokens.Add(RefreshToken.Create(account.Id, tokens.HashRefreshToken(session.RefreshToken), now));
-        await unitOfWork.SaveChangesAsync(ct);
+        if (!await unitOfWork.TrySaveChangesAsync(ct))
+            throw new AuthenticationFailedException("Refresh token is expired or revoked.");
         return session;
     }
 }

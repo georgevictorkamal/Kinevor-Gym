@@ -82,6 +82,34 @@ public class IdentityApiTests
         Assert.NotEqual(session.RefreshToken, refreshed.RefreshToken);
     }
 
+    /// <summary>Replaying a rotated token revokes the whole token family, including the newest one.</summary>
+    [Fact]
+    public async Task Refresh_ReplayOfRotatedToken_RevokesAllSessions()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var session = await LoginAsync(client, "staff@kinevor.demo", "Kinevor!2026");
+        var refreshed = await RefreshAsync(client, session.RefreshToken);
+
+        var replay = await client.PostAsJsonAsync("/api/v1/auth/refresh", new { refreshToken = session.RefreshToken });
+        Assert.Equal(HttpStatusCode.Unauthorized, replay.StatusCode);
+
+        var afterReplay = await client.PostAsJsonAsync("/api/v1/auth/refresh", new { refreshToken = refreshed.RefreshToken });
+        Assert.Equal(HttpStatusCode.Unauthorized, afterReplay.StatusCode);
+    }
+
+    /// <summary>Login e-mail lookup is case-insensitive.</summary>
+    [Fact]
+    public async Task Login_IsCaseInsensitiveOnEmail()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var session = await LoginAsync(client, "  Admin@Kinevor.Demo ", "Kinevor!2026");
+        Assert.Equal("Admin", session.Role);
+    }
+
     /// <summary>Logout revokes the refresh token.</summary>
     [Fact]
     public async Task Logout_RevokesRefreshToken()

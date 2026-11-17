@@ -38,6 +38,8 @@ public sealed class RefreshTokenConfiguration : IEntityTypeConfiguration<Refresh
         builder.ToTable("RefreshTokens");
         builder.HasKey(token => token.Id);
         builder.Property(token => token.TokenHash).HasMaxLength(128).IsRequired();
+        // Two concurrent refreshes with the same token must not both succeed.
+        builder.Property(token => token.RevokedAt).IsConcurrencyToken();
         builder.HasIndex(token => token.TokenHash).IsUnique();
         builder.HasIndex(token => token.UserId);
         builder.Ignore(token => token.DomainEvents);

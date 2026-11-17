@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Kinevor.Modules.IdentityAccess.Application;
 
-/// <summary>PBKDF2-HMAC-SHA256 password hasher with 120,000 iterations.</summary>
+/// <summary>PBKDF2-HMAC-SHA256 password hasher with 600,000 iterations (OWASP 2023 guidance).</summary>
 public sealed class Pbkdf2PasswordHasher : IPasswordHasher
 {
     private const int Iterations = 600_000;

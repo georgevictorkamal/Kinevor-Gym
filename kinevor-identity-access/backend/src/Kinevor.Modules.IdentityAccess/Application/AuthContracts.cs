@@ -55,6 +55,9 @@ public interface IRefreshTokenRepository
 
     /// <summary>Tracks a new refresh token.</summary>
     void Add(RefreshToken token);
+
+    /// <summary>Revokes every active refresh token issued to an account.</summary>
+    Task RevokeAllForUserAsync(Guid userId, DateTime now, CancellationToken ct = default);
 }
 
 /// <summary>Work-unit abstraction over the module DbContext.</summary>
@@ -62,6 +65,9 @@ public interface IIdentityUnitOfWork
 {
     /// <summary>Persists pending changes.</summary>
     Task<int> SaveChangesAsync(CancellationToken ct = default);
+
+    /// <summary>Persists pending changes, returning false when an optimistic-concurrency check fails.</summary>
+    Task<bool> TrySaveChangesAsync(CancellationToken ct = default);
 }
 
 /// <summary>Password hashing contract.</summary>
