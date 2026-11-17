@@ -13,6 +13,17 @@ All notable changes to Kinevor are documented here. The repository uses a single
   migrations, distributed rate limiting, observability and supply-chain
   hardening.
 
+### Fixed
+
+- Identity refresh-token replay now revokes every active session for the
+  account instead of rejecting only the replayed token.
+- Concurrent refresh requests can no longer both rotate the same token; the
+  second write is rejected by optimistic concurrency.
+- Login resolves the account e-mail in a database query instead of loading
+  every account into memory.
+- Corrected the documented PBKDF2 iteration count to 600,000 and refreshed the
+  README test totals.
+
 ## 0.2.1 — 2026-11-15
 
 A growth and demo release: all 19 demo images publish to GHCR, the demo stack

@@ -80,7 +80,7 @@ set `$env:KINEVOR_VERSION = "0.2.1"` first.
 - **Executable architecture.** 22 repository checks cover module independence, version alignment, i18n parity, OpenAPI snapshots and release guardrails.
 - **Secure by default.** Demo hosts refuse to start outside Development or Demo, Docker ports are loopback-only, the image fails closed, there is no committed signing key, and CI is SHA-pinned with CodeQL and Dependabot.
 - **Verifiable releases.** Tagged releases ship an SBOM and build provenance attestation.
-- **Tested end to end.** 482 automated tests: 209 .NET, 99 Angular, 128 Flutter and 46 Playwright with axe accessibility checks.
+- **Tested end to end.** 485 automated tests: 212 .NET, 99 Angular, 128 Flutter and 46 Playwright with axe accessibility checks.
 
 ![Kinevor public website](docs/screenshots/public-web.png)
 
@@ -125,8 +125,8 @@ domain to UI.
 <tr>
 <td>
 
-### ✅ 482 Automated Tests
-209 .NET + 99 Angular + 128 Flutter unit tests plus 46 Playwright end-to-end
+### ✅ 485 Automated Tests
+212 .NET + 99 Angular + 128 Flutter unit tests plus 46 Playwright end-to-end
 checks covering domain rules, HTTP endpoints, gateways, components, screen
 states, accessibility and responsive layouts — all passing in CI.
 
@@ -166,7 +166,7 @@ Material 3 and golden tests) and API (ASP.NET Core 10 with MediatR CQRS).
 | **Backend** | 10 ASP.NET Core 10 APIs, EF Core 10, SQLite, MediatR |
 | **Web** | 9 Angular 22 libraries with runnable demos |
 | **Mobile** | 9 Flutter packages with runnable examples |
-| **Automated tests** | **482** — 209 .NET · 99 Angular · 128 Flutter · 46 Playwright |
+| **Automated tests** | **485** — 212 .NET · 99 Angular · 128 Flutter · 46 Playwright |
 | **Screenshots** | 57 captured from the running applications |
 | **CI** | Hygiene, backend/web/mobile matrices, coverage, E2E, CodeQL, dependency review, Scorecard |
 
@@ -344,11 +344,11 @@ See [SECURITY.md](SECURITY.md) for details.
 
 | Suite | Tests | Result |
 | --- | ---: | --- |
-| .NET — platform + 10 module APIs | 209 | ✅ passed |
+| .NET — platform + 10 module APIs | 212 | ✅ passed |
 | Angular — 9 module libraries | 99 | ✅ passed |
 | Flutter — 9 packages | 128 | ✅ passed |
 | Playwright E2E — public site + members | 46 | ✅ passed |
-| **Total** | **482** | **✅ all passed** |
+| **Total** | **485** | **✅ all passed** |
 
 .NET tests run with `coverlet.collector`; CI publishes a Cobertura report per
 service. Playwright runs every audited route at 1440×1040 and 390×844, checks
