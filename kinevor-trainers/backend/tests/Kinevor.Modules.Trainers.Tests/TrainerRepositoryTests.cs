@@ -1,8 +1,10 @@
+using System.Data.Common;
 using Kinevor.Modules.Trainers.Domain;
 using Kinevor.Modules.Trainers.EntityFrameworkCore;
 using Kinevor.Platform.Domain.Enums;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Kinevor.Modules.Trainers.Tests;
 
@@ -83,6 +85,31 @@ public sealed class TrainerRepositoryTests : IAsyncLifetime
         Assert.Equal("Layla", result.Items[0].FirstName);
     }
 
+    /// <summary>Search translates text filtering and paging into SQL rather than loading all rows into memory.</summary>
+    [Fact]
+    public async Task Search_TranslatesFilterToSqlQuery()
+    {
+        await AddTrainer("Layla", "Hassan", "layla@kinevor.demo");
+        await AddTrainer("Omar", "Khaled", "omar@kinevor.demo");
+
+        var interceptor = new SqlCaptureInterceptor();
+        var options = new DbContextOptionsBuilder<TrainersDbContext>()
+            .UseSqlite(_connection)
+            .AddInterceptors(interceptor)
+            .Options;
+
+        await using var instrumentedDb = new TrainersDbContext(options);
+        var repo = new TrainerRepository(instrumentedDb);
+
+        var result = await repo.SearchAsync("Layla Hassan", 1, 10, onlyActive: false);
+
+        Assert.Single(result.Items);
+        Assert.Equal(1, result.TotalCount);
+        Assert.Contains(interceptor.Commands, sql =>
+            sql.Contains("LIKE", StringComparison.OrdinalIgnoreCase) &&
+            sql.Contains("LIMIT", StringComparison.OrdinalIgnoreCase));
+    }
+
     /// <summary>Inserting through the unit of work stamps the creation timestamp.</summary>
     [Fact]
     public async Task SaveChanges_StampsCreatedAt()
@@ -102,5 +129,85 @@ public sealed class TrainerRepositoryTests : IAsyncLifetime
         _repository.Add(result.Value);
         await _db.SaveChangesAsync();
         return result.Value;
+    }
+
+    /// <summary>E-mail search matches only the address, not names.</summary>
+    [Fact]
+    public async Task Search_MatchesEmailAddressOnly()
+    {
+        await AddTrainer("Layla", "Hassan", "layla@kinevor.demo");
+        await AddTrainer("Omar", "Khaled", "omar@kinevor.demo");
+
+        var byFullAddress = await _repository.SearchAsync("OMAR@KINEVOR", 1, 10, onlyActive: false);
+        var byDomain = await _repository.SearchAsync("kinevor", 1, 10, onlyActive: false);
+
+        Assert.Single(byFullAddress.Items);
+        Assert.Equal("Omar", byFullAddress.Items[0].FirstName);
+        Assert.Equal(2, byDomain.TotalCount);
+    }
+
+    /// <summary>LIKE wildcards in user input are matched literally, not as patterns.</summary>
+    [Fact]
+    public async Task Search_TreatsWildcardsLiterally()
+    {
+        await AddTrainer("Layla", "Hassan", "layla@kinevor.demo");
+        await AddTrainer("Omar", "Khaled", "omar@kinevor.demo");
+
+        var percent = await _repository.SearchAsync("%", 1, 10, onlyActive: false);
+        var underscore = await _repository.SearchAsync("_", 1, 10, onlyActive: false);
+
+        Assert.Empty(percent.Items);
+        Assert.Empty(underscore.Items);
+    }
+
+    
+    /// <summary>E-mail search is translated to SQL against the Email column, not evaluated in memory.</summary>
+    [Fact]
+    public async Task Search_EmailPredicateRunsInSql()
+    {
+        await AddTrainer("Layla", "Hassan", "layla@kinevor.demo");
+
+        var interceptor = new SqlCaptureInterceptor();
+        var options = new DbContextOptionsBuilder<TrainersDbContext>()
+            .UseSqlite(_connection)
+            .AddInterceptors(interceptor)
+            .Options;
+
+        await using var instrumentedDb = new TrainersDbContext(options);
+        var repo = new TrainerRepository(instrumentedDb);
+
+        var result = await repo.SearchAsync("kinevor", 1, 10, onlyActive: false);
+
+
+        Assert.Single(result.Items);
+        Assert.Contains(interceptor.Commands, sql =>
+            sql.Contains("Email", StringComparison.Ordinal) &&
+            sql.Contains("LIKE", StringComparison.OrdinalIgnoreCase) &&
+            sql.Contains("LOWER", StringComparison.OrdinalIgnoreCase));
+
+
+    }
+    private sealed class SqlCaptureInterceptor : DbCommandInterceptor
+    {
+        public List<string> Commands { get; } = [];
+
+        public override InterceptionResult<DbDataReader> ReaderExecuting(
+            DbCommand command,
+            CommandEventData eventData,
+            InterceptionResult<DbDataReader> result)
+        {
+            Commands.Add(command.CommandText);
+            return base.ReaderExecuting(command, eventData, result);
+        }
+
+        public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(
+            DbCommand command,
+            CommandEventData eventData,
+            InterceptionResult<DbDataReader> result,
+            CancellationToken cancellationToken = default)
+        {
+            Commands.Add(command.CommandText);
+            return base.ReaderExecutingAsync(command, eventData, result, cancellationToken);
+        }
     }
 }

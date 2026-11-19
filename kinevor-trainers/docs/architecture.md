@@ -56,9 +56,10 @@ Create flow:
 ## Persistence
 
 The demo uses SQLite and `EnsureCreatedAsync`. Production hosts should configure
-PostgreSQL and migrations. The EF search currently loads matching trainers and
-filters in memory because the e-mail value object uses a converter. The planned
-fix is a normalized `Email` column with an index, then push search into SQL.
+PostgreSQL and migrations. `TrainerRepository.SearchAsync` translates text
+filtering and paging into a SQL query (`EF.Functions.Like` with wildcard
+escaping, `CountAsync`, `Skip`, and `Take`) rather than filtering trainers in
+memory.
 
 ## Client flow
 

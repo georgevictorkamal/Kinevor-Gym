@@ -50,9 +50,7 @@ public sealed class TrainerRepository(TrainersDbContext db) : ITrainerRepository
             .ToListAsync(ct);
 
     /// <summary>
-    /// Searches trainers by name or e-mail, optionally only active ones. Filtering runs in memory
-    /// because the e-mail value object is stored through a value converter, which cannot be
-    /// searched with string functions by every relational provider.
+    /// Searches trainers by name or e-mail in the database, optionally restricting to active ones.
     /// </summary>
     public async Task<(IReadOnlyList<Trainer> Items, int TotalCount)> SearchAsync(
         string? search, int page, int pageSize, bool onlyActive = false, CancellationToken ct = default)
@@ -64,26 +62,30 @@ public sealed class TrainerRepository(TrainersDbContext db) : ITrainerRepository
         if (onlyActive)
             query = query.Where(t => t.Status == TrainerStatus.Active);
 
-        var matching = await query
-            .OrderBy(t => t.LastName)
-            .ThenBy(t => t.FirstName)
-            .ToListAsync(ct);
-
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var term = search.Trim();
-            matching = matching
-                .Where(t => t.FullName.Contains(term, StringComparison.OrdinalIgnoreCase)
-                    || t.Email.Value.Contains(term, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            var escaped = search.Trim()
+                .Replace("\\", "\\\\")
+                .Replace("%", "\\%")
+                .Replace("_", "\\_")
+                .ToLowerInvariant();
+            var pattern = $"%{escaped}%";
+
+            query = query.Where(t =>
+                EF.Functions.Like((t.FirstName + " " + t.LastName).ToLower(), pattern, "\\")
+                || EF.Functions.Like(((string)(object)t.Email).ToLower(), pattern, "\\"));
         }
 
-        var items = matching
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
+            .OrderBy(t => t.LastName)
+            .ThenBy(t => t.FirstName)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .ToList();
+            .ToListAsync(ct);
 
-        return (items, matching.Count);
+        return (items, totalCount);
     }
 
     private IQueryable<Trainer> Apply(ISpecification<Trainer> spec)
