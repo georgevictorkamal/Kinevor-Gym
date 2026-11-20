@@ -5,6 +5,13 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ## Unreleased
 
+### Added
+
+- Identity now locks an account for fifteen minutes after five consecutive failed
+  sign-ins while keeping unknown, locked and wrong-password responses identical.
+- Identity now supports RFC 6238 TOTP enrolment, login challenges and eight
+  single-use hashed recovery codes, with the demo-only secret storage documented.
+
 ### Fixed
 
 - Regenerated the committed NuGet lockfiles for `0.2.2` and aligned

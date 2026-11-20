@@ -47,6 +47,10 @@ Flutter clients are thin presentation layers over a typed gateway/repository.
 ## Features
 
 - E-mail/password login with PBKDF2-HMAC-SHA256 (600,000 iterations, rehashed on login when lower).
+- Per-account lockout after five consecutive failures for fifteen minutes, with the
+  same response and PBKDF2 cost for unknown, locked and wrong-password attempts.
+- Optional TOTP multi-factor authentication (RFC 6238) with authenticator-app
+  enrolment and eight single-use recovery codes stored as hashes.
 - HS256 JWT access tokens with configurable issuer, audience and lifetime.
 - Opaque refresh tokens stored as SHA-256 hashes, rotated on every exchange and
   revoked on logout.
@@ -65,16 +69,42 @@ Flutter clients are thin presentation layers over a typed gateway/repository.
 
 | Method | Route | Policy | Used by |
 | --- | --- | --- | --- |
-| `POST` | `/api/v1/auth/login` | anonymous | Web and Flutter login |
+| `POST` | `/api/v1/auth/login` | anonymous | Web and Flutter login; optional `mfaCode` or `recoveryCode` |
 | `POST` | `/api/v1/auth/refresh` | anonymous | Session rotation |
 | `POST` | `/api/v1/auth/logout` | anonymous | Web and Flutter sign-out |
 | `GET` | `/api/v1/auth/session` | authenticated | Session screen, route guard |
+| `POST` | `/api/v1/auth/mfa/enrol` | authenticated | Starts TOTP enrolment |
+| `POST` | `/api/v1/auth/mfa/confirm` | authenticated | Confirms the first code and returns recovery codes |
+| `POST` | `/api/v1/auth/mfa/disable` | authenticated | Disables MFA after verifying a code |
 | `GET` | `/api/v1/auth/accounts` | `AdminOnly` | Admin account browser |
 | `GET` | `/health` | anonymous | Demo health check |
 | `GET` | `/swagger` | development only | API explorer |
 
 Refresh and logout accept the refresh token in the body. Access tokens are sent
 as `Authorization: Bearer <token>`.
+
+### Lockout and MFA
+
+Five consecutive failed sign-ins lock an account for fifteen minutes. The counter
+resets on success and after the window expires. Unknown, locked and
+wrong-password attempts all return the same `401` message and run one PBKDF2
+verification, so callers cannot enumerate accounts or lock state.
+
+MFA enrolment is two steps:
+
+```text
+POST /api/v1/auth/mfa/enrol     -> { secret, otpAuthUri }
+POST /api/v1/auth/mfa/confirm   { code } -> { recoveryCodes: [ ... ] }
+```
+
+The first endpoint stores a pending secret; the second verifies a current code,
+enables MFA and returns eight recovery codes **once**. Later logins send
+`mfaCode` (six digits) or `recoveryCode` (single use) alongside the password.
+`POST /api/v1/auth/mfa/disable` accepts either factor.
+
+The demo stores the TOTP secret as plain text in SQLite so the flow is easy to
+inspect. Production hosts must encrypt it with a managed key and treat recovery
+codes like passwords.
 
 ## Screenshots
 
@@ -218,8 +248,8 @@ flutter test --update-goldens test\identity_golden_test.dart
 | Flutter analysis | `cd mobile\packages\kinevor_identity_access; flutter analyze` |
 | Flutter tests | `cd mobile\packages\kinevor_identity_access; flutter test` |
 
-The backend suite covers domain invariants, password hashing, refresh rotation
-and API behavior against the demo host. The web suite covers the HTTP gateway
+The backend suite covers domain invariants, password hashing, lockout, TOTP
+vectors, recovery-code reuse, refresh rotation and API behavior against the demo host. The web suite covers the HTTP gateway
 and facade with Vitest. The Flutter suite covers the client, login/session
 widgets and golden images.
 
@@ -267,8 +297,12 @@ job. Modules do not need a published registry to build.
 - **Host-owned sessions.** The Angular facade persists to storage and the Flutter
   package returns sessions to the host. Neither package assumes a global state
   container.
-- **Constant-shape login errors.** Invalid e-mail and wrong password return the
-  same message so callers cannot enumerate accounts.
+- **Constant-shape login errors.** Invalid e-mail, wrong password, locked account
+  and missing second factor return the same message so callers cannot enumerate
+  accounts or infer lock/MFA state.
+- **MFA secrets are demo-only.** TOTP secrets and recovery-code hashes live in
+  the module database. A production host needs envelope encryption for the
+  secret; recovery codes are already stored as SHA-256 hashes.
 - **No committed signing key.** The demo host generates an ephemeral key when
   configuration does not provide one; a production host must use a managed
   secret.
@@ -319,7 +353,8 @@ These demo hosts refuse to start outside Development and Demo and use SQLite. Fo
 host, issue a strong random signing key, serve the API over HTTPS, restrict CORS
 to known origins, and keep refresh tokens out of logs. Swagger and seeded
 credentials are available in Development only. Do not commit connection
-strings, PATs or `.env` files.
+strings, PATs or `.env` files. Encrypt `UserAccount.MfaSecret` at rest before
+enabling MFA outside the demo.
 
 ## License
 

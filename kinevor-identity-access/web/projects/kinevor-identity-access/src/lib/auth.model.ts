@@ -22,6 +22,8 @@ export interface AuthSession {
 export interface LoginRequest {
   readonly email: string;
   readonly password: string;
+  readonly mfaCode?: string;
+  readonly recoveryCode?: string;
 }
 
 /** API envelope used by every Kinevor endpoint. */

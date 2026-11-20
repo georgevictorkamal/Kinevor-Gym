@@ -31,12 +31,16 @@ class KinevorIdentityClient {
   Future<AuthSession> login({
     required String email,
     required String password,
+    String? mfaCode,
+    String? recoveryCode,
   }) async {
-    final data = await _send(
-      'POST',
-      'auth/login',
-      body: {'email': email, 'password': password},
-    );
+    final body = <String, String>{
+      'email': email,
+      'password': password,
+      if (mfaCode != null) 'mfaCode': mfaCode,
+      if (recoveryCode != null) 'recoveryCode': recoveryCode,
+    };
+    final data = await _send('POST', 'auth/login', body: body);
     return AuthSession.fromJson(data);
   }
 

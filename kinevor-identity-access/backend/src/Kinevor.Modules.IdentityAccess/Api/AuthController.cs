@@ -63,4 +63,36 @@ public class AuthController(ISender sender) : ControllerBase
         var accounts = await sender.Send(new GetAccountsQuery(), ct);
         return Ok(ApiResponse<IReadOnlyList<UserAccountDto>>.Ok(accounts));
     }
+
+    /// <summary>Starts TOTP enrolment for the signed-in account.</summary>
+    [HttpPost("mfa/enrol")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<MfaEnrolmentDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<MfaEnrolmentDto>>> BeginMfaEnrolment(CancellationToken ct)
+    {
+        var enrolment = await sender.Send(new BeginMfaEnrolmentCommand(), ct);
+        return Ok(ApiResponse<MfaEnrolmentDto>.Ok(enrolment, "MFA enrolment started."));
+    }
+
+    /// <summary>Confirms enrolment with the first TOTP code and returns recovery codes once.</summary>
+    [HttpPost("mfa/confirm")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<MfaRecoveryCodesDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse<MfaRecoveryCodesDto>>> ConfirmMfa(
+        [FromBody] ConfirmMfaCommand command, CancellationToken ct)
+    {
+        var codes = await sender.Send(command, ct);
+        return Ok(ApiResponse<MfaRecoveryCodesDto>.Ok(codes, "MFA enabled."));
+    }
+
+    /// <summary>Disables MFA after verifying a current TOTP or recovery code.</summary>
+    [HttpPost("mfa/disable")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<ApiResponse>> DisableMfa(
+        [FromBody] DisableMfaCommand command, CancellationToken ct)
+    {
+        await sender.Send(command, ct);
+        return Ok(ApiResponse.Ok("MFA disabled."));
+    }
 }

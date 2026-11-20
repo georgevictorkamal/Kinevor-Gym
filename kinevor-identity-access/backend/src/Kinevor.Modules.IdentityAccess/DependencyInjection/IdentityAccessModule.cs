@@ -15,6 +15,7 @@ public static class IdentityAccessModule
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
         services.AddSingleton<IAuthTokenService, JwtAuthTokenService>();
+        services.AddSingleton<IMfaService, TotpMfaService>();
         return services;
     }
 }

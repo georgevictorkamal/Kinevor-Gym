@@ -28,12 +28,12 @@ export class IdentityAccessFacade {
   readonly isAuthenticated = computed(() => this.sessionState() !== null);
 
   /** Authenticates and stores the returned token pair. */
-  async login(email: string, password: string): Promise<boolean> {
+  async login(email: string, password: string, mfaCode?: string, recoveryCode?: string): Promise<boolean> {
     this.loadingState.set(true);
     this.errorState.set(null);
 
     try {
-      const session = await this.gateway.login({ email, password });
+      const session = await this.gateway.login({ email, password, mfaCode, recoveryCode });
       this.store(session);
       return true;
     } catch (error) {

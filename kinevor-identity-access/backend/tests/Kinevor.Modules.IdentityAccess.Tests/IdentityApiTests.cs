@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Kinevor.Modules.IdentityAccess.Application;
 
 namespace Kinevor.Modules.IdentityAccess.Tests;
 
@@ -153,6 +154,120 @@ public class IdentityApiTests
         using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         Assert.Equal(4, document.RootElement.GetProperty("data").GetArrayLength());
     }
+
+    /// <summary>Five wrong passwords lock the account, and locked/unknown responses are identical.</summary>
+    [Fact]
+    public async Task Login_LocksAccountAfterRepeatedFailures()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        for (var attempt = 0; attempt < 5; attempt++)
+        {
+            var failure = await PostLoginAsync(client, "member@kinevor.demo", "not-the-password");
+            Assert.Equal(HttpStatusCode.Unauthorized, failure.StatusCode);
+        }
+
+        var locked = await PostLoginAsync(client, "member@kinevor.demo", "Kinevor!2026");
+        var unknown = await PostLoginAsync(client, "nobody@kinevor.demo", "Kinevor!2026");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, locked.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, unknown.StatusCode);
+        Assert.Equal(
+            await unknown.Content.ReadAsStringAsync(),
+            await locked.Content.ReadAsStringAsync());
+    }
+
+    /// <summary>A successful login clears the failure counter before the threshold.</summary>
+    [Fact]
+    public async Task Login_SuccessResetsFailedAttempts()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        for (var attempt = 0; attempt < 4; attempt++)
+            await PostLoginAsync(client, "staff@kinevor.demo", "not-the-password");
+
+        await LoginAsync(client, "staff@kinevor.demo", "Kinevor!2026");
+
+        for (var attempt = 0; attempt < 4; attempt++)
+            await PostLoginAsync(client, "staff@kinevor.demo", "not-the-password");
+
+        await LoginAsync(client, "staff@kinevor.demo", "Kinevor!2026");
+    }
+
+    /// <summary>MFA enrolment, TOTP login and single-use recovery codes work end to end.</summary>
+    [Fact]
+    public async Task Mfa_EnrolConfirmLoginAndRecoveryCode()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var adminClient = factory.CreateClient();
+
+        var session = await LoginAsync(adminClient, "admin@kinevor.demo", "Kinevor!2026");
+        adminClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+
+        var enrolResponse = await adminClient.PostAsync("/api/v1/auth/mfa/enrol", null);
+        Assert.Equal(HttpStatusCode.OK, enrolResponse.StatusCode);
+        using var enrolDocument = JsonDocument.Parse(await enrolResponse.Content.ReadAsStringAsync());
+        var enrolment = enrolDocument.RootElement.GetProperty("data");
+        var secret = enrolment.GetProperty("secret").GetString()!;
+        Assert.StartsWith("otpauth://totp/", enrolment.GetProperty("otpAuthUri").GetString());
+
+        var confirmResponse = await adminClient.PostAsJsonAsync("/api/v1/auth/mfa/confirm", new
+        {
+            code = Totp.ComputeCode(secret, DateTime.UtcNow),
+        });
+        Assert.Equal(HttpStatusCode.OK, confirmResponse.StatusCode);
+        using var confirmDocument = JsonDocument.Parse(await confirmResponse.Content.ReadAsStringAsync());
+        var recoveryCodes = confirmDocument.RootElement.GetProperty("data")
+            .GetProperty("recoveryCodes")
+            .EnumerateArray()
+            .Select(item => item.GetString()!)
+            .ToList();
+        Assert.Equal(8, recoveryCodes.Count);
+
+        using var withoutCode = factory.CreateClient();
+        var missing = await PostLoginAsync(withoutCode, "admin@kinevor.demo", "Kinevor!2026");
+        Assert.Equal(HttpStatusCode.Unauthorized, missing.StatusCode);
+
+        using var withTotp = factory.CreateClient();
+        var totpLogin = await PostLoginAsync(
+            withTotp, "admin@kinevor.demo", "Kinevor!2026",
+            mfaCode: Totp.ComputeCode(secret, DateTime.UtcNow));
+        Assert.Equal(HttpStatusCode.OK, totpLogin.StatusCode);
+
+        using var withRecovery = factory.CreateClient();
+        var recoveryLogin = await PostLoginAsync(
+            withRecovery, "admin@kinevor.demo", "Kinevor!2026",
+            recoveryCode: recoveryCodes[0]);
+        Assert.Equal(HttpStatusCode.OK, recoveryLogin.StatusCode);
+
+        using var reusedRecovery = factory.CreateClient();
+        var reused = await PostLoginAsync(
+            reusedRecovery, "admin@kinevor.demo", "Kinevor!2026",
+            recoveryCode: recoveryCodes[0]);
+        Assert.Equal(HttpStatusCode.Unauthorized, reused.StatusCode);
+    }
+
+    /// <summary>MFA endpoints require an authenticated caller.</summary>
+    [Fact]
+    public async Task MfaEnrolment_RequiresAuthentication()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = factory.CreateClient();
+
+        var response = await client.PostAsync("/api/v1/auth/mfa/enrol", null);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    private static Task<HttpResponseMessage> PostLoginAsync(
+        HttpClient client,
+        string email,
+        string password,
+        string? mfaCode = null,
+        string? recoveryCode = null) =>
+        client.PostAsJsonAsync("/api/v1/auth/login", new { email, password, mfaCode, recoveryCode });
 
     private static async Task<Session> LoginAsync(HttpClient client, string email, string password)
     {
