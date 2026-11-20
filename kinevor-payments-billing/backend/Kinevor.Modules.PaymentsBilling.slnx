@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/samples/">
     <Project Path="samples/Kinevor.Modules.PaymentsBilling.DemoApi/Kinevor.Modules.PaymentsBilling.DemoApi.csproj" />
+    <Project Path="samples/Kinevor.Modules.PaymentsBilling.StripeGateway/Kinevor.Modules.PaymentsBilling.StripeGateway.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Kinevor.Modules.PaymentsBilling.EntityFrameworkCore/Kinevor.Modules.PaymentsBilling.EntityFrameworkCore.csproj" />

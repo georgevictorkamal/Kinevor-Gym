@@ -157,6 +157,28 @@ public sealed class Invoice : AggregateRoot
         return Result.Success();
     }
 
+    /// <summary>Reduces the settled amount after a payment refund and reopens the balance.</summary>
+    public Result ApplyRefund(decimal amount, DateTime now)
+    {
+        if (Status == InvoiceStatus.Void)
+            return Result.Failure(Error.Business("Invoice.Voided", "A void invoice cannot be refunded."));
+        if (amount <= 0m)
+            return Result.Failure(Error.Validation("Amount", "Refund amount must be positive."));
+        if (amount > AmountPaid)
+            return Result.Failure(Error.Business("Invoice.RefundExceedsPaid",
+                $"Refund exceeds the amount paid of {Currency} {AmountPaid:F2}."));
+
+        AmountPaid = decimal.Round(AmountPaid - amount, 2, MidpointRounding.AwayFromZero);
+        Status = AmountPaid >= Total
+            ? InvoiceStatus.Paid
+            : now.Date > DueAt.Date
+                ? InvoiceStatus.Overdue
+                : InvoiceStatus.Open;
+        PaidAt = Status == InvoiceStatus.Paid ? PaidAt ?? now : null;
+        RowVersion = Guid.NewGuid();
+        return Result.Success();
+    }
+
     /// <summary>Marks the invoice fully paid, for settlements recorded outside this module.</summary>
     public Result MarkPaid(DateTime now)
     {

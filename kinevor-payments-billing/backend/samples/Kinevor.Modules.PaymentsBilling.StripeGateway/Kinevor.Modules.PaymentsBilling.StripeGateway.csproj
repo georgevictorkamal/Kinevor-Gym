@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Kinevor.Modules.PaymentsBilling.StripeGateway</RootNamespace>
+    <Description>Stripe test-mode payment gateway adapter for the Kinevor payments module.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Kinevor.Modules.PaymentsBilling\Kinevor.Modules.PaymentsBilling.csproj" />
+  </ItemGroup>
+</Project>

@@ -308,6 +308,12 @@
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )"
         }
+      },
+      "kinevor.modules.paymentsbilling.stripegateway": {
+        "type": "Project",
+        "dependencies": {
+          "Kinevor.Modules.PaymentsBilling": "[0.2.2, )"
+        }
       }
     }
   }
