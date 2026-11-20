@@ -5,6 +5,14 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ## Unreleased
 
+### Added
+
+- Classes and bookings now document the booking, waitlist, cancellation and
+  promotion flow with a Mermaid sequence diagram, including the `409` optimistic-
+  concurrency path.
+- Added ownership tests for member, staff and trainer booking/cancellation
+  rules, including the two-hour confirmed-booking window.
+
 ### Fixed
 
 - Regenerated the committed NuGet lockfiles for `0.2.2` and aligned
