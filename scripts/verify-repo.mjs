@@ -245,12 +245,27 @@ check('platform i18n catalogues stay in parity', () => {
   };
   const base = 'kinevor-platform/web/projects/kinevor-platform-web/src/lib/i18n/data';
   const english = flatten(load(`${base}/en.json`));
-  const arabic = flatten(load(`${base}/ar.json`));
-  const missing = [...english].filter((key) => !arabic.has(key));
-  const extra = [...arabic].filter((key) => !english.has(key));
-  assert(missing.length === 0, `missing Arabic keys: ${missing.join(', ')}`);
-  assert(extra.length === 0, `extra Arabic keys: ${extra.join(', ')}`);
-  return `${english.size} keys in en/ar`;
+  const catalogues = [
+    { code: 'ar', name: 'Arabic' },
+    { code: 'fr', name: 'French' },
+  ];
+
+  for (const { code, name } of catalogues) {
+    const bundle = flatten(load(`${base}/${code}.json`));
+    const missing = [...english].filter((key) => !bundle.has(key));
+    const extra = [...bundle].filter((key) => !english.has(key));
+    assert(missing.length === 0, `missing ${name} keys: ${missing.join(', ')}`);
+    assert(extra.length === 0, `extra ${name} keys: ${extra.join(', ')}`);
+  }
+
+  const registry = load(`${base}/languages.json`);
+  const registered = registry.languages.map((language) => language.code).sort();
+  const expected = ['ar', 'en', 'fr'];
+  assert(
+    registered.join(',') === expected.join(','),
+    `languages.json registers ${registered.join(', ')}; expected ${expected.join(', ')}`,
+  );
+  return `${english.size} keys in en/ar/fr`;
 });
 
 check('Flutter lockfiles are present', () => {

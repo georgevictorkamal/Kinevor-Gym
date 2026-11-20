@@ -15,7 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Members")
     ?? "Data Source=members-demo.db";
 
-builder.Services.AddDbContext<MembersDbContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDbContext<MembersDbContext>(options =>
+    options.UseSqlite(connectionString, sqlite =>
+        sqlite.MigrationsAssembly("Kinevor.Modules.Members.Migrations")));
 builder.Services.AddMembersModule();
 builder.Services.AddMembersEntityFrameworkCore();
 builder.Services.AddHttpContextAccessor();
@@ -75,7 +77,7 @@ app.EnsureDemoHost();
 await using (var scope = app.Services.CreateAsyncScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<MembersDbContext>();
-    await db.Database.EnsureCreatedAsync();
+    await db.Database.MigrateAsync();
     await DemoDataSeeder.SeedAsync(db);
 }
 

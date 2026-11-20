@@ -5,6 +5,18 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ## Unreleased
 
+### Added
+
+- The platform now ships French (`fr`) UI copy with full catalogue parity and a
+  language registry entry; `npm run verify` checks every catalogue against
+  English and validates the registry.
+- `AddKinevorOpenTelemetry()` in `Kinevor.Platform.Api` adds opt-in ASP.NET Core,
+  `HttpClient` and EF Core traces and metrics with an OTLP exporter driven by
+  standard `OTEL_EXPORTER_OTLP_*` environment variables. It is off by default.
+- Members now provides a non-packable SQLite migrations baseline and applies it
+  in the demo host, replacing `EnsureCreatedAsync`; the pattern is documented for
+  the other modules.
+
 ### Fixed
 
 - Regenerated the committed NuGet lockfiles for `0.2.2` and aligned

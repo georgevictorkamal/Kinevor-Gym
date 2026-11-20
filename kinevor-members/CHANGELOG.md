@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A non-packable `Kinevor.Modules.Members.Migrations` project with the initial
+  SQLite migration. The demo host now applies migrations instead of
+  `EnsureCreatedAsync`, and the library and EF Core projects stay free of
+  provider-specific migration code.
+
 ## [0.1.0] - 2026-10-20
 
 ### Added
