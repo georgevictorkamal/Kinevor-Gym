@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added an application-level `IPaymentGateway` port with a simulated default and
+  a separate non-packable Stripe test-mode sample. The sample calls the REST API
+  directly, reuses the payment reference as the idempotency key and refuses live
+  keys.
+- Added refund and concurrency coverage for full, partial and repeated refunds
+  and stale invoice writes.
+
+### Changed
+
+- Refunds now reduce the linked invoice's paid balance and reopen it as open or
+  overdue when it is no longer settled. The demo's recorded refund reopens
+  Sofia's invoice.
+- Card payments capture through `IPaymentGateway` before the payment is stored;
+  cash and bank-transfer payments are unchanged.
+
 ## [0.1.0] - 2026-10-20
 
 ### Added

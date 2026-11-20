@@ -49,6 +49,86 @@ on the published `Kinevor.Platform.*` packages for the response envelope,
 authorization policies and current-user abstractions. The Angular and Flutter
 clients are thin presentation layers over a typed gateway/repository.
 
+## Booking and waitlist flow
+
+Bookings are one transaction: reserving a seat (or a waitlist position) and
+updating the class counters share a save. `GymClass.RowVersion` changes on every
+mutation, so a concurrent booking fails with `409 Conflict` instead of
+overbooking. Cancelling a confirmed seat inside the two-hour window is blocked
+for members but allowed for staff; a freed seat promotes the oldest waitlisted
+booking.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Member
+    actor Trainer
+    participant API as Classes API
+    participant Book as BookClassHandler
+    participant Cancel as CancelBookingHandler
+    participant Promote as PromoteWaitListHandler
+    participant Class as GymClass
+    participant Store as EF Core
+
+    Member->>API: POST /classes/{id}/bookings
+    API->>Book: BookClassCommand
+    Book->>Store: Load class + active booking
+    alt already booked or class not open
+        Book-->>API: Conflict / domain error
+        API-->>Member: 409 / 400
+    else seat available
+        Book->>Class: Book(now, memberId)
+        Class->>Class: BookedCount + 1, new RowVersion
+        Book->>Store: Add booking + update class
+        Book->>Store: TrySaveChangesAsync
+        alt RowVersion mismatch
+            Book-->>API: ConflictException
+            API-->>Member: 409 "The class changed while booking. Refresh and try again."
+        else committed
+            API-->>Member: 201 Confirmed
+        end
+    else class full
+        Book->>Class: Book(now, memberId)
+        Class->>Class: WaitListCount + 1
+        Book->>Store: Add waitlisted booking
+        API-->>Member: 201 WaitListed
+    end
+
+    Member->>API: DELETE /bookings/{id}
+    API->>Cancel: CancelBookingCommand
+    Cancel->>Cancel: EnsureMayCancel (self, staff or owning trainer)
+    alt caller does not own the booking
+        Cancel-->>API: ForbiddenException
+        API-->>Member: 403
+    else confirmed inside two hours and not staff
+        Cancel-->>API: DomainException
+        API-->>Member: 400 cancellation window
+    else cancellable
+        Cancel->>Class: CancelBooking(wasWaitListed)
+        Class->>Class: counter - 1, new RowVersion
+        Cancel->>Store: Update booking + class
+        opt confirmed seat freed
+            Cancel->>Store: GetWaitListHeadAsync
+            Cancel->>Class: PromoteFromWaitList()
+            Class->>Class: WaitListCount - 1, BookedCount + 1
+            Cancel->>Store: Confirm promoted booking
+        end
+        API-->>Member: 200
+    end
+
+    Trainer->>API: POST /bookings/{id}/promote
+    API->>Promote: PromoteWaitListCommand
+    Promote->>Promote: Verify trainer owns the class
+    Promote->>Class: PromoteFromWaitList()
+    alt waitlist empty, class full or wrong trainer
+        Promote-->>API: Domain / forbidden error
+        API-->>Trainer: 400 / 403
+    else promoted
+        Promote->>Store: Confirm booking + update class
+        API-->>Trainer: 200
+    end
+```
+
 ## Features
 
 - Upcoming schedule with type, status and date filters, live seat counts and a
@@ -270,8 +350,9 @@ Copy-Item test\goldens\member_bookings.png ..\..\..\docs\screenshots\mobile-my-b
 | Flutter tests | `cd mobile\packages\kinevor_classes_bookings; flutter test` |
 
 The backend suite covers domain invariants, capacity and waitlist transitions,
-duplicate bookings, member/staff roster visibility, cancellation, attendance and
-the demo authorization boundaries. The web suite covers the HTTP gateway and the
+duplicate bookings, member/staff roster visibility, cancellation, attendance,
+booking and cancellation ownership (member, staff and owning trainer), the
+two-hour cancellation window and the demo authorization boundaries. The web suite covers the HTTP gateway and the
 schedule/detail/bookings facades with Vitest. The Flutter suite covers the typed
 client, schedule filtering, detail booking, member cancellation and golden
 images.

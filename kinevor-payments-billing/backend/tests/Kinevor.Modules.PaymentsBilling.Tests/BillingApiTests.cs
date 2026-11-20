@@ -30,11 +30,11 @@ public class BillingApiTests
         Assert.Equal(HttpStatusCode.OK, statsResponse.StatusCode);
         using var statsDocument = JsonDocument.Parse(await statsResponse.Content.ReadAsStringAsync());
         var data = statsDocument.RootElement.GetProperty("data");
-        Assert.Equal(4, data.GetProperty("openInvoiceCount").GetInt32());
-        Assert.Equal(2, data.GetProperty("overdueInvoiceCount").GetInt32());
+        Assert.Equal(5, data.GetProperty("openInvoiceCount").GetInt32());
+        Assert.Equal(3, data.GetProperty("overdueInvoiceCount").GetInt32());
         Assert.Equal(7, data.GetProperty("totalInvoiceCount").GetInt32());
-        Assert.Equal(373.20m, data.GetProperty("outstandingAmount").GetDecimal());
-        Assert.Equal(136.95m, data.GetProperty("overdueAmount").GetDecimal());
+        Assert.Equal(383.20m, data.GetProperty("outstandingAmount").GetDecimal());
+        Assert.Equal(146.95m, data.GetProperty("overdueAmount").GetDecimal());
         Assert.Equal("USD", data.GetProperty("currency").GetString());
     }
 
@@ -193,6 +193,10 @@ public class BillingApiTests
         using var factory = new TestWebApplicationFactory();
         using var client = factory.CreateClient();
         var paymentId = await FindPaymentId(client, "TXN-SEED-MAYA-001");
+        var invoiceId = await FindInvoiceId(
+            client,
+            "/api/v1/billing/invoices?search=INV-&pageSize=20",
+            $"INV-{DateTime.UtcNow.Year}-000001");
 
         using var partial = StaffRequest(HttpMethod.Post, $"/api/v1/billing/payments/{paymentId}/refund");
         partial.Content = JsonContent.Create(new { amount = 14.45m, reason = "Price adjustment" });
@@ -202,6 +206,15 @@ public class BillingApiTests
         var partialData = partialDocument.RootElement.GetProperty("data");
         Assert.Equal("PartiallyRefunded", partialData.GetProperty("status").GetString());
         Assert.Equal(14.45m, partialData.GetProperty("refundedAmount").GetDecimal());
+
+        using var partialInvoice = StaffRequest(HttpMethod.Get, $"/api/v1/billing/invoices/{invoiceId}");
+        var partialInvoiceResponse = await client.SendAsync(partialInvoice);
+        using var partialInvoiceDocument = JsonDocument.Parse(
+            await partialInvoiceResponse.Content.ReadAsStringAsync());
+        var partialInvoiceData = partialInvoiceDocument.RootElement.GetProperty("data");
+        Assert.Equal("Overdue", partialInvoiceData.GetProperty("status").GetString());
+        Assert.Equal(100m, partialInvoiceData.GetProperty("amountPaid").GetDecimal());
+        Assert.Equal(14.45m, partialInvoiceData.GetProperty("outstandingAmount").GetDecimal());
 
         using var over = StaffRequest(HttpMethod.Post, $"/api/v1/billing/payments/{paymentId}/refund");
         over.Content = JsonContent.Create(new { amount = 100.01m, reason = "Too much" });
@@ -214,6 +227,14 @@ public class BillingApiTests
         var fullData = fullDocument.RootElement.GetProperty("data");
         Assert.Equal("Refunded", fullData.GetProperty("status").GetString());
         Assert.Equal(2, fullData.GetProperty("refunds").GetArrayLength());
+
+        using var fullInvoice = StaffRequest(HttpMethod.Get, $"/api/v1/billing/invoices/{invoiceId}");
+        var fullInvoiceResponse = await client.SendAsync(fullInvoice);
+        using var fullInvoiceDocument = JsonDocument.Parse(
+            await fullInvoiceResponse.Content.ReadAsStringAsync());
+        var fullInvoiceData = fullInvoiceDocument.RootElement.GetProperty("data");
+        Assert.Equal(0m, fullInvoiceData.GetProperty("amountPaid").GetDecimal());
+        Assert.Equal(114.45m, fullInvoiceData.GetProperty("outstandingAmount").GetDecimal());
     }
 
     /// <summary>Voiding a paid invoice is refused and an open invoice can be voided.</summary>

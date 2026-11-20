@@ -11,6 +11,17 @@ All notable changes to Kinevor are documented here. The repository uses a single
   sign-ins while keeping unknown, locked and wrong-password responses identical.
 - Identity now supports RFC 6238 TOTP enrolment, login challenges and eight
   single-use hashed recovery codes, with the demo-only secret storage documented.
+- Classes and bookings now document the booking, waitlist, cancellation and
+  promotion flow with a Mermaid sequence diagram, including the `409` optimistic-
+  concurrency path.
+- Added ownership tests for member, staff and trainer booking/cancellation
+  rules, including the two-hour confirmed-booking window.
+
+### Changed
+
+- Trainer search now filters, counts and pages in SQL instead of loading the
+  directory into memory; e-mail is persisted in an indexed column and exposed as
+  a validated value object.
 
 ### Fixed
 

@@ -14,6 +14,7 @@ public static class PaymentsBillingModule
 
         services.AddMediatR(configuration =>
             configuration.RegisterServicesFromAssemblyContaining<GetInvoicesHandler>());
+        services.AddScoped<IPaymentGateway, SimulatedPaymentGateway>();
         services.AddSingleton(TimeProvider.System);
         return services;
     }
