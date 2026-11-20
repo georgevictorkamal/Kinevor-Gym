@@ -73,7 +73,7 @@ flutter run -d chrome --dart-define=CHECKINS_API_BASE_URL=http://localhost:5086/
 ```
 
 The example targets Maya Thompson's seeded member. On an Android emulator use
-`http://10.0.2.2:5086/api/v1`.
+`http://10.0.3.0:5086/api/v1`.
 
 ## Test
 

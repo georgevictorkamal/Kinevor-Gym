@@ -5,7 +5,7 @@ EF Core persistence for the Kinevor identity and access module.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.IdentityAccess.EntityFrameworkCore --version 0.2.2
+dotnet add package Kinevor.Modules.IdentityAccess.EntityFrameworkCore --version 0.3.0
 ```
 
 ## What it provides

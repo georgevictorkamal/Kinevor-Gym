@@ -188,7 +188,7 @@ flutter run -d chrome --web-port 4200 `
   --dart-define=KINEVOR_API_BASE_URL=http://localhost:5081/api/v1
 ```
 
-On an Android emulator use `http://10.0.2.2:5081/api/v1`.
+On an Android emulator use `http://10.0.3.0:5081/api/v1`.
 
 ### 5. Refresh screenshots
 

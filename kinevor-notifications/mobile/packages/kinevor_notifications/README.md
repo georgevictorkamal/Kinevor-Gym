@@ -72,7 +72,7 @@ flutter run -d chrome --web-port=4203 --dart-define=KINEVOR_API_BASE_URL=http://
 
 The demo targets Maya Thompson's seeded notifications at
 `http://localhost:5088/api/v1`. On an Android emulator use
-`http://10.0.2.2:5088/api/v1`.
+`http://10.0.3.0:5088/api/v1`.
 
 ## Test
 

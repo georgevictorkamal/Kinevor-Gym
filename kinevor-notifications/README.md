@@ -197,7 +197,7 @@ flutter run -d chrome --web-port=4203 `
   --dart-define=KINEVOR_API_BASE_URL=http://localhost:5088/api/v1
 ```
 
-On an Android emulator use `http://10.0.2.2:5088/api/v1`. The demo API allows the
+On an Android emulator use `http://10.0.3.0:5088/api/v1`. The demo API allows the
 local web origins `http://localhost:4200` through `http://localhost:4203`; use
 one of those ports for a Flutter web run.
 
@@ -263,10 +263,10 @@ platform's secret manager in production.
 | Flutter tests | `cd mobile\packages\kinevor_notifications; flutter test` |
 | Flutter format | `cd mobile\packages\kinevor_notifications; dart format --output=none --set-exit-if-changed lib test example/lib` |
 
-The backend suite contains 24 domain and API tests covering lifecycle rules,
+The backend suite contains 30 domain and API tests covering lifecycle rules,
 member isolation, preferences, devices, templates, compose, broadcast,
-suppression failures, scheduled dispatch and role policies. The Flutter suite
-covers the HTTP client, all three screens and golden images.
+suppression failures, scheduled dispatch, SMTP delivery and role policies. The
+Flutter suite covers the HTTP client, all three screens and golden images.
 
 ## Packages
 

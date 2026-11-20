@@ -3,7 +3,7 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
-## Unreleased
+## 0.3.0 — 2026-11-20
 
 ### Added
 
@@ -29,12 +29,21 @@ All notable changes to Kinevor are documented here. The repository uses a single
   configured through `Notifications:Smtp`, keeps preference and suppression
   rules, records failures on the notification and supports a pickup directory
   for captured local messages.
+- Payments now capture card payments through an `IPaymentGateway` port with a
+  simulated default and a non-packable Stripe test-mode sample that calls the
+  REST API directly, reuses the payment reference as its idempotency key and
+  refuses live keys.
 
 ### Changed
 
 - Trainer search now filters, counts and pages in SQL instead of loading the
   directory into memory; e-mail is persisted in an indexed column and exposed as
   a validated value object.
+- Refunds now reduce the linked invoice's paid balance and reopen it as open or
+  overdue when it is no longer settled. The demo's recorded refund reopens
+  Sofia's invoice.
+- The test suite grew from 485 to 526 automated tests: 253 .NET, 99 Angular,
+  128 Flutter and 46 Playwright checks.
 
 ### Fixed
 

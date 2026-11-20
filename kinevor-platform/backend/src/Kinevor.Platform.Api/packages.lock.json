@@ -92,7 +92,7 @@
       "kinevor.platform.application": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Platform.Domain": "[0.2.2, )",
+          "Kinevor.Platform.Domain": "[0.3.0, )",
           "MediatR": "[12.4.1, )"
         }
       },
