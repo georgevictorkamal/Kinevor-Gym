@@ -233,8 +233,8 @@ Also:
 - run the repository verifier and all test suites on every change.
 
 ```bash
-gh attestation verify Kinevor-v0.2.1.zip --repo georgevictorkamal/Kinevor-Gym
-sha256sum Kinevor-v0.2.1.zip
+gh attestation verify Kinevor-v0.2.2.zip --repo georgevictorkamal/Kinevor-Gym
+sha256sum Kinevor-v0.2.2.zip
 ```
 
 ## 9. Go-live checklist

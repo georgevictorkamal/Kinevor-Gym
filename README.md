@@ -84,7 +84,7 @@ Silicon, `npm run demo:up` builds natively instead. See the
 ## 💡 Why Kinevor
 
 - **Ten independent services.** Each has its own .NET API and an Angular or Flutter client, and no module references another. `npm run verify` enforces it.
-- **Executable architecture.** 22 repository checks cover module independence, version alignment, i18n parity, OpenAPI snapshots and release guardrails.
+- **Executable architecture.** 24 repository checks cover module independence, version alignment, i18n parity, OpenAPI snapshots and release guardrails.
 - **Secure by default.** Demo hosts refuse to start outside Development or Demo, Docker ports are loopback-only, the image fails closed, there is no committed signing key, and CI is SHA-pinned with CodeQL and Dependabot.
 - **Verifiable releases.** Tagged releases ship an SBOM and build provenance attestation.
 - **Tested end to end.** 485 automated tests: 212 .NET, 99 Angular, 128 Flutter and 46 Playwright with axe accessibility checks.

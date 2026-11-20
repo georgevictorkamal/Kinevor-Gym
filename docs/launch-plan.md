@@ -36,7 +36,7 @@ Read each community's self-promotion rules first; many only allow showcases in a
 ## 4. Article ideas (each is a real story from this repository)
 
 1. **Mutation-testing your CI guardrails.** Breaking the repo on purpose to prove the verifier fails, and the unquoted-port blind spot it found.
-2. **Executable architecture in 22 checks.** Enforcing module independence, version alignment, i18n parity and OpenAPI snapshots from one script.
+2. **Executable architecture in 24 checks.** Enforcing module independence, version alignment, i18n parity and OpenAPI snapshots from one script.
 3. **A demo stack that fails closed.** Loopback-only ports, a `Production` image default and a host guard that refuses to start.
 4. **Pin every GitHub Action by SHA, then verify the tags.** Why pinning needs a check that each SHA matches its version comment.
 5. **Timing-safe login in ASP.NET Core.** A dummy PBKDF2 hash for unknown accounts and rehash-on-login.
