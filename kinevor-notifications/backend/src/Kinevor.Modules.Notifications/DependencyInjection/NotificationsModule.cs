@@ -13,6 +13,7 @@ public static class NotificationsModule
 
         services.AddMediatR(configuration =>
             configuration.RegisterServicesFromAssemblyContaining<GetMyNotificationsHandler>());
+        services.AddScoped<NotificationDeliveryPolicy>();
         services.AddScoped<INotificationDeliverySimulator, NotificationDeliverySimulator>();
         services.AddSingleton(TimeProvider.System);
         return services;

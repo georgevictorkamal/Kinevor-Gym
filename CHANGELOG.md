@@ -5,6 +5,13 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ## Unreleased
 
+### Added
+
+- Notifications can now deliver e-mail through an opt-in SMTP adapter. It is
+  configured through `Notifications:Smtp`, keeps preference and suppression
+  rules, records failures on the notification and supports a pickup directory
+  for captured local messages.
+
 ### Fixed
 
 - Regenerated the committed NuGet lockfiles for `0.2.2` and aligned

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Optional SMTP delivery adapter (`AddNotificationsSmtpDelivery`) with
+  configuration-bound host, port, TLS, credentials and sender; it reuses the
+  preference and suppression rules and records failures on the notification.
+  A pickup-directory mode captures messages locally without a server.
+
 ## [0.1.0] - 2026-10-20
 
 ### Added
