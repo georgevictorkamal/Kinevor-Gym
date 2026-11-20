@@ -22,8 +22,8 @@ public sealed class TrainerConfiguration : IEntityTypeConfiguration<Trainer>
         builder.Property(t => t.Bio).HasMaxLength(2000).IsRequired();
         builder.Property(t => t.PhotoUrl).HasMaxLength(500);
 
-        builder.Property(t => t.Email)
-            .HasConversion(email => email.Value, value => Email.Create(value).Value)
+        builder.Property(t => t.EmailAddress)
+            .HasColumnName("Email")
             .HasMaxLength(200)
             .IsRequired();
 
@@ -52,8 +52,9 @@ public sealed class TrainerConfiguration : IEntityTypeConfiguration<Trainer>
             .HasMaxLength(2000);
 
         builder.Property(t => t.Rating).HasPrecision(3, 2);
-        builder.HasIndex(t => t.Email).IsUnique();
+        builder.HasIndex(t => t.EmailAddress).IsUnique();
         builder.Ignore(t => t.FullName);
+        builder.Ignore(t => t.Email);
         builder.Ignore(t => t.DomainEvents);
     }
 }

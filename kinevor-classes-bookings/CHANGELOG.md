@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Ownership tests for booking and cancellation: members cannot act for other
+  members, staff must supply a member id when booking on behalf, the owning
+  trainer may cancel bookings, and the two-hour window blocks members but not
+  staff.
+- A Mermaid sequence diagram in the README covering booking, waitlisting,
+  cancellation, promotion and the `409` concurrency conflict.
+
 ## [0.1.0] - 2026-10-21
 
 ### Added

@@ -1,9 +1,9 @@
 # Kinevor Payments & Billing
 
-Invoices, simulated payments, refunds and revenue reporting for the Kinevor gym
-platform, delivered as a .NET 10 API, a standalone Angular library and demo, and
-a Flutter package with a runnable example. The layers are independent, and the
-demo runs from this monorepo.
+Invoices, card, cash and bank-transfer payments, refunds and revenue reporting
+for the Kinevor gym platform, delivered as a .NET 10 API, a standalone Angular
+library and demo, and a Flutter package with a runnable example. The layers are
+independent, and the demo runs from this monorepo.
 
 [![CI](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml/badge.svg)](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml)
 [![Flutter](https://img.shields.io/badge/Flutter-3.35%2B-02569B?logo=flutter)](https://flutter.dev)
@@ -57,10 +57,11 @@ layers over a typed gateway/repository.
 - Invoice creation with up to 50 lines, per-line quantity, unit price and tax
   rate, ISO currency validation and derived subtotal/tax/total.
 - Payment recording with reference idempotency, invoice ownership checks,
-  outstanding-balance checks and simulated methods (`Card`, `Cash`,
-  `BankTransfer`).
-- Full or partial refunds with reason, remaining-refundable validation and
-  captured/refunded/net projections.
+  outstanding-balance checks and an `IPaymentGateway` port for card captures;
+  cash and bank transfers record without a gateway call.
+- Full or partial refunds with reason and remaining-refundable validation.
+  Refunds reduce the invoice's paid balance and reopen it when it is no longer
+  settled.
 - Invoice lifecycle actions: mark paid, mark past-due overdue and void with a
   reason. Paid invoices cannot be voided; void invoices cannot be paid.
 - Member invoice summary, list, detail and self-service payment.
@@ -172,17 +173,17 @@ database and seeds this billing story on first run:
 | `INV-2026-000004` | Maya Thompson | Void | 42.00 | 0.00 |
 | `INV-2026-000005` | Daniel Okafor | Overdue | 84.00 | 84.00 |
 | `INV-2026-000006` | Daniel Okafor | Open | 110.25 | 110.25 |
-| `INV-2026-000007` | Sofia Rossi | Paid | 68.25 | 0.00 |
+| `INV-2026-000007` | Sofia Rossi | Overdue | 68.25 | 10.00 |
 
 Seed payments include a card payment, a cash part-payment and a bank transfer;
-the Sofia payment has a recorded refund. Across all members the demo starts with
-`373.20` outstanding and `136.95` overdue. Maya is the primary self-service
-member:
+the Sofia payment has a recorded partial refund that reopens her invoice. Across
+all members the demo starts with `383.20` outstanding and `146.95` overdue. Maya
+is the primary self-service member:
 
 | Member | ID | Outstanding | Overdue | Open invoices |
 | --- | --- | ---: | ---: | ---: |
 | Maya Thompson | `11111111-1111-1111-1111-111111111111` | 178.95 | 52.95 | 2 |
-| Sofia Rossi | `33333333-3333-3333-3333-333333333333` | 0.00 | 0.00 | 0 |
+| Sofia Rossi | `33333333-3333-3333-3333-333333333333` | 10.00 | 10.00 | 1 |
 
 The demo trusts demo role headers (Development and Demo only):
 
@@ -194,6 +195,33 @@ The demo trusts demo role headers (Development and Demo only):
 | `X-Demo-Branch` | Selects the branch context | branch GUID |
 
 These headers are a demo adapter only. Never enable them in production.
+
+### Optional Stripe test-mode gateway
+
+The module depends on `IPaymentGateway` and registers a simulated adapter that
+approves card captures. For a real test-mode integration, reference the
+non-packable sample project and register it after the module:
+
+```csharp
+services.AddStripeTestPaymentGateway(builder.Configuration);
+```
+
+```powershell
+dotnet add <host>.csproj reference `
+  backend\samples\Kinevor.Modules.PaymentsBilling.StripeGateway
+```
+
+Supply the key from user-secrets or the environment; never commit it:
+
+```powershell
+dotnet user-secrets set "Payments:Stripe:SecretKey" "sk_test_..." --project <host>
+```
+
+The adapter calls Stripe's PaymentIntent API directly without a Stripe SDK,
+reuses the payment reference as the idempotency key and refuses any key that is
+not `sk_test_`. Cash and bank-transfer payments never reach the gateway. The
+sample is not packed or published; live mode, webhooks and provider-side refunds
+are out of scope.
 
 ### 3. Run the web demo
 
@@ -279,11 +307,11 @@ Copy-Item test\goldens\invoice_detail.png ..\..\..\docs\screenshots\mobile-invoi
 | Flutter analysis | `cd mobile\packages\kinevor_payments_billing; flutter analyze` |
 | Flutter tests | `cd mobile\packages\kinevor_payments_billing; flutter test` |
 
-The backend suite has 21 tests covering domain invariants, invoice endpoints,
-payment idempotency, refunds, member ownership and authorization. The web suite
-has 13 Vitest tests across the gateway, facade and three screens. The Flutter
-suite has 15 tests covering models, HTTP client, screens, payment flow and two
-golden images.
+The backend suite has 28 tests covering domain invariants, invoice endpoints,
+payment idempotency, refunds, gateway adapters, optimistic concurrency, member
+ownership and authorization. The web suite has 13 Vitest tests across the
+gateway, facade and three screens. The Flutter suite has 15 tests covering
+models, HTTP client, screens, payment flow and two golden images.
 
 ## Packages
 
@@ -327,9 +355,14 @@ job. Modules do not need a published registry to build.
   authenticated member id is pushed into every invoice and payment lookup.
 - **Payment references are idempotent.** Repeating the same reference, amount,
   member, invoice and method returns the recorded result; a conflicting reuse is
-  rejected.
-- **Refunds are payment-led.** Refund history belongs to the captured payment,
-  with partial and full states derived from the refunded amount.
+  rejected. The same reference is forwarded to the gateway as its idempotency
+  key.
+- **Card capture sits behind a port.** `IPaymentGateway` keeps the module
+  provider-agnostic; the simulated adapter is the default, and the Stripe
+  test-mode sample lives outside the package.
+- **Refunds update both ledgers.** Refund history stays on the captured payment,
+  while the linked invoice reduces `AmountPaid` and reopens as open or overdue
+  when it is no longer settled.
 - **Thin clients.** Angular facades own loading and action state; the Flutter
   package injects a repository so hosts can swap the HTTP implementation.
 - **Demo auth is explicit.** Trust headers exist only in Development and Demo,
@@ -339,12 +372,13 @@ job. Modules do not need a published registry to build.
 
 ## Scope and limitations
 
-- Payments are simulated. There is no Stripe or acquiring-bank integration, PCI
-  data handling, settlement import or reconciliation.
+- The default gateway is simulated. The optional Stripe adapter is test-mode
+  only; there is no live mode, webhook handling, PCI data handling, settlement
+  import or reconciliation.
 - Captured payments and reporting are USD-only. Invoices can validate other ISO
   currency codes, but the payment command rejects anything except `USD`.
-- Refunds do not reopen the invoice or reduce `AmountPaid`; invoice balances and
-  refunds are separate ledgers. Hosts must reconcile any accounting reversal.
+- Refunds update the internal ledger only; they do not call the card network, so
+  hosts must reverse a provider charge separately.
 - The Angular library does not include an invoice-creation form; creation is
   available through the API.
 - There is no PDF rendering, e-mail delivery, dunning automation, subscription
@@ -361,6 +395,7 @@ kinevor-payments-billing/
     src/Kinevor.Modules.PaymentsBilling/          domain, application, API
     src/Kinevor.Modules.PaymentsBilling.EntityFrameworkCore/
     samples/Kinevor.Modules.PaymentsBilling.DemoApi/
+    samples/Kinevor.Modules.PaymentsBilling.StripeGateway/  test-mode adapter
     tests/Kinevor.Modules.PaymentsBilling.Tests/
   web/
     projects/kinevor-payments-billing/             Angular library

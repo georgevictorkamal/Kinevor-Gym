@@ -1,5 +1,8 @@
 using Kinevor.Modules.PaymentsBilling.Domain;
 using Kinevor.Modules.PaymentsBilling.Domain.ValueObjects;
+using Kinevor.Modules.PaymentsBilling.EntityFrameworkCore;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace Kinevor.Modules.PaymentsBilling.Tests;
@@ -109,6 +112,54 @@ public class BillingDomainTests
         Assert.Equal(InvoiceStatus.Overdue, due.Status);
     }
 
+    /// <summary>A partial refund reduces the paid balance; repeated refunds reopen the invoice.</summary>
+    [Fact]
+    public void Invoice_RefundReopensPaidBalance()
+    {
+        var invoice = NewInvoice(new InvoiceLineSpec("Membership", 1, 100m, 0m));
+        Assert.True(invoice.MarkPaid(Now).IsSuccess);
+        var originalVersion = invoice.RowVersion;
+
+        var partial = invoice.ApplyRefund(30m, Now);
+
+        Assert.True(partial.IsSuccess);
+        Assert.Equal(70m, invoice.AmountPaid);
+        Assert.Equal(30m, invoice.OutstandingAmount);
+        Assert.Equal(InvoiceStatus.Open, invoice.Status);
+        Assert.Null(invoice.PaidAt);
+        Assert.NotEqual(originalVersion, invoice.RowVersion);
+
+        var rest = invoice.ApplyRefund(70m, Now);
+
+        Assert.True(rest.IsSuccess);
+        Assert.Equal(0m, invoice.AmountPaid);
+        Assert.Equal(100m, invoice.OutstandingAmount);
+        Assert.Equal(InvoiceStatus.Open, invoice.Status);
+
+        var again = invoice.ApplyRefund(1m, Now);
+        Assert.True(again.IsFailure);
+        Assert.Equal("Invoice.RefundExceedsPaid", again.Error.Code);
+    }
+
+    /// <summary>A refund on a past-due invoice reopens it as overdue.</summary>
+    [Fact]
+    public void Invoice_RefundUsesDueDateForOverdueStatus()
+    {
+        var invoice = NewInvoice(
+            [new InvoiceLineSpec("Membership", 1, 100m, 0m)],
+            dueAt: Now.AddDays(-1),
+            issuedAt: Now.AddDays(-15));
+        Assert.True(invoice.MarkPaid(Now).IsSuccess);
+
+        var refund = invoice.ApplyRefund(25m, Now);
+
+        Assert.True(refund.IsSuccess);
+        Assert.Equal(75m, invoice.AmountPaid);
+        Assert.Equal(25m, invoice.OutstandingAmount);
+        Assert.Equal(InvoiceStatus.Overdue, invoice.Status);
+        Assert.Null(invoice.PaidAt);
+    }
+
     /// <summary>Refunds may be partial and cannot exceed the captured amount.</summary>
     [Fact]
     public void Payment_RefundsPartiallyThenFully()
@@ -154,6 +205,37 @@ public class BillingDomainTests
         Assert.True(usd.Add(eur).IsFailure);
         Assert.True(Money.Create(-1m).IsFailure);
         Assert.True(Money.Create(1m, "ZZZ").IsFailure);
+    }
+
+    /// <summary>A stale invoice write is rejected by the configured concurrency token.</summary>
+    [Fact]
+    public async Task Invoice_RefundRejectsStaleConcurrencyToken()
+    {
+        await using var connection = new SqliteConnection("Data Source=:memory:");
+        await connection.OpenAsync();
+        var options = new DbContextOptionsBuilder<PaymentsBillingDbContext>()
+            .UseSqlite(connection)
+            .Options;
+
+        var invoice = NewInvoice(new InvoiceLineSpec("Membership", 1, 100m, 0m));
+        Assert.True(invoice.MarkPaid(Now).IsSuccess);
+        await using (var setup = new PaymentsBillingDbContext(options))
+        {
+            await setup.Database.EnsureCreatedAsync();
+            setup.Invoices.Add(invoice);
+            await setup.SaveChangesAsync();
+        }
+
+        await using var first = new PaymentsBillingDbContext(options);
+        await using var second = new PaymentsBillingDbContext(options);
+        var firstInvoice = await first.Invoices.SingleAsync(item => item.Id == invoice.Id);
+        var secondInvoice = await second.Invoices.SingleAsync(item => item.Id == invoice.Id);
+
+        Assert.True(firstInvoice.ApplyRefund(10m, Now).IsSuccess);
+        await first.SaveChangesAsync();
+
+        Assert.True(secondInvoice.ApplyRefund(20m, Now).IsSuccess);
+        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(() => second.SaveChangesAsync());
     }
 
     private static Invoice NewInvoice(params InvoiceLineSpec[] lines) =>

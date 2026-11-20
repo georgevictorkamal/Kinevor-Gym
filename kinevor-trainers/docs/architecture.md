@@ -56,9 +56,12 @@ Create flow:
 ## Persistence
 
 The demo uses SQLite and `EnsureCreatedAsync`. Production hosts should configure
-PostgreSQL and migrations. The EF search currently loads matching trainers and
-filters in memory because the e-mail value object uses a converter. The planned
-fix is a normalized `Email` column with an index, then push search into SQL.
+PostgreSQL and migrations. Trainer search is translated to SQL: name and e-mail
+filters use `EF.Functions.Like` over lowercased columns, and the count, ordering
+and page all run in the database. `EmailAddress` is the persisted, indexed
+column; the `Email` value object is derived from it so the domain keeps its
+validation. `Search_TranslatesFilterAndPagingToSql` asserts the generated SQL
+contains `WHERE`, `LIKE` and `LIMIT`.
 
 ## Client flow
 

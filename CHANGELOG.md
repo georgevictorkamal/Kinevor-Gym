@@ -16,6 +16,17 @@ All notable changes to Kinevor are documented here. The repository uses a single
 - Members now provides a non-packable SQLite migrations baseline and applies it
   in the demo host, replacing `EnsureCreatedAsync`; the pattern is documented for
   the other modules.
+- Classes and bookings now document the booking, waitlist, cancellation and
+  promotion flow with a Mermaid sequence diagram, including the `409` optimistic-
+  concurrency path.
+- Added ownership tests for member, staff and trainer booking/cancellation
+  rules, including the two-hour confirmed-booking window.
+
+### Changed
+
+- Trainer search now filters, counts and pages in SQL instead of loading the
+  directory into memory; e-mail is persisted in an indexed column and exposed as
+  a validated value object.
 
 ### Fixed
 

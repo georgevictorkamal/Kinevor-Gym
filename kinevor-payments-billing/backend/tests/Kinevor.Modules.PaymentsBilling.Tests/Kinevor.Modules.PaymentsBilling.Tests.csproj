@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\samples\Kinevor.Modules.PaymentsBilling.DemoApi\Kinevor.Modules.PaymentsBilling.DemoApi.csproj" />
+    <ProjectReference Include="..\..\samples\Kinevor.Modules.PaymentsBilling.StripeGateway\Kinevor.Modules.PaymentsBilling.StripeGateway.csproj" />
     <ProjectReference Include="..\..\src\Kinevor.Modules.PaymentsBilling.EntityFrameworkCore\Kinevor.Modules.PaymentsBilling.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Kinevor.Modules.PaymentsBilling\Kinevor.Modules.PaymentsBilling.csproj" />
   </ItemGroup>
