@@ -1,9 +1,10 @@
 import registry from './data/languages.json';
 import enBundle from './data/en.json';
 import arBundle from './data/ar.json';
+import frBundle from './data/fr.json';
 
 /** Supported UI locales. */
-export type Locale = 'en' | 'ar';
+export type Locale = 'en' | 'ar' | 'fr';
 
 /** Metadata describing one supported UI language. */
 export interface Language {
@@ -51,6 +52,7 @@ export const LOCALES: readonly Locale[] = LANGUAGES.map(language => language.cod
 export const BUNDLES: Record<Locale, Dictionary> = {
   en: enBundle as Dictionary,
   ar: arBundle as Dictionary,
+  fr: frBundle as Dictionary,
 };
 
 /**

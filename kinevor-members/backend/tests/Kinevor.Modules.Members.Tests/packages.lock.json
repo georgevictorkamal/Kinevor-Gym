@@ -296,6 +296,7 @@
         "dependencies": {
           "Kinevor.Modules.Members": "[0.2.2, )",
           "Kinevor.Modules.Members.EntityFrameworkCore": "[0.2.2, )",
+          "Kinevor.Modules.Members.Migrations": "[0.2.2, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[10.0.0, )",
           "SQLitePCLRaw.bundle_e_sqlite3": "[2.1.14, )",
           "Swashbuckle.AspNetCore": "[7.2.0, )"
@@ -307,6 +308,14 @@
           "Kinevor.Modules.Members": "[0.2.2, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )"
+        }
+      },
+      "kinevor.modules.members.migrations": {
+        "type": "Project",
+        "dependencies": {
+          "Kinevor.Modules.Members.EntityFrameworkCore": "[0.2.2, )",
+          "Microsoft.EntityFrameworkCore.Sqlite": "[10.0.0, )",
+          "SQLitePCLRaw.bundle_e_sqlite3": "[2.1.14, )"
         }
       }
     }

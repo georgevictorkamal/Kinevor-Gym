@@ -2,6 +2,7 @@
   "default": "en",
   "languages": [
     { "code": "en", "name": "English", "short": "EN", "ogLocale": "en_US", "dir": "ltr" },
-    { "code": "ar", "name": "العربية", "short": "العربية", "ogLocale": "ar_AR", "dir": "rtl" }
+    { "code": "ar", "name": "العربية", "short": "العربية", "ogLocale": "ar_AR", "dir": "rtl" },
+    { "code": "fr", "name": "Français", "short": "FR", "ogLocale": "fr_FR", "dir": "ltr" }
   ]
 }
