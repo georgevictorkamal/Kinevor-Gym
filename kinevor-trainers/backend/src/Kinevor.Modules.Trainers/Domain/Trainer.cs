@@ -16,8 +16,11 @@ public sealed class Trainer : AggregateRoot
     /// <summary>First and last name combined.</summary>
     public string FullName => $"{FirstName} {LastName}";
 
-    /// <summary>Primary e-mail address.</summary>
-    public Email Email { get; private set; } = null!;
+    /// <summary>Primary e-mail address as stored in the database.</summary>
+    public string EmailAddress { get; private set; } = string.Empty;
+
+    /// <summary>Primary e-mail address value object.</summary>
+    public Email Email => Email.Create(EmailAddress).Value;
 
     /// <summary>Primary phone number.</summary>
     public PhoneNumber Phone { get; private set; } = null!;
@@ -86,7 +89,7 @@ public sealed class Trainer : AggregateRoot
         {
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
-            Email = emailResult.Value,
+            EmailAddress = emailResult.Value.Value,
             Phone = phoneResult.Value,
             Bio = (bio ?? string.Empty).Trim(),
             Specializations = specializations.ToList(),

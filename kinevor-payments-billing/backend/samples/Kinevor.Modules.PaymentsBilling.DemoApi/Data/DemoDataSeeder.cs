@@ -88,6 +88,10 @@ public static class DemoDataSeeder
         if (refund.IsFailure)
             throw new InvalidOperationException(refund.Error.Message);
 
+        var invoiceRefund = sofiaPaid.ApplyRefund(refundAmount.Amount, now.AddDays(-6));
+        if (invoiceRefund.IsFailure)
+            throw new InvalidOperationException(invoiceRefund.Error.Message);
+
         await db.SaveChangesAsync(ct);
     }
 

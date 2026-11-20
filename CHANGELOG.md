@@ -7,10 +7,34 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ### Added
 
+- Identity now locks an account for fifteen minutes after five consecutive failed
+  sign-ins while keeping unknown, locked and wrong-password responses identical.
+- Identity now supports RFC 6238 TOTP enrolment, login challenges and eight
+  single-use hashed recovery codes, with the demo-only secret storage documented.
+- The platform now ships French (`fr`) UI copy with full catalogue parity and a
+  language registry entry; `npm run verify` checks every catalogue against
+  English and validates the registry.
+- `AddKinevorOpenTelemetry()` in `Kinevor.Platform.Api` adds opt-in ASP.NET Core,
+  `HttpClient` and EF Core traces and metrics with an OTLP exporter driven by
+  standard `OTEL_EXPORTER_OTLP_*` environment variables. It is off by default.
+- Members now provides a non-packable SQLite migrations baseline and applies it
+  in the demo host, replacing `EnsureCreatedAsync`; the pattern is documented for
+  the other modules.
+- Classes and bookings now document the booking, waitlist, cancellation and
+  promotion flow with a Mermaid sequence diagram, including the `409` optimistic-
+  concurrency path.
+- Added ownership tests for member, staff and trainer booking/cancellation
+  rules, including the two-hour confirmed-booking window.
 - Notifications can now deliver e-mail through an opt-in SMTP adapter. It is
   configured through `Notifications:Smtp`, keeps preference and suppression
   rules, records failures on the notification and supports a pickup directory
   for captured local messages.
+
+### Changed
+
+- Trainer search now filters, counts and pages in SQL instead of loading the
+  directory into memory; e-mail is persisted in an indexed column and exposed as
+  a validated value object.
 
 ### Fixed
 

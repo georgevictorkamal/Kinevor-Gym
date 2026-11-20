@@ -140,6 +140,31 @@ See [PUBLISHING.md](PUBLISHING.md) for the optional release checklist. A
 `KINEVOR_PACKAGES_TOKEN` repository secret is only needed by consumers that
 restore private packages from another repository.
 
+## Observability
+
+OpenTelemetry is opt-in. Call the extension after the host is configured:
+
+```csharp
+using Kinevor.Platform.Api;
+
+builder.Services.AddKinevorOpenTelemetry(builder.Configuration);
+```
+
+Then enable it and point the exporter at a collector using standard variables:
+
+```bash
+export OpenTelemetry__Enabled=true
+export OpenTelemetry__ServiceName=kinevor-members-api
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+```
+
+The extension adds ASP.NET Core, `HttpClient` and EF Core instrumentation, plus
+the OTLP trace and metric exporters. Without `OpenTelemetry:Enabled` it registers
+nothing, so demos and tests keep their current behavior. EF Core instrumentation
+is currently a beta package; the platform suppresses `NU5104` for that one
+dependency.
+
 ## Security
 
 Demo modules are responsible for their own authentication adapters. Never commit

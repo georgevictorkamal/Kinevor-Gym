@@ -1,8 +1,8 @@
 # Kinevor.Modules.PaymentsBilling
 
-Domain and application layer for Kinevor invoices, simulated payments, refunds
-and revenue reporting. The package contains the `Invoice` and `Payment`
-aggregates, MediatR commands and queries, DTOs and the staff/member API
+Domain and application layer for Kinevor invoices, payments, refunds and revenue
+reporting. The package contains the `Invoice` and `Payment` aggregates, MediatR
+commands and queries, DTOs, the `IPaymentGateway` port and the staff/member API
 controllers.
 
 ## Install
@@ -30,11 +30,13 @@ builder.Services
     .AddApplicationPart(typeof(InvoicesController).Assembly);
 ```
 
-`AddPaymentsBillingModule` registers the MediatR handlers and `TimeProvider`.
-The host must also register `ICurrentUser`, `IBranchContext`, authorization
-policies, authentication and the repository implementations. The companion
-`Kinevor.Modules.PaymentsBilling.EntityFrameworkCore` package supplies EF Core
-repositories and the unit of work.
+`AddPaymentsBillingModule` registers the MediatR handlers, `TimeProvider` and the
+simulated `IPaymentGateway` adapter. Replace the gateway registration to capture
+card payments through a provider; the repository ships a non-packable Stripe
+test-mode sample. The host must also register `ICurrentUser`, `IBranchContext`,
+authorization policies, authentication and the repository implementations. The
+companion `Kinevor.Modules.PaymentsBilling.EntityFrameworkCore` package supplies
+EF Core repositories and the unit of work.
 
 ## API surface
 
@@ -51,9 +53,11 @@ repositories and the unit of work.
 - Invoice totals are derived from lines, including quantity, unit price and tax
   rate. Currency codes are validated against ISO 4217 minor units.
 - Payments support `Card`, `Cash` and `BankTransfer`, reference-level
-  idempotency, ownership checks and outstanding-balance validation.
-- Refunds are recorded against the captured payment and enforce the remaining
-  refundable amount.
+  idempotency, ownership checks and outstanding-balance validation. Card
+  captures go through `IPaymentGateway`; the default adapter is simulated.
+- Refunds are recorded against the captured payment, enforce the remaining
+  refundable amount and reduce the linked invoice's paid balance. A refunded
+  invoice reopens as open or overdue when it is no longer settled.
 - Invoice lifecycle transitions cover mark-paid, mark-overdue and void.
 - Member queries bind the authenticated member id into every lookup.
 

@@ -151,8 +151,8 @@ dotnet run --project backend\samples\Kinevor.Modules.Members.DemoApi
 ```
 
 The API listens on `http://localhost:5083`. Open
-`http://localhost:5083/swagger` for the explorer. The demo creates a SQLite
-database and seeds five members on first run. Maya Thompson is the primary
+`http://localhost:5083/swagger` for the explorer. The demo applies the SQLite
+migrations and seeds five members on first run. Maya Thompson is the primary
 self-service member:
 
 | Member | Number | Status | Check-ins |
@@ -294,6 +294,46 @@ Both clients use the same API contract. The Angular package expects
 The monorepo CI packs the platform once and feeds the artifacts to each module
 job. Modules do not need a published registry to build.
 
+## Database migrations
+
+Members is the migrations pilot for the platform. The EF Core library stays
+provider-agnostic and contains no migrations; a separate non-packable project
+holds the SQLite baseline:
+
+```text
+backend/src/Kinevor.Modules.Members.EntityFrameworkCore/   model and configurations
+backend/src/Kinevor.Modules.Members.Migrations/            provider-specific migrations
+```
+
+The demo host configures the provider and migration assembly, then applies
+pending migrations at startup:
+
+```csharp
+builder.Services.AddDbContext<MembersDbContext>(options =>
+    options.UseSqlite(connectionString, sqlite =>
+        sqlite.MigrationsAssembly("Kinevor.Modules.Members.Migrations")));
+
+await db.Database.MigrateAsync();
+```
+
+Create or extend the baseline from `kinevor-members/backend`:
+
+```powershell
+dotnet ef migrations add <Name> `
+  --project src\Kinevor.Modules.Members.Migrations `
+  --startup-project src\Kinevor.Modules.Members.Migrations `
+  --output-dir Migrations
+```
+
+Production hosts should keep this shape but generate migrations against their
+own provider (for example Npgsql) in a provider-specific migrations project, and
+run `MigrateAsync()` as a single-instance deployment step rather than on every
+process start. The other modules can copy this layout: library, EF Core project,
+non-packable migrations project, then a host that selects the assembly.
+
+The demo host now applies migrations, so the integration tests exercise the
+baseline on every run.
+
 ## Design decisions
 
 - **Masked by default.** Directory projections always mask e-mail and phone.
@@ -318,6 +358,7 @@ kinevor-members/
   backend/
     src/Kinevor.Modules.Members/          domain, application, API
     src/Kinevor.Modules.Members.EntityFrameworkCore/
+    src/Kinevor.Modules.Members.Migrations/   SQLite baseline (not packaged)
     samples/Kinevor.Modules.Members.DemoApi/
     tests/Kinevor.Modules.Members.Tests/
   web/

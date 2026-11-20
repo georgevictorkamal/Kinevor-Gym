@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Kinevor.Modules.Members.EntityFrameworkCore/Kinevor.Modules.Members.EntityFrameworkCore.csproj" />
+    <Project Path="src/Kinevor.Modules.Members.Migrations/Kinevor.Modules.Members.Migrations.csproj" />
     <Project Path="src/Kinevor.Modules.Members/Kinevor.Modules.Members.csproj" />
   </Folder>
   <Folder Name="/tests/">

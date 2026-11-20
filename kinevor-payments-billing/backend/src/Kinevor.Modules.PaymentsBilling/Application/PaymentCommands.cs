@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Kinevor.Modules.PaymentsBilling.Application;
 
-/// <summary>Records a simulated card, cash or bank-transfer payment.</summary>
+/// <summary>Records a card, cash or bank-transfer payment; card captures go through the gateway.</summary>
 public record RecordPaymentCommand(
     Guid MemberId,
     string MemberName,
@@ -22,6 +22,7 @@ public record RecordPaymentCommand(
 public class RecordPaymentHandler(
     IInvoiceRepository invoices,
     IPaymentRepository payments,
+    IPaymentGateway gateway,
     IPaymentsBillingUnitOfWork unitOfWork,
     TimeProvider clock) : IRequestHandler<RecordPaymentCommand, PaymentRecordedDto>
 {
@@ -68,8 +69,24 @@ public class RecordPaymentHandler(
 
         var memberName = invoice?.MemberName ?? command.MemberName;
         var description = string.IsNullOrWhiteSpace(command.Description)
-            ? invoice is null ? "Simulated payment" : $"Payment for {invoice.Number}"
+            ? invoice is null ? "Payment" : $"Payment for {invoice.Number}"
             : command.Description.Trim();
+
+        if (command.Method == PaymentMethod.Card)
+        {
+            var capture = await gateway.CaptureAsync(
+                new PaymentGatewayRequest(
+                    command.MemberId,
+                    invoice?.Id,
+                    reference,
+                    command.Amount,
+                    BillingDefaults.Currency,
+                    command.Method,
+                    description),
+                ct);
+            if (!capture.Succeeded)
+                throw new DomainException(capture.FailureReason ?? "The payment gateway declined the card payment.");
+        }
 
         var result = Payment.Record(
             command.MemberId,
@@ -110,10 +127,11 @@ public record RefundPaymentCommand(Guid PaymentId, decimal Amount, string Reason
 /// <summary>Handles <see cref="RefundPaymentCommand"/>.</summary>
 public class RefundPaymentHandler(
     IPaymentRepository payments,
+    IInvoiceRepository invoices,
     IPaymentsBillingUnitOfWork unitOfWork,
     TimeProvider clock) : IRequestHandler<RefundPaymentCommand, PaymentDetailDto>
 {
-    /// <summary>Validates the refund and persists it.</summary>
+    /// <summary>Validates the refund, updates the linked invoice balance and persists both.</summary>
     public async Task<PaymentDetailDto> Handle(RefundPaymentCommand command, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -124,9 +142,24 @@ public class RefundPaymentHandler(
         if (money.IsFailure)
             throw new DomainException(money.Error.Message);
 
-        var result = payment.Refund(money.Value, command.Reason, clock.GetUtcNow().UtcDateTime);
+        Invoice? invoice = null;
+        if (payment.InvoiceId is { } invoiceId)
+        {
+            invoice = await invoices.GetByIdAsync(invoiceId, ct)
+                ?? throw new NotFoundException("Invoice", invoiceId);
+        }
+
+        var now = clock.GetUtcNow().UtcDateTime;
+        var result = payment.Refund(money.Value, command.Reason, now);
         if (result.IsFailure)
             throw new DomainException(result.Error.Message);
+
+        if (invoice is not null)
+        {
+            var adjusted = invoice.ApplyRefund(command.Amount, now);
+            if (adjusted.IsFailure)
+                throw new DomainException(adjusted.Error.Message);
+        }
 
         await unitOfWork.SaveChangesAsync(ct);
         return BillingMapper.ToDetail(payment);
