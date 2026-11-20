@@ -263,7 +263,7 @@ sha256sum Kinevor-v0.3.0.zip
 
 ## Implemented foundations
 
-The 0.3.0 release implemented several of these steps; the production host still
+The 0.3.1 release implemented several of these steps; the production host still
 owns the deployment-specific work above.
 
 - [#24 EF Core migrations baseline for members](https://github.com/georgevictorkamal/Kinevor-Gym/issues/24)

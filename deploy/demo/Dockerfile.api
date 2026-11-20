@@ -19,7 +19,9 @@ RUN dotnet pack kinevor-platform/backend/Kinevor.Platform.slnx \
       -o kinevor-platform/backend/artifacts/packages
 
 COPY ${SERVICE}/backend/ ${SERVICE}/backend/
-RUN dotnet publish ${SERVICE}/backend/samples/*/*.csproj \
+# Only the runnable demo host is published. Auxiliary samples such as the
+# non-packable Stripe gateway stay in the build context but are not images.
+RUN dotnet publish ${SERVICE}/backend/samples/*.DemoApi/*.csproj \
       -c Release \
       -o /app/publish \
       /p:UseAppHost=false \

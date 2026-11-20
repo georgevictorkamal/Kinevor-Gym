@@ -3,6 +3,14 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
+## 0.3.1 — 2026-11-21
+
+### Fixed
+
+- The demo API image build now publishes only the module's `*.DemoApi` project.
+  The non-packable Stripe test-mode sample no longer makes `dotnet publish`
+  fail with `MSB1008`, so all 19 demo images build and publish for the release.
+
 ## 0.3.0 — 2026-11-20
 
 ### Added

@@ -20,7 +20,7 @@ and EF Core are instrumented. The method is a no-op when the flag is absent.
 ## Install
 
 ```bash
-dotnet add package Kinevor.Platform.Api --version 0.3.0
+dotnet add package Kinevor.Platform.Api --version 0.3.1
 ```
 
 The package references `Kinevor.Platform.Application` and the ASP.NET Core

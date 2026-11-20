@@ -38,10 +38,10 @@
       },
       "Kinevor.Platform.Api": {
         "type": "Transitive",
-        "resolved": "0.3.0",
-        "contentHash": "hzIwBOnHuLXHnhZrZW8jKE82eB0xSDPXAe40x97EUuzqgML3SFuEp4C7HgSC7jVU8TcCyvuuZ8hO3AGylwvuiQ==",
+        "resolved": "0.3.1",
+        "contentHash": "ZFxr7zNcjgQpFfXZaw3OV9235evFK9+8/ntbAYDFjITbfAFH/iu5YyBxK0NDNlNKzbDLO6Kt1faGGDCcDImSjw==",
         "dependencies": {
-          "Kinevor.Platform.Application": "0.3.0",
+          "Kinevor.Platform.Application": "0.3.1",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "1.21.0",
           "OpenTelemetry.Extensions.Hosting": "1.21.0",
           "OpenTelemetry.Instrumentation.AspNetCore": "1.21.0",
@@ -51,17 +51,17 @@
       },
       "Kinevor.Platform.Application": {
         "type": "Transitive",
-        "resolved": "0.3.0",
-        "contentHash": "Mo8CBw3Njp6mLSDJHpH9XriKf9AbK/x0Jd25OQiPTeWN2pN/BbBFNMJpfBvkvvA+9k5D5wOikAJrO9iGzZ+EjQ==",
+        "resolved": "0.3.1",
+        "contentHash": "9e3z1D5m2498kSKmd6hxLUg6pfDvgbzLXvv+3G0mcedfE2Nbvxfh59AeODfiQtOFxJD3BR4t4zy4nT7UUCGVXw==",
         "dependencies": {
-          "Kinevor.Platform.Domain": "0.3.0",
+          "Kinevor.Platform.Domain": "0.3.1",
           "MediatR": "12.4.1"
         }
       },
       "Kinevor.Platform.Domain": {
         "type": "Transitive",
-        "resolved": "0.3.0",
-        "contentHash": "PTSsHpr/e8h/WLsPRZB2kAgUD1ae86TQm/E1X5QOd2XsyZDeUhiJGDQhAH80GZkUcRLLLOuZp+jEnrfD/DzS5g=="
+        "resolved": "0.3.1",
+        "contentHash": "Vqy9WuP7t1PCQsCiR0C0gN+eCgU+GGpHFIuhVJTEd3vvQ+zSbW7SeEgwrc6DrbX+WXB0cxsoglH81sLOUWcliw=="
       },
       "MediatR": {
         "type": "Transitive",
@@ -248,16 +248,16 @@
       "kinevor.modules.trainers": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Platform.Api": "[0.3.0, )",
-          "Kinevor.Platform.Application": "[0.3.0, )",
-          "Kinevor.Platform.Domain": "[0.3.0, )",
+          "Kinevor.Platform.Api": "[0.3.1, )",
+          "Kinevor.Platform.Application": "[0.3.1, )",
+          "Kinevor.Platform.Domain": "[0.3.1, )",
           "MediatR": "[12.4.1, )"
         }
       },
       "kinevor.modules.trainers.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Modules.Trainers": "[0.3.0, )",
+          "Kinevor.Modules.Trainers": "[0.3.1, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )"
         }
