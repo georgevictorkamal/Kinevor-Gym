@@ -111,15 +111,21 @@ builder.Services.AddDbContext<MembersDbContext>(
         builder.Configuration.GetConnectionString("Members")));
 ```
 
-3. Replace `EnsureCreatedAsync()` with migrations. Create the first migration
-   against the module's EF Core project:
+3. The members module ships the worked migrations example:
+   `kinevor-members/backend/src/Kinevor.Modules.Members.Migrations` contains the
+   SQLite baseline, and the library and EF Core projects contain none. Copy that
+   layout for a production host and generate the migration against its own
+   provider and migrations project:
 
 ```bash
 dotnet ef migrations add InitialCreate \
-  --project kinevor-members/backend/src/Kinevor.Modules.Members.EntityFrameworkCore \
-  --startup-project <production-host> \
+  --project <host>.Migrations \
+  --startup-project <host> \
   --output-dir Migrations
 ```
+
+   Configure `MigrationsAssembly("<host>.Migrations")` in `UseNpgsql`. The SQLite
+   baseline is a worked example, not a cross-provider migration.
 
 4. Apply migrations as a deployment step, not on every process start. If the
    host applies them at startup, use `MigrateAsync()` and ensure only one

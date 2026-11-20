@@ -11,6 +11,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Kinevor.Modules.Members.EntityFrameworkCore\Kinevor.Modules.Members.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Kinevor.Modules.Members.Migrations\Kinevor.Modules.Members.Migrations.csproj" />
     <ProjectReference Include="..\..\src\Kinevor.Modules.Members\Kinevor.Modules.Members.csproj" />
   </ItemGroup>
 </Project>
