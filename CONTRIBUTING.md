@@ -101,7 +101,10 @@ while any required job or the `CI success` gate is failing.
 5. Create an annotated `v<version>` tag and push it.
 6. Wait for the release workflow. It publishes exactly one source zip, an SPDX
    SBOM workflow artifact and a build-provenance attestation.
-7. Verify the release asset's SHA-256 before announcing it.
+7. Confirm the Demo images workflow published all 19 packages and that each is
+   Public in its package settings; private packages cannot be pulled
+   anonymously.
+8. Verify the release asset's SHA-256 before announcing it.
 
 ## Pull requests
 

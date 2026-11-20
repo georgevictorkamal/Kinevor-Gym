@@ -201,7 +201,7 @@ flutter run -d windows --dart-define=KINEVOR_API_BASE_URL=http://localhost:5089/
 
 The demo sends the demo-only `Staff` role, e-mail and subject headers.
 Use `flutter run -d chrome` for the web build or
-`http://10.0.3.0:5089/api/v1` on an Android emulator. The 7/30-day range and the
+`http://10.0.3.1:5089/api/v1` on an Android emulator. The 7/30-day range and the
 branch selector update the same query parameters as the Angular facade.
 
 ### 5. Refresh screenshots

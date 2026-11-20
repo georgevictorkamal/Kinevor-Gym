@@ -5,7 +5,7 @@ EF Core persistence for the Kinevor members module.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.Members.EntityFrameworkCore --version 0.3.0
+dotnet add package Kinevor.Modules.Members.EntityFrameworkCore --version 0.3.1
 ```
 
 ## What it provides

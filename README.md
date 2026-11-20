@@ -56,8 +56,8 @@ cd Kinevor-Gym
 npm run demo:images
 ```
 
-Pin a release with `KINEVOR_VERSION=0.3.0 npm run demo:images`. On PowerShell,
-set `$env:KINEVOR_VERSION = "0.3.0"` first.
+Pin a release with `KINEVOR_VERSION=0.3.1 npm run demo:images`. On PowerShell,
+set `$env:KINEVOR_VERSION = "0.3.1"` first.
 
 **Build from source.** The full stack compiles ten API and nine static web
 images in Docker:

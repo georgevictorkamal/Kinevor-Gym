@@ -17,7 +17,7 @@ flutter run -d chrome --web-port 4200 --dart-define=KINEVOR_API_BASE_URL=http://
 
 The DemoApi allows CORS from `http://localhost:4200`, so use `--web-port 4200`
 when running in a browser. On an Android emulator, replace `localhost` with
-`10.0.3.0`.
+`10.0.3.1`.
 
 The demo sends the trust headers `X-Demo-Role: Staff` and
 `X-Demo-Email: staff.demo@kinevor.local`; a real host should supply an

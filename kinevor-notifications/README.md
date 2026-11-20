@@ -197,7 +197,7 @@ flutter run -d chrome --web-port=4203 `
   --dart-define=KINEVOR_API_BASE_URL=http://localhost:5088/api/v1
 ```
 
-On an Android emulator use `http://10.0.3.0:5088/api/v1`. The demo API allows the
+On an Android emulator use `http://10.0.3.1:5088/api/v1`. The demo API allows the
 local web origins `http://localhost:4200` through `http://localhost:4203`; use
 one of those ports for a Flutter web run.
 
