@@ -65,6 +65,8 @@ client and repository.
 - E-mail suppressions block delivery and record the failure reason.
 - Notification delivery simulator for Email, Push and In-app channels; no
   provider SDKs or secrets are required.
+- Optional SMTP adapter for real e-mail delivery. It reuses the preference,
+  suppression and failure-recording rules; credentials come from configuration.
 - Flutter: injectable client/repository, inbox, detail and preferences screens,
   devices, dark theme, Sora typography, widget tests, golden tests and an example.
 - SQLite demo with Maya Thompson's five-notification inbox, two other members,
@@ -214,6 +216,44 @@ Copy-Item test\goldens\notification_preferences.png ..\..\..\docs\screenshots\mo
 With the API running, capture `http://localhost:5088/swagger/index.html` at
 1440x1000 and save it as `docs/screenshots/api-swagger.png`.
 
+## Optional SMTP delivery
+
+The demo simulates every channel. Hosts that need real e-mail can register the
+SMTP adapter after the module:
+
+```csharp
+builder.Services.AddNotificationsModule();
+builder.Services.AddNotificationsSmtpDelivery(builder.Configuration);
+```
+
+The adapter binds `Notifications:Smtp` and records the same preference,
+suppression and failure states as the simulator. Supply credentials through
+user-secrets, environment variables or a secret store:
+
+```powershell
+dotnet user-secrets set "Notifications:Smtp:Host" "smtp.example.com" --project backend\samples\Kinevor.Modules.Notifications.DemoApi
+dotnet user-secrets set "Notifications:Smtp:Port" "587" --project backend\samples\Kinevor.Modules.Notifications.DemoApi
+dotnet user-secrets set "Notifications:Smtp:UserName" "<smtp-user>" --project backend\samples\Kinevor.Modules.Notifications.DemoApi
+dotnet user-secrets set "Notifications:Smtp:Password" "<smtp-password>" --project backend\samples\Kinevor.Modules.Notifications.DemoApi
+dotnet user-secrets set "Notifications:Smtp:FromAddress" "gym@example.com" --project backend\samples\Kinevor.Modules.Notifications.DemoApi
+```
+
+Environment variables use the same keys with double underscores, for example
+`Notifications__Smtp__Host` and `Notifications__Smtp__Password`. Options are
+validated at startup. Push and in-app notifications keep the simulated path,
+and SMTP failures are recorded on the notification with a bounded reason.
+
+For local capture without a server, set `Notifications:Smtp:PickupDirectory` to
+a folder. The transport writes `.eml` files there instead of connecting to a
+network host; the test suite uses this path.
+
+The transport uses the framework SMTP client so the module adds no provider SDK.
+Replace `IEmailTransport` with a MailKit or provider-specific implementation if
+you need pooled connections, OAuth2 or delivery webhooks.
+
+Never commit SMTP credentials. Use `dotnet user-secrets` locally and the
+platform's secret manager in production.
+
 ## Testing
 
 | Area | Command |
@@ -254,9 +294,10 @@ job. Modules do not need a published registry to build.
 
 - **External member identity.** Notifications stores member ids but does not own
   profiles; member routes resolve identity from the host's `ICurrentUser`.
-- **Deterministic delivery.** A simulator records sent or failed states instead
-  of calling e-mail or push providers. Production hosts can replace
-  `INotificationDeliverySimulator`.
+- **Deterministic delivery by default.** A simulator records sent or failed
+  states instead of calling e-mail or push providers. Production hosts can
+  replace the seam with the SMTP adapter, which keeps the same preference and
+  suppression rules.
 - **Defaults are enabled.** A missing preference row means Email, Push and
   In-app are all on, so new categories work without a migration.
 - **Read only after delivery.** Only delivered notifications can transition to

@@ -25,6 +25,10 @@ All notable changes to Kinevor are documented here. The repository uses a single
   concurrency path.
 - Added ownership tests for member, staff and trainer booking/cancellation
   rules, including the two-hour confirmed-booking window.
+- Notifications can now deliver e-mail through an opt-in SMTP adapter. It is
+  configured through `Notifications:Smtp`, keeps preference and suppression
+  rules, records failures on the notification and supports a pickup directory
+  for captured local messages.
 
 ### Changed
 
