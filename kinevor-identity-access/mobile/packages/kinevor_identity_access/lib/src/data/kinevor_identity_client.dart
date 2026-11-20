@@ -37,8 +37,8 @@ class KinevorIdentityClient {
     final body = <String, String>{
       'email': email,
       'password': password,
-      if (mfaCode != null) 'mfaCode': mfaCode,
-      if (recoveryCode != null) 'recoveryCode': recoveryCode,
+      'mfaCode': ?mfaCode,
+      'recoveryCode': ?recoveryCode,
     };
     final data = await _send('POST', 'auth/login', body: body);
     return AuthSession.fromJson(data);
