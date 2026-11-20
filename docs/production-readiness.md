@@ -26,12 +26,12 @@ defaults.
 | Capability | Demo implementation | Production requirement |
 | --- | --- | --- |
 | Authentication | `DemoAuthenticationHandler` and `X-Demo-*` headers | OIDC/OAuth or JWT bearer with issuer, audience and key validation |
-| Persistence | SQLite plus `EnsureCreatedAsync()` | PostgreSQL (or another managed database) plus EF Core migrations |
+| Persistence | SQLite; members applies a migrations baseline, other demos use `EnsureCreatedAsync()` | PostgreSQL (or another managed database) plus EF Core migrations |
 | Rate limiting | In-memory fixed window in `RateLimitingExtensions` | Edge/WAF control or a distributed limiter shared by replicas |
 | Secrets | `appsettings.json`, user secrets, random JWT key | Secret manager or managed identity; stable, rotatable signing keys |
-| Payments | Simulated invoices and refunds | Provider integration with idempotency, webhooks and reconciliation |
-| Notifications | Delivery records only | Provider with retries, bounce/suppression handling and templates |
-| Observability | `/health` liveness endpoint | Readiness probes, structured logs, traces, metrics and alerts |
+| Payments | Simulated invoices and refunds behind a gateway port; Stripe sample is test-mode only | Provider integration with idempotency, webhooks and reconciliation |
+| Notifications | Delivery records plus an optional SMTP adapter | Provider with retries, bounce/suppression handling and templates |
+| Observability | `/health` liveness endpoint and opt-in OpenTelemetry | Readiness probes, structured logs, traces, metrics and alerts |
 | Database topology | One SQLite file per service | One database (or schema) per service; no cross-service joins |
 | Images | Public `linux/amd64` demo images | Scanned, multi-architecture images pinned by digest |
 
@@ -200,15 +200,17 @@ or any dependency. Add:
 - a readiness endpoint that checks the database and required downstream
   services, with a short timeout;
 - structured logs with correlation IDs and no tokens or personal data;
-- OpenTelemetry traces and metrics, including request latency, error rate and
-  database duration (the repository tracks this as a starter issue);
+- OpenTelemetry traces and metrics. `AddKinevorOpenTelemetry()` is available but
+  off by default; enable it with `OpenTelemetry:Enabled=true` and point the
+  standard `OTEL_EXPORTER_OTLP_*` variables at your collector;
 - alerting on error rate, saturation, queue depth and failed provider calls;
 - audit records for authentication, authorization and payment events.
 
 ## 7. Payments and notifications
 
-The payments module records simulated invoices and refunds. A real provider
-integration needs:
+The payments module records simulated invoices and refunds. Card capture goes
+through an `IPaymentGateway` port; the default adapter is simulated and the
+Stripe sample is test-mode only. A real provider integration needs:
 
 - idempotency keys on every create/refund command;
 - signature verification for webhooks and replay protection;
@@ -216,9 +218,10 @@ integration needs:
 - reconciliation against the provider's ledger;
 - a documented PCI scope; never store card data in these services.
 
-The notifications module records deliveries but does not call a provider. Add a
-provider adapter with retries, bounce and complaint handling, suppression lists
-and per-channel templates.
+The notifications module records deliveries and can deliver e-mail through an
+opt-in SMTP adapter configured under `Notifications:Smtp`. For production, add
+retries, bounce and complaint handling, suppression lists and per-channel
+templates around that transport.
 
 ## 8. Containers and supply chain
 
@@ -239,8 +242,8 @@ Also:
 - run the repository verifier and all test suites on every change.
 
 ```bash
-gh attestation verify Kinevor-v0.2.2.zip --repo georgevictorkamal/Kinevor-Gym
-sha256sum Kinevor-v0.2.2.zip
+gh attestation verify Kinevor-v0.3.0.zip --repo georgevictorkamal/Kinevor-Gym
+sha256sum Kinevor-v0.3.0.zip
 ```
 
 ## 9. Go-live checklist
@@ -258,13 +261,14 @@ sha256sum Kinevor-v0.2.2.zip
 - [ ] Backups are automated and a restore has been tested.
 - [ ] The runbook covers rollback, key rotation and provider outages.
 
-## Related starter issues
+## Implemented foundations
 
-The repository has scoped issues for several of these steps:
+The 0.3.0 release implemented several of these steps; the production host still
+owns the deployment-specific work above.
 
-- [#24 Create an EF Core migrations baseline for one module](https://github.com/georgevictorkamal/Kinevor-Gym/issues/24)
-- [#25 Add OpenTelemetry traces and metrics to the platform kernel](https://github.com/georgevictorkamal/Kinevor-Gym/issues/25)
-- [#20 Introduce a payment gateway port with a Stripe test-mode adapter](https://github.com/georgevictorkamal/Kinevor-Gym/issues/20)
-- [#21 Add an SMTP delivery adapter for notifications](https://github.com/georgevictorkamal/Kinevor-Gym/issues/21)
-- [#22 Implement TOTP multi-factor authentication](https://github.com/georgevictorkamal/Kinevor-Gym/issues/22)
-- [#23 Add account lockout after repeated failed sign-ins](https://github.com/georgevictorkamal/Kinevor-Gym/issues/23)
+- [#24 EF Core migrations baseline for members](https://github.com/georgevictorkamal/Kinevor-Gym/issues/24)
+- [#25 Opt-in OpenTelemetry traces and metrics](https://github.com/georgevictorkamal/Kinevor-Gym/issues/25)
+- [#20 Payment gateway port with a Stripe test-mode sample](https://github.com/georgevictorkamal/Kinevor-Gym/issues/20)
+- [#21 SMTP delivery adapter for notifications](https://github.com/georgevictorkamal/Kinevor-Gym/issues/21)
+- [#22 TOTP multi-factor authentication](https://github.com/georgevictorkamal/Kinevor-Gym/issues/22)
+- [#23 Account lockout after repeated failed sign-ins](https://github.com/georgevictorkamal/Kinevor-Gym/issues/23)

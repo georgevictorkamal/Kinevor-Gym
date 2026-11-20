@@ -330,7 +330,7 @@
       "kinevor.platform.api": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Platform.Application": "[0.2.2, )",
+          "Kinevor.Platform.Application": "[0.3.0, )",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.21.0, )",
           "OpenTelemetry.Extensions.Hosting": "[1.21.0, )",
           "OpenTelemetry.Instrumentation.AspNetCore": "[1.21.0, )",
@@ -341,7 +341,7 @@
       "kinevor.platform.application": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Platform.Domain": "[0.2.2, )",
+          "Kinevor.Platform.Domain": "[0.3.0, )",
           "MediatR": "[12.4.1, )"
         }
       },

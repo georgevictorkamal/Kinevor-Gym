@@ -7,36 +7,44 @@ observable and easier to adopt over adding new product surface.
 
 No dates are promised. Items move when they are ready and when CI proves them.
 
-## Next — 0.3.0
+## Shipped — 0.3.0
 
-The next minor release finishes the hardening work started in 0.2.x.
+The 0.3.0 hardening release closed the reliability and adoption work started in
+0.2.x:
 
 - **Identity** — account lockout after repeated failed sign-ins
   ([#23](https://github.com/georgevictorkamal/Kinevor-Gym/issues/23)) and TOTP
   multi-factor authentication
   ([#22](https://github.com/georgevictorkamal/Kinevor-Gym/issues/22)).
-- **Trainers** — replace the in-memory search with a database-side query
+- **Trainers** — database-side directory search instead of in-memory filtering
   ([#18](https://github.com/georgevictorkamal/Kinevor-Gym/issues/18)).
-- **Classes and bookings** — document the booking and waitlist flow with a
-  Mermaid sequence diagram
-  ([#17](https://github.com/georgevictorkamal/Kinevor-Gym/issues/17)) and add
-  edge-case tests for booking ownership rules
+- **Classes and bookings** — a documented booking, waitlist and cancellation
+  flow ([#17](https://github.com/georgevictorkamal/Kinevor-Gym/issues/17)) and
+  edge-case ownership tests
   ([#16](https://github.com/georgevictorkamal/Kinevor-Gym/issues/16)).
 - **Platform** — a French UI catalogue
-  ([#15](https://github.com/georgevictorkamal/Kinevor-Gym/issues/15)), an EF Core
-  migrations baseline for one module
+  ([#15](https://github.com/georgevictorkamal/Kinevor-Gym/issues/15)), a members
+  EF Core migrations baseline
   ([#24](https://github.com/georgevictorkamal/Kinevor-Gym/issues/24)) and
-  OpenTelemetry traces and metrics
+  opt-in OpenTelemetry traces and metrics
   ([#25](https://github.com/georgevictorkamal/Kinevor-Gym/issues/25)).
-
-## Later
-
-- **Notifications** — an SMTP delivery adapter with retries and suppression
-  handling ([#21](https://github.com/georgevictorkamal/Kinevor-Gym/issues/21)).
-- **Payments** — refunds that update invoice status
+- **Notifications** — an opt-in SMTP delivery adapter
+  ([#21](https://github.com/georgevictorkamal/Kinevor-Gym/issues/21)).
+- **Payments** — refunds that reconcile invoice status
   ([#19](https://github.com/georgevictorkamal/Kinevor-Gym/issues/19)) and a
-  payment-gateway port with a Stripe test-mode adapter
+  payment-gateway port with a Stripe test-mode sample
   ([#20](https://github.com/georgevictorkamal/Kinevor-Gym/issues/20)).
+
+## Next — 0.4.0
+
+The next release follows the production path below, starting with:
+
+- PostgreSQL migrations and schema ownership for the remaining modules,
+  following the members baseline.
+- Distributed rate limiting for authentication and write endpoints.
+- Collector-based OpenTelemetry guidance with centralized logs, metrics and
+  traces.
+- Multi-architecture images, digest pinning and image scanning.
 
 ## Production path
 

@@ -85,7 +85,7 @@ flutter run -d chrome --dart-define=KINEVOR_API_BASE_URL=http://localhost:5089/a
 ```
 
 The demo trusts the seeded staff account. On an Android emulator use
-`http://10.0.2.2:5089/api/v1`.
+`http://10.0.3.0:5089/api/v1`.
 
 ## Test
 

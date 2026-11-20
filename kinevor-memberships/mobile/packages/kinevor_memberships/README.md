@@ -147,7 +147,7 @@ flutter run -d chrome `
   --dart-define=KINEVOR_API_BASE_URL=http://localhost:5084/api/v1
 ```
 
-Android emulators reach the host machine at `http://10.0.2.2:5084/api/v1`.
+Android emulators reach the host machine at `http://10.0.3.0:5084/api/v1`.
 
 ## Testing
 
