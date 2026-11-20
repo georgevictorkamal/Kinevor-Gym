@@ -3,6 +3,8 @@ using Kinevor.Modules.Trainers.EntityFrameworkCore;
 using Kinevor.Platform.Domain.Enums;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Data.Common;
 
 namespace Kinevor.Modules.Trainers.Tests;
 
@@ -12,6 +14,7 @@ public sealed class TrainerRepositoryTests : IAsyncLifetime
     private SqliteConnection _connection = null!;
     private TrainersDbContext _db = null!;
     private TrainerRepository _repository = null!;
+    private readonly SqlCaptureInterceptor _capture = new();
 
     /// <summary>Creates an isolated in-memory SQLite database.</summary>
     public async Task InitializeAsync()
@@ -21,6 +24,7 @@ public sealed class TrainerRepositoryTests : IAsyncLifetime
 
         var options = new DbContextOptionsBuilder<TrainersDbContext>()
             .UseSqlite(_connection)
+            .AddInterceptors(_capture)
             .Options;
 
         _db = new TrainersDbContext(options);
@@ -68,6 +72,25 @@ public sealed class TrainerRepositoryTests : IAsyncLifetime
         Assert.Equal(2, page.Items.Count);
     }
 
+    /// <summary>Search filtering and paging are translated into SQL rather than evaluated in memory.</summary>
+    [Fact]
+    public async Task Search_TranslatesFilterAndPagingToSql()
+    {
+        await AddTrainer("Layla", "Hassan", "layla@kinevor.demo");
+        await AddTrainer("Omar", "Khaled", "omar@kinevor.demo");
+        _capture.Commands.Clear();
+
+        var result = await _repository.SearchAsync("layla", 1, 10, onlyActive: false);
+
+        Assert.Single(result.Items);
+        var command = Assert.Single(_capture.Commands
+            .Where(sql => sql.Contains("LIMIT", StringComparison.OrdinalIgnoreCase))
+            .ToList());
+        Assert.Contains("WHERE", command, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("LIKE", command, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("LOWER", command, StringComparison.OrdinalIgnoreCase);
+    }
+
     /// <summary>Search can restrict results to active trainers.</summary>
     [Fact]
     public async Task Search_OnlyActiveFiltersStatus()
@@ -102,5 +125,27 @@ public sealed class TrainerRepositoryTests : IAsyncLifetime
         _repository.Add(result.Value);
         await _db.SaveChangesAsync();
         return result.Value;
+    }
+
+    private sealed class SqlCaptureInterceptor : DbCommandInterceptor
+    {
+        public List<string> Commands { get; } = [];
+
+        public override InterceptionResult<DbDataReader> ReaderExecuting(
+            DbCommand command, CommandEventData eventData, InterceptionResult<DbDataReader> result)
+        {
+            Commands.Add(command.CommandText);
+            return base.ReaderExecuting(command, eventData, result);
+        }
+
+        public override ValueTask<InterceptionResult<DbDataReader>> ReaderExecutingAsync(
+            DbCommand command,
+            CommandEventData eventData,
+            InterceptionResult<DbDataReader> result,
+            CancellationToken cancellationToken = default)
+        {
+            Commands.Add(command.CommandText);
+            return base.ReaderExecutingAsync(command, eventData, result, cancellationToken);
+        }
     }
 }

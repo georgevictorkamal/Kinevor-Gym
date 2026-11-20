@@ -263,9 +263,10 @@ job. Modules do not need a published registry to build.
   package injects a repository so hosts can swap the HTTP implementation.
 - **Demo auth is explicit.** The API only enables the trust headers in
   Development and the clients send them through a demo interceptor/client.
-- **Search is provider-independent.** The EF repository currently filters in
-  memory because `Email` is a value object with a converter. A normalized,
-  indexed e-mail column is the follow-up for large data sets.
+- **Search runs in the database.** Name and e-mail filters use `LIKE` over
+  lowercased columns; count, ordering and paging are SQL too. The e-mail is
+  persisted in an indexed `Email` column and exposed as a validated value
+  object, so large directories never load into memory.
 - **Visual contract in tests.** Golden tests and Playwright screenshots make
   typography, spacing and icon regressions visible.
 

@@ -5,6 +5,12 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ## Unreleased
 
+### Changed
+
+- Trainer search now filters, counts and pages in SQL instead of loading the
+  directory into memory; e-mail is persisted in an indexed column and exposed as
+  a validated value object.
+
 ### Fixed
 
 - Regenerated the committed NuGet lockfiles for `0.2.2` and aligned
