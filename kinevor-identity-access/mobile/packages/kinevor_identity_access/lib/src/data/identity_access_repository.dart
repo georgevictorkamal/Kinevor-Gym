@@ -4,7 +4,12 @@ import 'kinevor_identity_client.dart';
 /// Data access used by the identity widgets.
 abstract interface class IdentityAccessRepository {
   /// Exchanges credentials for a token pair.
-  Future<AuthSession> login(String email, String password);
+  Future<AuthSession> login(
+    String email,
+    String password, {
+    String? mfaCode,
+    String? recoveryCode,
+  });
 
   /// Loads the account for an access token.
   Future<UserAccount> session(String accessToken);
@@ -25,8 +30,17 @@ class RemoteIdentityAccessRepository implements IdentityAccessRepository {
   final KinevorIdentityClient client;
 
   @override
-  Future<AuthSession> login(String email, String password) =>
-      client.login(email: email, password: password);
+  Future<AuthSession> login(
+    String email,
+    String password, {
+    String? mfaCode,
+    String? recoveryCode,
+  }) => client.login(
+    email: email,
+    password: password,
+    mfaCode: mfaCode,
+    recoveryCode: recoveryCode,
+  );
 
   @override
   Future<UserAccount> session(String accessToken) =>

@@ -11,7 +11,12 @@ class FakeIdentityAccessRepository implements IdentityAccessRepository {
   String? lastEmail;
 
   @override
-  Future<AuthSession> login(String email, String password) async {
+  Future<AuthSession> login(
+    String email,
+    String password, {
+    String? mfaCode,
+    String? recoveryCode,
+  }) async {
     loginCalls++;
     lastEmail = email;
     if (failure != null) throw failure!;

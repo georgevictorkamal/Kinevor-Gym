@@ -7,6 +7,10 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ### Added
 
+- Identity now locks an account for fifteen minutes after five consecutive failed
+  sign-ins while keeping unknown, locked and wrong-password responses identical.
+- Identity now supports RFC 6238 TOTP enrolment, login challenges and eight
+  single-use hashed recovery codes, with the demo-only secret storage documented.
 - The platform now ships French (`fr`) UI copy with full catalogue parity and a
   language registry entry; `npm run verify` checks every catalogue against
   English and validates the registry.
