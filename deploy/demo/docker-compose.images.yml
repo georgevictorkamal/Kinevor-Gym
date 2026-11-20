@@ -1,6 +1,6 @@
 # Layer over docker-compose.yml to run prebuilt images instead of building from source:
 #   docker compose -f deploy/demo/docker-compose.yml -f deploy/demo/docker-compose.images.yml up --no-build --pull always
-# Pick a release with KINEVOR_VERSION (for example KINEVOR_VERSION=0.2.1); the default is "latest".
+# Pick a release with KINEVOR_VERSION (for example KINEVOR_VERSION=0.2.2); the default is "latest".
 # Ports, environment and volumes still come from docker-compose.yml, so everything stays loopback-only.
 services:
   kinevor-trainers-api:

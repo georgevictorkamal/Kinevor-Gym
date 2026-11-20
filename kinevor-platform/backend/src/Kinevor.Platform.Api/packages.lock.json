@@ -18,7 +18,7 @@
       "kinevor.platform.application": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Platform.Domain": "[0.2.1, )",
+          "Kinevor.Platform.Domain": "[0.2.2, )",
           "MediatR": "[12.4.1, )"
         }
       },

@@ -3,6 +3,14 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
+## Unreleased
+
+### Fixed
+
+- Regenerated the committed NuGet lockfiles for `0.2.2` and aligned
+  `CITATION.cff`, so `dotnet restore --locked-mode` matches the repository
+  version. `npm run verify` now fails when the citation or a lockfile drifts.
+
 ## 0.2.2 — 2026-11-20
 
 ### Added

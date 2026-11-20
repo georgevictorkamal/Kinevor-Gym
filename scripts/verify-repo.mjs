@@ -107,6 +107,27 @@ check('Flutter package versions match root', () => {
   return `${pubspecs.length} packages`;
 });
 
+check('citation metadata matches root', () => {
+  const text = read('CITATION.cff');
+  const citationVersion = text.match(/^version:\s*(\S+)/m)?.[1];
+  assert(citationVersion === version, `CITATION.cff version is ${citationVersion}`);
+  return `CITATION.cff ${citationVersion}`;
+});
+
+check('NuGet lockfiles match root', () => {
+  const lockfiles = files.filter((file) => file.endsWith('packages.lock.json'));
+  const stale = [];
+  for (const file of lockfiles) {
+    for (const [name, dependency] of Object.entries(json(file).dependencies ?? {})) {
+      if (name.startsWith('Kinevor.') && dependency.resolved && dependency.resolved !== version) {
+        stale.push(`${file} (${name} ${dependency.resolved})`);
+      }
+    }
+  }
+  assert(stale.length === 0, `stale lockfile entries: ${stale.slice(0, 10).join(', ')}`);
+  return `${lockfiles.length} lockfiles`;
+});
+
 check('platform npm lockfile matches root', () => {
   const lock = json('kinevor-platform/web/package-lock.json');
   assert(lock.version === version, `lockfile version is ${lock.version}`);

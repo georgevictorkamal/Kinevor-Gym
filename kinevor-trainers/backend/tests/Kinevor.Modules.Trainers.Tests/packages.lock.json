@@ -69,25 +69,25 @@
       },
       "Kinevor.Platform.Api": {
         "type": "Transitive",
-        "resolved": "0.2.1",
-        "contentHash": "fOTXgKEtuf3jlrquVQ2lqUDEY4IY6DYc+TvCaNVx9vJh1Sc2uk1Rhvyuvc0w9aYKaSH1nkEjmQ9LmO22FFNt1A==",
+        "resolved": "0.2.2",
+        "contentHash": "Ne8ryDAuuOs9mdKAf6rdU88bdkGEE5eTjRzsduH6lVEAKJ+u6kIw8mSGXDEWVyzQsgTIh0fDARh862FTp6AmLA==",
         "dependencies": {
-          "Kinevor.Platform.Application": "0.2.1"
+          "Kinevor.Platform.Application": "0.2.2"
         }
       },
       "Kinevor.Platform.Application": {
         "type": "Transitive",
-        "resolved": "0.2.1",
-        "contentHash": "3M7f3+lZzYggK0EzTOtnQA0XLO6uEVjje+jPnctycsFCwCsn/K3CwC1hvvjhl10l5oJdoDMKkIMAlXrjgTSbyQ==",
+        "resolved": "0.2.2",
+        "contentHash": "LofDj7413SL7/Etj3VT5e5lDop33B260mEwKbVgXTyzG1qEWnGA7sXbEEGpl29fQRdFrC1S4PiyPb/eeXYg2Qg==",
         "dependencies": {
-          "Kinevor.Platform.Domain": "0.2.1",
+          "Kinevor.Platform.Domain": "0.2.2",
           "MediatR": "12.4.1"
         }
       },
       "Kinevor.Platform.Domain": {
         "type": "Transitive",
-        "resolved": "0.2.1",
-        "contentHash": "KNoqhixbJZk6JIiAPp3v1zYivU5dZHZeIqQmDhzE652nSY2jW0W5/mhw7VyJfxwrzu0PpbskEx8zmFEMZ7e6DA=="
+        "resolved": "0.2.2",
+        "contentHash": "yNI0jNxZHH4hUg71/J/e0h6w0yy5DoWOCewNQ+9WZcdhuVLXpu9MzHqciz9d8AjfetGMP60JM19CbsgJl1WKXA=="
       },
       "MediatR": {
         "type": "Transitive",
@@ -285,17 +285,17 @@
       "kinevor.modules.trainers": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Platform.Api": "[0.2.1, )",
-          "Kinevor.Platform.Application": "[0.2.1, )",
-          "Kinevor.Platform.Domain": "[0.2.1, )",
+          "Kinevor.Platform.Api": "[0.2.2, )",
+          "Kinevor.Platform.Application": "[0.2.2, )",
+          "Kinevor.Platform.Domain": "[0.2.2, )",
           "MediatR": "[12.4.1, )"
         }
       },
       "kinevor.modules.trainers.demoapi": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Modules.Trainers": "[0.2.1, )",
-          "Kinevor.Modules.Trainers.EntityFrameworkCore": "[0.2.1, )",
+          "Kinevor.Modules.Trainers": "[0.2.2, )",
+          "Kinevor.Modules.Trainers.EntityFrameworkCore": "[0.2.2, )",
           "Microsoft.EntityFrameworkCore.Sqlite": "[10.0.0, )",
           "SQLitePCLRaw.bundle_e_sqlite3": "[2.1.14, )",
           "Swashbuckle.AspNetCore": "[7.2.0, )"
@@ -304,7 +304,7 @@
       "kinevor.modules.trainers.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
-          "Kinevor.Modules.Trainers": "[0.2.1, )",
+          "Kinevor.Modules.Trainers": "[0.2.2, )",
           "Microsoft.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.0.0, )"
         }

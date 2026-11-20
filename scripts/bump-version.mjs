@@ -24,6 +24,7 @@ if (!requested || !semver.test(requested)) {
 
 const readJson = (file) => JSON.parse(readFileSync(resolve(root, file), 'utf8'));
 const current = readJson('package.json').version;
+const today = new Date().toISOString().slice(0, 10);
 const tracked = execFileSync('git', ['ls-files', '-z'], { cwd: root, encoding: 'utf8' })
   .split('\0')
   .filter(Boolean);
@@ -77,6 +78,14 @@ for (const file of tracked) {
   if (/\/mobile\/packages\/[^/]+\/pubspec\.yaml$/.test(file)) {
     update(file, (text) =>
       text.replace(/^version:\s*[^\r\n]+/m, `version: ${requested}`));
+    continue;
+  }
+
+  if (file === 'CITATION.cff') {
+    update(file, (text) =>
+      text
+        .replace(/^version:\s*[^\r\n]+/m, `version: ${requested}`)
+        .replace(/^date-released:\s*[^\r\n]+/m, `date-released: "${today}"`));
     continue;
   }
 
