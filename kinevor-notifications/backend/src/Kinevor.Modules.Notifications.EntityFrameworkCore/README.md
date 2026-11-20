@@ -5,8 +5,8 @@ EF Core persistence for the Kinevor notifications module.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.Notifications --version 0.2.1
-dotnet add package Kinevor.Modules.Notifications.EntityFrameworkCore --version 0.2.1
+dotnet add package Kinevor.Modules.Notifications --version 0.2.2
+dotnet add package Kinevor.Modules.Notifications.EntityFrameworkCore --version 0.2.2
 ```
 
 ## Register

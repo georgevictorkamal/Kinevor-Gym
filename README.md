@@ -28,6 +28,7 @@
   <a href="#-quick-start">Quick Start</a> •
   <a href="ARCHITECTURE.md">Architecture</a> •
   <a href="#-services">Services</a> •
+  <a href="ROADMAP.md">Roadmap</a> •
   <a href="CONTRIBUTING.md">Contributing</a>
 </p>
 
@@ -55,8 +56,8 @@ cd Kinevor-Gym
 npm run demo:images
 ```
 
-Pin a release with `KINEVOR_VERSION=0.2.1 npm run demo:images`. On PowerShell,
-set `$env:KINEVOR_VERSION = "0.2.1"` first.
+Pin a release with `KINEVOR_VERSION=0.2.2 npm run demo:images`. On PowerShell,
+set `$env:KINEVOR_VERSION = "0.2.2"` first.
 
 **Build from source.** The full stack compiles ten API and nine static web
 images in Docker:
@@ -464,8 +465,10 @@ This is a portfolio reference implementation, deliberately scoped:
 | Document | Description |
 | --- | --- |
 | [Architecture](ARCHITECTURE.md) | Design, conventions and module anatomy |
+| [Roadmap](ROADMAP.md) | Planned work, production path and explicit non-goals |
 | [Deployment](docs/deployment.md) | Docker stack, runtime configuration and hardening |
 | [Production readiness](docs/production-readiness.md) | Migration path for authentication, database, scaling and observability |
+| [Troubleshooting](docs/troubleshooting.md) | Local feed, Codespaces, Apple Silicon and demo stack fixes |
 | [OpenAPI](docs/openapi/README.md) | Generated API documents for all ten services |
 | [ADRs](docs/adr/) | Architecture decision records |
 | [Security](SECURITY.md) | Security policy, demo caveats and deployment checklist |
@@ -486,6 +489,14 @@ This is a portfolio reference implementation, deliberately scoped:
 [trainers](kinevor-trainers/README.md) ·
 [dashboard](kinevor-staff-dashboard/README.md) ·
 [public site](kinevor-public-site/README.md)
+
+## 🗺 Roadmap
+
+[ROADMAP.md](ROADMAP.md) tracks the work that strengthens the existing services:
+identity follow-ups, database-side queries, booking-flow documentation and the
+production path from SQLite to PostgreSQL. It also records what is deliberately
+out of scope — a public hosted demo, package publication and workout-tracker
+features.
 
 ## 👤 Author
 

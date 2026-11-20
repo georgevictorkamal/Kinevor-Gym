@@ -3,7 +3,7 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
-## Unreleased
+## 0.2.2 — 2026-11-20
 
 ### Added
 
@@ -12,6 +12,8 @@ All notable changes to Kinevor are documented here. The repository uses a single
 - Added a production-readiness guide covering authentication, PostgreSQL
   migrations, distributed rate limiting, observability and supply-chain
   hardening.
+- Added a roadmap and a troubleshooting guide covering the local platform feed,
+  Codespaces setup, Apple Silicon images and the demo stack.
 
 ### Fixed
 
