@@ -3,6 +3,8 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Kinevor.Modules.ClassesBookings.DemoApi.Data;
+using Microsoft.AspNetCore.Http;
+using Kinevor.Modules.ClassesBookings.Domain;
 
 namespace Kinevor.Modules.ClassesBookings.Tests;
 
@@ -11,13 +13,48 @@ public class ApiTests
     private static HttpClient Actor(
         TestWebApplicationFactory factory,
         string role,
-        Guid? memberId = null)
+        Guid? memberId = null,
+        Guid? trainerId = null)
     {
         var client = factory.CreateClient();
         client.DefaultRequestHeaders.Add("X-Demo-Role", role);
         if (memberId is { } id)
             client.DefaultRequestHeaders.Add("X-Demo-Member", id.ToString());
+        if (trainerId is { } trainer)
+            client.DefaultRequestHeaders.Add("X-Demo-Trainer", trainer.ToString());
         return client;
+    }
+
+    private static async Task<Guid> CreateClassAsync(HttpClient staff, Guid trainerId, DateTime startsAt, int capacity = 10)
+    {
+        var response = await staff.PostAsJsonAsync("/api/v1/classes", new
+        {
+            name = "Ownership Test Class",
+            type = "Yoga",
+            trainerId,
+            trainerName = "Test Trainer",
+            startsAt,
+            durationMinutes = 60,
+            capacity,
+            room = "Studio One",
+        });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        return document.RootElement.GetProperty("data").GetGuid();
+    }
+
+    private static async Task<Guid> BookAsync(HttpClient member, Guid classId)
+    {
+        var response = await member.PostAsJsonAsync(
+            $"/api/v1/classes/{classId}/bookings",
+            new { memberName = "Test Member" });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        return document.RootElement.GetProperty("data").GetProperty("bookingId").GetGuid();
     }
 
     [Fact]
@@ -113,6 +150,135 @@ public class ApiTests
         using var afterDocument = JsonDocument.Parse(await after.Content.ReadAsStringAsync());
         Assert.Equal(JsonValueKind.Null, afterDocument.RootElement.GetProperty("data")
             .GetProperty("myBooking").ValueKind);
+    }
+
+    [Fact]
+    public async Task Booking_MemberCantBookWithAnotherMemberId()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var staff = Actor(factory, "Staff");
+        using var member = Actor(factory, "Member", Guid.NewGuid());
+
+        var classId = await CreateClassAsync(staff, Guid.NewGuid(), DateTime.UtcNow.AddDays(2));
+
+        var response = await member.PostAsJsonAsync(
+            $"/api/v1/classes/{classId}/bookings",
+            new { memberId = Guid.NewGuid(), memberName = "Other Member" });
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Booking_StaffCanBookWithMemberId()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = Actor(factory, "Staff");
+
+        var newBook = new { memberId = DemoDataSeeder.DanielMemberId, memberName = "Daniel" };
+
+        var bookingResponce = await client.PostAsJsonAsync($"/api/v1/classes/{DemoDataSeeder.AquaClassId}/bookings", newBook);
+        Assert.Equal(HttpStatusCode.Created, bookingResponce.StatusCode);
+    }
+
+    [Fact]
+    public async Task Booking_StaffCantBookWithoutMemberId()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = Actor(factory, "Staff");
+
+        var newBook = new { };
+
+        var bookingResponce = await client.PostAsJsonAsync($"/api/v1/classes/{DemoDataSeeder.AquaClassId}/bookings", newBook);
+        Assert.Equal(HttpStatusCode.BadRequest, bookingResponce.StatusCode);
+    }
+
+    [Fact]
+    public async Task BookingCancellation_StaffCanCancelAny()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var staff = Actor(factory, "Staff");
+        var memberId = Guid.NewGuid();
+        using var member = Actor(factory, "Member", memberId);
+
+        var classId = await CreateClassAsync(staff, Guid.NewGuid(), DateTime.UtcNow.AddDays(2));
+        var bookingId = await BookAsync(member, classId);
+
+        var response = await staff.DeleteAsync($"/api/v1/bookings/{bookingId}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task BookingCancellation_MemberCantCancelNonOwnedBooking()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var staff = Actor(factory, "Staff");
+        using var owner = Actor(factory, "Member", Guid.NewGuid());
+        using var other = Actor(factory, "Member", Guid.NewGuid());
+
+        var classId = await CreateClassAsync(staff, Guid.NewGuid(), DateTime.UtcNow.AddDays(2));
+        var bookingId = await BookAsync(owner, classId);
+
+        var response = await other.DeleteAsync($"/api/v1/bookings/{bookingId}");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task BookingCancellation_TrainerCanCancelInOwnClass()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var staff = Actor(factory, "Staff");
+        var trainerId = Guid.NewGuid();
+        using var member = Actor(factory, "Member", Guid.NewGuid());
+
+        var classId = await CreateClassAsync(staff, trainerId, DateTime.UtcNow.AddDays(2));
+        var bookingId = await BookAsync(member, classId);
+
+        using var trainer = Actor(factory, "Trainer", trainerId: trainerId);
+        var response = await trainer.DeleteAsync($"/api/v1/bookings/{bookingId}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task BookingCancellation_TrainerCantCancelInAnotherTrainersClass()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var staff = Actor(factory, "Staff");
+        using var member = Actor(factory, "Member", Guid.NewGuid());
+
+        var classId = await CreateClassAsync(staff, Guid.NewGuid(), DateTime.UtcNow.AddDays(2));
+        var bookingId = await BookAsync(member, classId);
+
+        using var otherTrainer = Actor(factory, "Trainer", trainerId: Guid.NewGuid());
+        var response = await otherTrainer.DeleteAsync($"/api/v1/bookings/{bookingId}");
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task BookingCancellation_MemberCantCancelWithinTwoHours()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var staff = Actor(factory, "Staff");
+        using var member = Actor(factory, "Member", Guid.NewGuid());
+
+        var classId = await CreateClassAsync(staff, Guid.NewGuid(), DateTime.UtcNow.AddMinutes(60));
+        var bookingId = await BookAsync(member, classId);
+
+        var response = await member.DeleteAsync($"/api/v1/bookings/{bookingId}");
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task BookingCancellation_StaffCanCancelWithinTwoHours()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var staff = Actor(factory, "Staff");
+        using var member = Actor(factory, "Member", Guid.NewGuid());
+
+        var classId = await CreateClassAsync(staff, Guid.NewGuid(), DateTime.UtcNow.AddMinutes(60));
+        var bookingId = await BookAsync(member, classId);
+
+        var response = await staff.DeleteAsync($"/api/v1/bookings/{bookingId}");
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
