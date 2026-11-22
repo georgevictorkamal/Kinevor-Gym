@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/notifications_api_exception.dart';
 import '../data/notifications_repository.dart';
@@ -260,9 +260,8 @@ class _DetailHero extends StatelessWidget {
               Text(
                 '${strings.channelLabel(record.channel)} · '
                 '${strings.date(record.createdAt)}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: KinevorNotificationsTheme.textMuted,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: KinevorNotificationsTheme.textMuted),
               ),
             ],
           ),
@@ -479,9 +478,8 @@ class _DetailError extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: KinevorNotificationsTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: KinevorNotificationsTheme.textMuted),
             ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(retryLabel)),

@@ -2,13 +2,20 @@
 # Prepares a Kinevor Codespace. Safe to run more than once.
 set -euo pipefail
 
-FLUTTER_VERSION="${KINEVOR_FLUTTER_VERSION:-3.47.8}"
+FLUTTER_VERSION="${KINEVOR_FLUTTER_VERSION:-3.50.1}"
 FLUTTER_HOME="${HOME}/flutter"
 
 install_flutter() {
   if [ -x "${FLUTTER_HOME}/bin/flutter" ]; then
-    echo "Flutter ${FLUTTER_VERSION} is already installed."
-    return 0
+    local installed_version
+    installed_version="$("${FLUTTER_HOME}/bin/flutter" --version 2>/dev/null \
+      | sed -n '1s/^Flutter \([0-9][0-9.]*\).*/\1/p')"
+    if [ "${installed_version}" = "${FLUTTER_VERSION}" ]; then
+      echo "Flutter ${FLUTTER_VERSION} is already installed."
+      return 0
+    fi
+    echo "Replacing Flutter ${installed_version:-unknown} with ${FLUTTER_VERSION}..."
+    rm -rf "${FLUTTER_HOME}"
   fi
 
   echo "Installing Flutter ${FLUTTER_VERSION} into ${FLUTTER_HOME}..."

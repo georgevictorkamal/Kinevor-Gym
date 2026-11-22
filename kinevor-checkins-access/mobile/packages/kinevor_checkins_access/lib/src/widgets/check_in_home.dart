@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/check_ins_repository.dart';
 import '../theme/check_ins_strings.dart';

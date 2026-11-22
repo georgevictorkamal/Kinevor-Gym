@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/check_ins_repository.dart';
 import '../models/check_in_models.dart';
@@ -714,9 +714,8 @@ class _StatusPill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(
-          context,
-        ).textTheme.labelSmall?.copyWith(color: color, fontSize: 10),
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: color, fontSize: 10),
       ),
     );
   }

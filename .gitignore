@@ -22,6 +22,7 @@ npm-debug.log*
 yarn-error.log*
 
 # Flutter / Dart
+.fvm/
 **/.dart_tool/
 **/.flutter-plugins
 **/.flutter-plugins-dependencies

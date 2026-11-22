@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/notifications_api_exception.dart';
 import '../data/notifications_repository.dart';
@@ -289,9 +289,8 @@ class _PreferencesHero extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   strings.preferencesSubtitle,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: KinevorNotificationsTheme.textMuted,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: KinevorNotificationsTheme.textMuted),
                 ),
                 const SizedBox(height: 6),
                 Wrap(
@@ -576,9 +575,8 @@ class _DeviceCard extends StatelessWidget {
             if (devices.isEmpty)
               Text(
                 strings.noDevices,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: KinevorNotificationsTheme.textMuted,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: KinevorNotificationsTheme.textMuted),
               )
             else
               for (var index = 0; index < devices.length; index++) ...[
@@ -722,9 +720,8 @@ class _PreferencesError extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: KinevorNotificationsTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: KinevorNotificationsTheme.textMuted),
             ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(retryLabel)),

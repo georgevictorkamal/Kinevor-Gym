@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// "Architectural Obsidian" palette and theme for the classes module.
 abstract final class KinevorClassesBookingsTheme {

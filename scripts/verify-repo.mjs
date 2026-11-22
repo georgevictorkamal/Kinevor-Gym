@@ -294,7 +294,7 @@ check('toolchain pins are present', () => {
   const nvm = read('.nvmrc').trim();
   const fvm = JSON.parse(read('.fvmrc')).flutter;
   assert(nvm === '24', `.nvmrc should pin Node 24, found ${nvm}`);
-  assert(fvm === '3.47.8', `.fvmrc should pin Flutter 3.47.8, found ${fvm}`);
+  assert(fvm === '3.50.1', `.fvmrc should pin Flutter 3.50.1, found ${fvm}`);
   return `Node ${nvm}, Flutter ${fvm}`;
 });
 

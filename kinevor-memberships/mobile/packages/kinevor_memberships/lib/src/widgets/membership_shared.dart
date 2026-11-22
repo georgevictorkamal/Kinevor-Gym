@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../theme/kinevor_memberships_theme.dart';
 import '../theme/memberships_strings.dart';
@@ -86,9 +86,8 @@ class MembershipErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: KinevorMembershipsTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: KinevorMembershipsTheme.textMuted),
             ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(strings.retry)),
@@ -144,9 +143,8 @@ class MembershipFreezeBanner extends StatelessWidget {
                 if (reason != null && reason!.isNotEmpty)
                   '${strings.freezeReason}: $reason',
               ].join(' | '),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: KinevorMembershipsTheme.info,
-              ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: KinevorMembershipsTheme.info),
             ),
           ),
         ],

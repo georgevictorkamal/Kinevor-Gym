@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../models/staff_dashboard_models.dart';
 import '../theme/kinevor_staff_dashboard_theme.dart';
@@ -586,9 +586,8 @@ class DashboardErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: KinevorStaffDashboardTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: KinevorStaffDashboardTheme.textMuted),
             ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(retryLabel)),
@@ -655,9 +654,8 @@ class DashboardEmptyState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: KinevorStaffDashboardTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: KinevorStaffDashboardTheme.textMuted),
             ),
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 12),

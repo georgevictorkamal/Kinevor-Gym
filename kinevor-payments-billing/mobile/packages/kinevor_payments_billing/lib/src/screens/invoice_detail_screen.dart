@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 import '../data/billing_api_exception.dart';
@@ -80,9 +80,8 @@ class _InvoiceDetailScreenState extends State<InvoiceDetailScreen> {
       ),
     );
     if (!mounted || paid != true) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(widget.strings.paymentRecorded)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(widget.strings.paymentRecorded)));
     await _load();
   }
 
@@ -207,17 +206,15 @@ class _InvoiceHero extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: KinevorBillingTheme.statusColor(
-            invoice.status,
-          ).withValues(alpha: 0.32),
+          color: KinevorBillingTheme.statusColor(invoice.status)
+              .withValues(alpha: 0.32),
         ),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            KinevorBillingTheme.statusColor(
-              invoice.status,
-            ).withValues(alpha: 0.15),
+            KinevorBillingTheme.statusColor(invoice.status)
+                .withValues(alpha: 0.15),
             KinevorBillingTheme.surfaceRaised,
           ],
         ),

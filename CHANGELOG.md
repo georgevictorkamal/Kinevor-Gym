@@ -3,6 +3,18 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
+## Unreleased
+
+### Changed
+
+- Upgraded the pinned Flutter toolchain from 3.47.8 to 3.50.1 (Dart 3.14)
+  across CI, the devcontainer and the mobile packages. All 128 Flutter tests
+  pass, and every package and example is formatted and analyzes cleanly.
+- Migrated the mobile packages from the deprecated
+  `package:flutter/material.dart` import to the standalone `material_ui`
+  package. This raises the package compatibility floor to Dart 3.13 /
+  Flutter 3.47, the version that `material_ui` requires.
+
 ## 0.3.1 — 2026-11-21
 
 ### Fixed

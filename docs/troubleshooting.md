@@ -139,8 +139,8 @@ npx playwright install --with-deps chromium
 
 ## Flutter commands use the wrong SDK
 
-The repository pins Flutter in `.fvmrc` and the devcontainer installs that
-version. Check what is on your path:
+The repository pins Flutter **3.50.1** in `.fvmrc` and the devcontainer installs
+that version. Check what is on your path:
 
 ```bash
 flutter --version

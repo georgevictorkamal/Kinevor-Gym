@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/identity_access_repository.dart';
 import '../data/identity_api_exception.dart';
@@ -170,9 +170,8 @@ class _SessionScreenState extends State<SessionScreen> {
                   ),
                   child: Text(
                     _error!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: KinevorIdentityTheme.error,
-                    ),
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: KinevorIdentityTheme.error),
                   ),
                 ),
               ],
@@ -297,9 +296,8 @@ class _AccountCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       user.email,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: KinevorIdentityTheme.textMuted,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: KinevorIdentityTheme.textMuted),
                     ),
                   ],
                 ),
@@ -401,9 +399,8 @@ class _FactRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: KinevorIdentityTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: KinevorIdentityTheme.textMuted),
             ),
           ),
           Flexible(

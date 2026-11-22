@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// "Architectural Obsidian" palette and theme used by the notifications module.
 abstract final class KinevorNotificationsTheme {

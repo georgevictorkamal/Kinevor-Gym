@@ -5,8 +5,7 @@ class ClassesBookingsStrings {
     this.title = 'Classes',
     this.eyebrow = 'KINEVOR MOVEMENT',
     this.scheduleTitle = 'Train with intent.',
-    this.scheduleSubtitle =
-        'Yoga, strength, cycle and recovery sessions with live capacity and an automatic waitlist.',
+    this.scheduleSubtitle = 'Yoga, strength, cycle and recovery sessions with live capacity and an automatic waitlist.',
     this.upcomingSessions = 'Upcoming',
     this.openSeats = 'Open seats',
     this.filled = 'Filled',
@@ -25,8 +24,7 @@ class ClassesBookingsStrings {
     this.confirmed = 'Confirmed',
     this.capacity = 'Capacity',
     this.waiting = 'Waiting',
-    this.policy =
-        'Confirmed bookings can be cancelled up to two hours before the session. Waitlist promotions happen automatically.',
+    this.policy = 'Confirmed bookings can be cancelled up to two hours before the session. Waitlist promotions happen automatically.',
     this.beforeYouArrive = 'BEFORE YOU ARRIVE',
     this.sessionNotes = 'Session notes',
     this.classRoster = 'CLASS ROSTER',
@@ -34,27 +32,21 @@ class ClassesBookingsStrings {
     this.rosterPrivate = 'Roster details are available to the Kinevor team.',
     this.reservePlace = 'RESERVE YOUR PLACE',
     this.readyToMove = 'Ready to move?',
-    this.bookingIntro =
-        'Book now and your seat is confirmed instantly. Waitlist and cancellations update in real time.',
-    this.waitlistIntro =
-        'This session is full. Join the waitlist and we will move you into a seat when one frees up.',
+    this.bookingIntro = 'Book now and your seat is confirmed instantly. Waitlist and cancellations update in real time.',
+    this.waitlistIntro = 'This session is full. Join the waitlist and we will move you into a seat when one frees up.',
     this.yourBooking = 'YOUR BOOKING',
     this.youreOnList = "You're on the list",
     this.seatConfirmed = 'Seat confirmed',
     this.waitlisted = 'Waitlisted',
-    this.seatHeld =
-        'Your seat is held. Arrive ten minutes early and check in at reception.',
-    this.waitlistHeld =
-        'We will promote you automatically when a seat opens. You can leave the waitlist at any time.',
+    this.seatHeld = 'Your seat is held. Arrive ten minutes early and check in at reception.',
+    this.waitlistHeld = 'We will promote you automatically when a seat opens. You can leave the waitlist at any time.',
     this.cancelBooking = 'Cancel booking',
     this.leaveWaitlist = 'Leave waitlist',
-    this.noPayment =
-        'Bookings are tied to your Kinevor member profile. No payment is taken in this demo.',
+    this.noPayment = 'Bookings are tied to your Kinevor member profile. No payment is taken in this demo.',
     this.myBookings = 'My bookings',
     this.bookingsEyebrow = 'YOUR TRAINING',
     this.bookingsTitle = 'My bookings',
-    this.bookingsSubtitle =
-        'Keep track of confirmed seats, waitlists and the sessions you have completed.',
+    this.bookingsSubtitle = 'Keep track of confirmed seats, waitlists and the sessions you have completed.',
     this.upcoming = 'Upcoming',
     this.pastSessions = 'Past sessions',
     this.bookClass = 'Book a class',
@@ -67,8 +59,7 @@ class ClassesBookingsStrings {
     this.noPastBody =
         'Your completed and cancelled sessions will be collected here.',
     this.browseClasses = 'Browse classes',
-    this.waitNote =
-        "You're on the waitlist. We'll move you into a seat automatically when one opens.",
+    this.waitNote = "You're on the waitlist. We'll move you into a seat automatically when one opens.",
     this.loadError = 'Could not load the class schedule.',
     this.actionFailed = 'The request could not be completed.',
     this.retry = 'Try again',
