@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/memberships_api_exception.dart';
 import '../data/memberships_repository.dart';
@@ -259,19 +259,16 @@ class _CurrentCover extends StatelessWidget {
             membership.planName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: 27,
-              letterSpacing: -0.5,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontSize: 27, letterSpacing: -0.5),
           ),
           const SizedBox(height: 3),
           Text(
             '${strings.tierLabel(membership.tier)} · '
             '${strings.money(membership.price, membership.currency)} '
             '${strings.billingLabel(membership.billingPeriod)}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: KinevorMembershipsTheme.textMuted,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembershipsTheme.textMuted),
           ),
           const SizedBox(height: 14),
           Container(
@@ -420,9 +417,8 @@ class _NoCurrentCover extends StatelessWidget {
           const SizedBox(height: 5),
           Text(
             strings.noCurrentBody,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: KinevorMembershipsTheme.textMuted,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembershipsTheme.textMuted),
           ),
           const SizedBox(height: 16),
           FilledButton(onPressed: onBrowse, child: Text(strings.browsePlans)),
@@ -585,9 +581,8 @@ class _HistoryCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
                   strings.noHistory,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: KinevorMembershipsTheme.textMuted,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: KinevorMembershipsTheme.textMuted),
                 ),
               )
             else

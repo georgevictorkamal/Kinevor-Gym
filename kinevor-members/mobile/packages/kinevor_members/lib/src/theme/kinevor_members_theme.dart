@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// "Architectural Obsidian" palette and theme used by the members module.
 abstract final class KinevorMembersTheme {

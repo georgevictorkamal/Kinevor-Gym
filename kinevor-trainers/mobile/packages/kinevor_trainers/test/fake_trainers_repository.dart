@@ -62,8 +62,7 @@ const sampleTrainers = [
     fullName: 'Nour Adel',
     email: 'nour.adel@kinevor.demo',
     phone: '+201003456789',
-    bio:
-        'High-energy cycling and dance coach with a focus on rhythm and endurance.',
+    bio: 'High-energy cycling and dance coach with a focus on rhythm and endurance.',
     specializations: ['Spinning', 'Zumba', 'Aqua'],
     rating: 4.9,
     totalRatings: 143,
@@ -76,8 +75,7 @@ const sampleTrainers = [
     fullName: 'Karim Fathy',
     email: 'karim.fathy@kinevor.demo',
     phone: '+201004567890',
-    bio:
-        'Combat sports coach with a decade of ring and conditioning experience.',
+    bio: 'Combat sports coach with a decade of ring and conditioning experience.',
     specializations: ['Boxing', 'Kickboxing', 'HIIT'],
     rating: 4.6,
     totalRatings: 87,

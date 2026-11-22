@@ -18,7 +18,7 @@ improvements are welcome.
 ## Development setup
 
 The fastest start is [GitHub Codespaces](https://codespaces.new/georgevictorkamal/Kinevor-Gym):
-the devcontainer installs .NET 10, Node 24, Flutter 3.47.8, Docker Compose and
+the devcontainer installs .NET 10, Node 24, Flutter 3.50.1, Docker Compose and
 the repository tooling, then forwards the demo ports. Use a 4-core machine for
 the full stack; the showcase subset is lighter.
 
@@ -28,7 +28,7 @@ For a local setup, follow the [Quick start](README.md#-quick-start) in the root 
 2. Run the module you are changing (`dotnet run`, `npm start`, or
    `flutter run`).
 3. Use the seeded demo accounts documented in each module README.
-4. Use Node 24 with npm 11+ and Flutter 3.47.8 to match CI.
+4. Use Node 24 with npm 11+ and Flutter 3.50.1 to match CI.
 
 For a full local stack, `npm run demo:up` builds the Docker Compose environment.
 See [the deployment guide](docs/deployment.md).

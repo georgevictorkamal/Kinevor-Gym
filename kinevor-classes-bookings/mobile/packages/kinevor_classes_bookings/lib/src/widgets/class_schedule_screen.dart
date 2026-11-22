@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/classes_bookings_api_exception.dart';
 import '../data/classes_bookings_repository.dart';
@@ -330,11 +330,8 @@ class _ScheduleHero extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             strings.scheduleTitle,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: 32,
-              height: 1.05,
-              letterSpacing: -1,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontSize: 32, height: 1.05, letterSpacing: -1),
           ),
           const SizedBox(height: 8),
           Text(
@@ -465,9 +462,8 @@ class _NextClassCard extends StatelessWidget {
                       item.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -929,9 +925,8 @@ class _ErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: KinevorClassesBookingsTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: KinevorClassesBookingsTheme.textMuted),
             ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(retryLabel)),

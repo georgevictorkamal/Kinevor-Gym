@@ -33,18 +33,15 @@ class MembersStrings {
     this.devicesTitle = 'Devices',
     this.noDevices = 'No push devices registered.',
     this.privacyRightsTitle = 'Your privacy rights',
-    this.privacyRightsBody =
-        'Export everything this module stores, or request erasure. Consent history is retained as a legal record.',
+    this.privacyRightsBody = 'Export everything this module stores, or request erasure. Consent history is retained as a legal record.',
     this.exportData = 'Export my data',
     this.exportTitle = 'Your data export',
-    this.exportSummary =
-        'The export contains your profile, progress, consent and device records owned by the Members module.',
+    this.exportSummary = 'The export contains your profile, progress, consent and device records owned by the Members module.',
     this.exportReady = 'Data export ready.',
     this.close = 'Close',
     this.eraseData = 'Request erasure',
     this.eraseTitle = 'Erase your data?',
-    this.eraseBody =
-        'Your profile, health data, progress and devices will be removed. This cannot be undone. Consent history is retained as a legal record.',
+    this.eraseBody = 'Your profile, health data, progress and devices will be removed. This cannot be undone. Consent history is retained as a legal record.',
     this.eraseConfirm = 'Erase my data',
     this.eraseSuccess = 'Erasure request processed.',
     this.loadError = 'Could not load your member data.',

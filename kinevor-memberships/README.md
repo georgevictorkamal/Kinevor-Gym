@@ -6,7 +6,7 @@ demo, and a Flutter package with a runnable example. Each layer can be used on
 its own, and the demo runs locally from this monorepo.
 
 [![CI](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml/badge.svg)](https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/ci.yml)
-[![Flutter](https://img.shields.io/badge/Flutter-3.35%2B-02569B?logo=flutter)](https://flutter.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-3.47%2B-02569B?logo=flutter)](https://flutter.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ![Member membership dashboard](docs/screenshots/web-membership-dashboard.png)
@@ -132,7 +132,7 @@ The commands below use PowerShell; on macOS or Linux use forward slashes.
 
 - .NET SDK 10 (the solution uses `.slnx`) and the ASP.NET Core 10 runtime.
 - Node.js 22.12+ and npm 11+.
-- Flutter 3.47.8 (pinned in `.fvmrc`).
+- Flutter 3.50.1 (pinned in `.fvmrc`).
 
 ### 1. Build the platform packages
 

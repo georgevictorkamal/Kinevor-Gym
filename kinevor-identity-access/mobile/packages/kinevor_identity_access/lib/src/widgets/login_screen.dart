@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/identity_access_repository.dart';
 import '../data/identity_api_exception.dart';
@@ -180,9 +180,8 @@ class _TopBar extends StatelessWidget {
         Expanded(
           child: Text(
             strings.brand,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
         Container(
@@ -255,18 +254,14 @@ class _Hero extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             strings.welcome,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: 30,
-              letterSpacing: -0.8,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontSize: 30, letterSpacing: -0.8),
           ),
           const SizedBox(height: 6),
           Text(
             strings.subtitle,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: KinevorIdentityTheme.textMuted,
-              height: 1.5,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: KinevorIdentityTheme.textMuted, height: 1.5),
           ),
           const SizedBox(height: 16),
           Wrap(
@@ -393,9 +388,8 @@ class _FormCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         error!,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: KinevorIdentityTheme.error,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: KinevorIdentityTheme.error),
                       ),
                     ),
                   ],

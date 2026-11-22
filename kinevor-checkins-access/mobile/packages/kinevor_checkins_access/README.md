@@ -30,7 +30,7 @@ dependencies:
 ## Use
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:kinevor_checkins_access/kinevor_checkins_access.dart';
 
 final client = KinevorCheckInsClient(

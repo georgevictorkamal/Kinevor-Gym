@@ -15,7 +15,7 @@
   <a href="https://codespaces.new/georgevictorkamal/Kinevor-Gym"><img src="https://img.shields.io/badge/Open_in-GitHub_Codespaces-24292F?logo=github&logoColor=white" alt="Open in GitHub Codespaces"></a>
   <a href="https://dotnet.microsoft.com/"><img src="https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white" alt=".NET 10"></a>
   <a href="https://angular.dev/"><img src="https://img.shields.io/badge/Angular-22-DD0031?logo=angular&logoColor=white" alt="Angular 22"></a>
-  <a href="https://flutter.dev/"><img src="https://img.shields.io/badge/Flutter-3.47.8-02569B?logo=flutter&logoColor=white" alt="Flutter"></a>
+  <a href="https://flutter.dev/"><img src="https://img.shields.io/badge/Flutter-3.50.1-02569B?logo=flutter&logoColor=white" alt="Flutter"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
   <a href="https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/codeql.yml"><img src="https://github.com/georgevictorkamal/Kinevor-Gym/actions/workflows/codeql.yml/badge.svg" alt="CodeQL"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/georgevictorkamal/Kinevor-Gym"><img src="https://api.securityscorecards.dev/projects/github.com/georgevictorkamal/Kinevor-Gym/badge" alt="OpenSSF Scorecard"></a>
@@ -41,7 +41,7 @@
 ## 🚀 Try Kinevor
 
 **Zero install — open it in Codespaces.** The devcontainer installs .NET 10,
-Node 24, Flutter 3.47.8, Docker Compose, the repository tooling and the demo
+Node 24, Flutter 3.50.1, Docker Compose, the repository tooling and the demo
 port forwards. Use a 4-core machine for the full stack, or run the showcase
 subset.
 
@@ -268,7 +268,7 @@ Each module follows layered conventions — **Domain → Application → API →
 | --- | --- |
 | **Backend** | ASP.NET Core 10 (`net10.0`), EF Core 10, SQLite, MediatR 12, JWT bearer, PBKDF2, Swashbuckle, xUnit + `WebApplicationFactory`, coverlet coverage |
 | **Web** | Angular 22 — standalone components, signals, typed gateways/facades, Angular Material, Vitest |
-| **Mobile** | Flutter 3.47.8, Material 3, typed HTTP client + repository, widget + golden tests |
+| **Mobile** | Flutter 3.50.1, Material 3, typed HTTP client + repository, widget + golden tests |
 | **Delivery** | Docker Compose demo stack, nginx static hosting, OpenAPI snapshots, tag-driven release with SBOM and build provenance |
 | **Tooling** | GitHub Actions matrices, Playwright + axe, NuGet, npm, Dart/Flutter, CodeQL, Dependabot, OpenSSF Scorecard |
 
@@ -280,7 +280,7 @@ Each module follows layered conventions — **Domain → Application → API →
 | --- | --- |
 | .NET SDK | **10** |
 | Node.js | **24 LTS** with **npm 11+** |
-| Flutter | **3.47.8** (stable channel) |
+| Flutter | **3.50.1** (stable channel) |
 | Docker | Optional — Docker Engine 24+ with Compose v2 for the demo stack |
 
 ### 1. Build the platform (once)

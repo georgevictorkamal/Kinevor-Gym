@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/classes_bookings_api_exception.dart';
 import '../data/classes_bookings_repository.dart';
@@ -325,11 +325,8 @@ class _DetailHero extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             detail.name,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: 31,
-              height: 1.05,
-              letterSpacing: -1,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontSize: 31, height: 1.05, letterSpacing: -1),
           ),
           const SizedBox(height: 8),
           Text(
@@ -532,10 +529,8 @@ class _BookingPanel extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             booking != null ? strings.youreOnList : strings.readyToMove,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontSize: 22,
-              letterSpacing: -0.4,
-            ),
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontSize: 22, letterSpacing: -0.4),
           ),
           if (booking != null) ...[
             const SizedBox(height: 10),

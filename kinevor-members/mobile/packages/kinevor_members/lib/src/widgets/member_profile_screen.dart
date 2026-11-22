@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/members_api_exception.dart';
 import '../data/members_repository.dart';
@@ -278,9 +278,8 @@ class _ProfileHero extends StatelessWidget {
                     const SizedBox(height: 3),
                     Text(
                       profile.memberNumber,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: KinevorMembersTheme.textMuted,
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: KinevorMembersTheme.textMuted),
                     ),
                   ],
                 ),
@@ -302,9 +301,8 @@ class _ProfileHero extends StatelessWidget {
                     Flexible(
                       child: Text(
                         '${strings.joined} ${strings.date(profile.joinedAt)}',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: KinevorMembersTheme.textMuted,
-                        ),
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: KinevorMembersTheme.textMuted),
                       ),
                     ),
                   ],
@@ -352,9 +350,8 @@ class _HeroLine extends StatelessWidget {
             text,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: KinevorMembersTheme.text),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembersTheme.text),
           ),
         ),
       ],
@@ -431,9 +428,8 @@ class _FreezeBanner extends StatelessWidget {
                 if (profile.freezeReason != null)
                   '${strings.frozenReason}: ${profile.freezeReason}',
               ].join(' | '),
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: KinevorMembersTheme.info),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: KinevorMembersTheme.info),
             ),
           ),
         ],
@@ -590,9 +586,8 @@ class _ProgressCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   strings.noProgress,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: KinevorMembersTheme.textMuted,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: KinevorMembersTheme.textMuted),
                 ),
               )
             else
@@ -909,9 +904,8 @@ class _ErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: KinevorMembersTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: KinevorMembersTheme.textMuted),
             ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(retryLabel)),

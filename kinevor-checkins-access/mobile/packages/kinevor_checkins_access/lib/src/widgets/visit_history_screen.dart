@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/check_ins_repository.dart';
 import '../models/check_in_models.dart';
@@ -155,9 +155,8 @@ class _VisitHistoryScreenState extends State<VisitHistoryScreen> {
               const Spacer(),
               Text(
                 widget.strings.visitsCount(_totalCount),
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: KinevorCheckInsTheme.textMuted,
-                ),
+                style: Theme.of(context).textTheme.labelSmall
+                    ?.copyWith(color: KinevorCheckInsTheme.textMuted),
               ),
             ],
           ),

@@ -17,7 +17,9 @@ class KinevorStaffDashboardClient {
     required Uri baseUrl,
     http.Client? httpClient,
     Map<String, String> headers = const {},
-  }) : _baseUrl = baseUrl,
+  }) : // Public parameter name is kept stable for callers.
+       // ignore: prefer_initializing_formals
+       _baseUrl = baseUrl,
        _http = httpClient ?? http.Client(),
        _ownsClient = httpClient == null,
        _headers = Map.unmodifiable(headers);

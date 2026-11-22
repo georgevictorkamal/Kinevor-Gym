@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../theme/billing_strings.dart';
 import '../theme/kinevor_billing_theme.dart';

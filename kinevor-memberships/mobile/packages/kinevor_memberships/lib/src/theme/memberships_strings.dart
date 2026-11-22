@@ -9,8 +9,7 @@ class MembershipsStrings {
     this.currentCover = 'CURRENT COVER',
     this.plansEyebrow = 'MEMBERSHIP PLANS',
     this.catalogueHeadline = 'Choose how you train',
-    this.catalogueIntro =
-        'Set your term and billing rhythm. Change plans when your training does.',
+    this.catalogueIntro = 'Set your term and billing rhythm. Change plans when your training does.',
     this.currentPlan = 'Current plan',
     this.mostPopular = 'MOST POPULAR',
     this.included = 'Included in your plan',
@@ -40,15 +39,13 @@ class MembershipsStrings {
     this.cancel = 'Cancel membership',
     this.renew = 'Renew membership',
     this.freezeTitle = 'Freeze membership',
-    this.freezeBody =
-        'Your end date moves by the freeze length. You can freeze for up to 90 days.',
+    this.freezeBody = 'Your end date moves by the freeze length. You can freeze for up to 90 days.',
     this.freezeLength = 'Freeze length',
     this.freezeConfirm = 'Freeze membership',
     this.freezeSuccess = 'Membership frozen.',
     this.resumeSuccess = 'Membership resumed.',
     this.cancelTitle = 'Cancel membership?',
-    this.cancelBody =
-        'This ends your cover immediately. You can start a new membership whenever you are ready.',
+    this.cancelBody = 'This ends your cover immediately. You can start a new membership whenever you are ready.',
     this.keepMembership = 'Keep membership',
     this.confirmCancel = 'Cancel membership',
     this.cancelSuccess = 'Membership cancelled.',

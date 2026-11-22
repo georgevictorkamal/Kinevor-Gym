@@ -30,14 +30,15 @@ dependencies:
     path: ../kinevor-memberships/mobile/packages/kinevor_memberships
 ```
 
-Requires Dart 3.9+ and Flutter 3.47.8.
+Built and tested with Flutter 3.50.1 (Dart 3.14); the package keeps its
+Dart 3.13+ / Flutter 3.47+ compatibility floor.
 
 ## Register
 
 Create the HTTP client, wrap it in the remote repository, and hand it to a screen:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:kinevor_memberships/kinevor_memberships.dart';
 
 final client = KinevorMembershipsClient(

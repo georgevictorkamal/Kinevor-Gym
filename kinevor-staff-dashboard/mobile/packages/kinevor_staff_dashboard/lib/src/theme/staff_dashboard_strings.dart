@@ -4,8 +4,7 @@ class StaffDashboardStrings {
     this.brand = 'Kinevor Staff',
     this.title = 'Staff dashboard',
     this.eyebrow = 'EXECUTIVE PULSE',
-    this.subtitle =
-        'Memberships, revenue, occupancy and front-desk workload in one live view.',
+    this.subtitle = 'Memberships, revenue, occupancy and front-desk workload in one live view.',
     this.allBranches = 'All branches',
     this.range7 = '7 days',
     this.range30 = '30 days',
@@ -27,8 +26,7 @@ class StaffDashboardStrings {
     this.bookings = 'Bookings',
     this.alertsTitle = 'Alerts & tasks',
     this.alertsEyebrow = 'OPERATIONS INBOX',
-    this.alertsSubtitle =
-        'Every collection risk, retention task, low-fill class and failed delivery in one severity-ordered queue.',
+    this.alertsSubtitle = 'Every collection risk, retention task, low-fill class and failed delivery in one severity-ordered queue.',
     this.viewInbox = 'View inbox',
     this.openInbox = 'Open alert inbox',
     this.critical = 'Critical',

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/members_api_exception.dart';
 import '../data/members_repository.dart';
@@ -299,9 +299,8 @@ class _PrivacyHero extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   'Consent, devices and personal data in one place.',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: KinevorMembersTheme.textMuted,
-                  ),
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: KinevorMembersTheme.textMuted),
                 ),
               ],
             ),
@@ -340,9 +339,8 @@ class _ConsentCard extends StatelessWidget {
             const SizedBox(height: 3),
             Text(
               strings.consentNote,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: KinevorMembersTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: KinevorMembersTheme.textMuted),
             ),
             const SizedBox(height: 8),
             for (final key in memberConsentKeys)
@@ -458,9 +456,8 @@ class _DeviceCard extends StatelessWidget {
             if (devices.isEmpty)
               Text(
                 strings.noDevices,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: KinevorMembersTheme.textMuted,
-                ),
+                style: Theme.of(context).textTheme.bodySmall
+                    ?.copyWith(color: KinevorMembersTheme.textMuted),
               )
             else
               for (var index = 0; index < devices.length; index++) ...[
@@ -565,10 +562,8 @@ class _PrivacyRightsCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               strings.privacyRightsBody,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: KinevorMembersTheme.textMuted,
-                height: 1.5,
-              ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: KinevorMembersTheme.textMuted, height: 1.5),
             ),
             const SizedBox(height: 14),
             OutlinedButton.icon(
@@ -626,9 +621,8 @@ class _PrivacyError extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: KinevorMembersTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: KinevorMembersTheme.textMuted),
             ),
             const SizedBox(height: 14),
             FilledButton(onPressed: onRetry, child: Text(retryLabel)),

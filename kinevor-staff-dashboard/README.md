@@ -104,7 +104,7 @@ The commands below use PowerShell; on macOS or Linux use forward slashes.
 
 - .NET SDK 10 (the solution uses `.slnx`) and the ASP.NET Core 10 runtime.
 - Node.js 22.12+ and npm 11+.
-- Flutter 3.47.8 only when working with the companion mobile package.
+- Flutter 3.50.1 only when working with the companion mobile package.
 
 ### 1. Build the platform packages
 

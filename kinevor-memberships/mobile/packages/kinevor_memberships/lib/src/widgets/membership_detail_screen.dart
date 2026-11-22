@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/memberships_api_exception.dart';
 import '../data/memberships_repository.dart';
@@ -296,19 +296,16 @@ class _DetailHero extends StatelessWidget {
             membership.planName,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontSize: 26,
-              letterSpacing: -0.5,
-            ),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontSize: 26, letterSpacing: -0.5),
           ),
           const SizedBox(height: 3),
           Text(
             '${strings.money(membership.price, membership.currency)} '
             '${strings.billingLabel(membership.billingPeriod)} · '
             '${strings.termDays(membership.durationDays)}',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: KinevorMembershipsTheme.textMuted,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembershipsTheme.textMuted),
           ),
           const SizedBox(height: 14),
           Row(
@@ -578,9 +575,8 @@ class _FreezeSheetState extends State<_FreezeSheet> {
           const SizedBox(height: 6),
           Text(
             strings.freezeBody,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: KinevorMembershipsTheme.textMuted,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembershipsTheme.textMuted),
           ),
           const SizedBox(height: 14),
           Text(
@@ -660,9 +656,8 @@ class _RenewSheetState extends State<_RenewSheet> {
           const SizedBox(height: 6),
           Text(
             strings.renewBody,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: KinevorMembershipsTheme.textMuted,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembershipsTheme.textMuted),
           ),
           const SizedBox(height: 14),
           Text(

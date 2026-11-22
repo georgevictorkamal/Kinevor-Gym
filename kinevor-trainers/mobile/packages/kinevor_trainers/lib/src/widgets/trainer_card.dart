@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../models/trainer.dart';
 import '../theme/kinevor_trainers_theme.dart';

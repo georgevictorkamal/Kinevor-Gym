@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/billing_repository.dart';
 import '../models/billing_models.dart';
@@ -65,9 +65,8 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
         _filtering = false;
       });
       if (_summary != null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(widget.strings.loadError)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(widget.strings.loadError)));
       }
     }
   }
@@ -88,9 +87,8 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
     } on Object {
       if (!mounted) return;
       setState(() => _filtering = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(widget.strings.loadError)));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(widget.strings.loadError)));
     }
   }
 
@@ -242,9 +240,8 @@ class _Header extends StatelessWidget {
               ),
               Text(
                 strings.title,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
               ),
             ],
           ),

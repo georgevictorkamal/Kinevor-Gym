@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:kinevor_classes_bookings/kinevor_classes_bookings.dart';
 
 const String _apiBaseUrl = String.fromEnvironment(

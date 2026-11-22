@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../data/memberships_api_exception.dart';
 import '../data/memberships_repository.dart';
@@ -185,16 +185,14 @@ class _CatalogueHeader extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             strings.catalogueHeadline,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineMedium?.copyWith(fontSize: 22),
+            style: Theme.of(context).textTheme.headlineMedium
+                ?.copyWith(fontSize: 22),
           ),
           const SizedBox(height: 4),
           Text(
             strings.catalogueIntro,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: KinevorMembershipsTheme.textMuted,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembershipsTheme.textMuted),
           ),
         ],
       ),
@@ -302,9 +300,8 @@ class _PlanCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             plan.description,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: KinevorMembershipsTheme.textMuted,
-            ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: KinevorMembershipsTheme.textMuted),
           ),
           const SizedBox(height: 12),
           Row(
@@ -411,9 +408,8 @@ class _EmptyCatalogue extends StatelessWidget {
             Text(
               strings.noPlansBody,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: KinevorMembershipsTheme.textMuted,
-              ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: KinevorMembershipsTheme.textMuted),
             ),
           ],
         ),

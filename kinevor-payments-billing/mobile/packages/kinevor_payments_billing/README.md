@@ -33,7 +33,7 @@ dependencies:
 ## Use
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:kinevor_payments_billing/kinevor_payments_billing.dart';
 
 void main() {
