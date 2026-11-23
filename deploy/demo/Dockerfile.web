@@ -25,7 +25,7 @@ RUN cd ${SERVICE}/web \
  && npm run install:local -- --ci \
  && npm run build:demo
 
-FROM nginx:1.29-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 
 ARG SERVICE
 
