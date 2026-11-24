@@ -115,11 +115,11 @@ $env:ASPNETCORE_ENVIRONMENT = "Demo"
 
 ## `KINEVOR_VERSION` is ignored on Windows PowerShell
 
-`KINEVOR_VERSION=0.3.1 npm run demo:images` is POSIX syntax. In PowerShell set
+`KINEVOR_VERSION=0.4.0 npm run demo:images` is POSIX syntax. In PowerShell set
 the variable first:
 
 ```powershell
-$env:KINEVOR_VERSION = "0.3.1"
+$env:KINEVOR_VERSION = "0.4.0"
 npm run demo:images
 ```
 

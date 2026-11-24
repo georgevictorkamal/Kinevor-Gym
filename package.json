@@ -1,6 +1,6 @@
 {
   "name": "kinevor",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "private": true,
   "description": "Kinevor gym-management platform: ten independent services in one repository.",
   "license": "MIT",

@@ -5,7 +5,7 @@ EF Core persistence for the Kinevor classes and bookings module.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.ClassesBookings.EntityFrameworkCore --version 0.3.1
+dotnet add package Kinevor.Modules.ClassesBookings.EntityFrameworkCore --version 0.4.0
 ```
 
 Register the context with your provider, then call

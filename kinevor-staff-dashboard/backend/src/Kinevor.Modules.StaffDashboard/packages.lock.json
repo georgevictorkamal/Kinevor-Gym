@@ -4,33 +4,32 @@
     "net10.0": {
       "Kinevor.Platform.Api": {
         "type": "Direct",
-        "requested": "[0.3.1, )",
-        "resolved": "0.3.1",
-        "contentHash": "ZFxr7zNcjgQpFfXZaw3OV9235evFK9+8/ntbAYDFjITbfAFH/iu5YyBxK0NDNlNKzbDLO6Kt1faGGDCcDImSjw==",
+        "requested": "[0.4.0, )",
+        "resolved": "0.4.0",
+        "contentHash": "zUDT23QJDWxrMqksmo6LedjKL+IvIDhCj436tMMWj6voK1CxVKyO/HCkS2HaOJws2VdxAAr+qoaMw44eVvC8Jg==",
         "dependencies": {
-          "Kinevor.Platform.Application": "0.3.1",
+          "Kinevor.Platform.Application": "0.4.0",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "1.21.0",
           "OpenTelemetry.Extensions.Hosting": "1.21.0",
           "OpenTelemetry.Instrumentation.AspNetCore": "1.21.0",
-          "OpenTelemetry.Instrumentation.EntityFrameworkCore": "1.21.0-beta.2",
           "OpenTelemetry.Instrumentation.Http": "1.21.0"
         }
       },
       "Kinevor.Platform.Application": {
         "type": "Direct",
-        "requested": "[0.3.1, )",
-        "resolved": "0.3.1",
-        "contentHash": "9e3z1D5m2498kSKmd6hxLUg6pfDvgbzLXvv+3G0mcedfE2Nbvxfh59AeODfiQtOFxJD3BR4t4zy4nT7UUCGVXw==",
+        "requested": "[0.4.0, )",
+        "resolved": "0.4.0",
+        "contentHash": "cK8kOJlmesiaCEF9B2y30wzFFGezGEKMAZDty+fcwMHtzXFjfZIMb/U8TeioFDNy5D4txIk2JqitNxI9TcVo5Q==",
         "dependencies": {
-          "Kinevor.Platform.Domain": "0.3.1",
+          "Kinevor.Platform.Domain": "0.4.0",
           "MediatR": "12.4.1"
         }
       },
       "Kinevor.Platform.Domain": {
         "type": "Direct",
-        "requested": "[0.3.1, )",
-        "resolved": "0.3.1",
-        "contentHash": "Vqy9WuP7t1PCQsCiR0C0gN+eCgU+GGpHFIuhVJTEd3vvQ+zSbW7SeEgwrc6DrbX+WXB0cxsoglH81sLOUWcliw=="
+        "requested": "[0.4.0, )",
+        "resolved": "0.4.0",
+        "contentHash": "fln4DAzxPa8f/vSxkyxavxjpyXsa4XOCm9JwVHK5MPJnkXJoNwFYN3CIUOGwSOamRBCwpt3LBAeJGc6Zbm/9AA=="
       },
       "MediatR": {
         "type": "Transitive",
@@ -89,14 +88,6 @@
         "type": "Transitive",
         "resolved": "1.21.0",
         "contentHash": "mHX+dOb0uGLGuVJxoKdYTsndz8pNg+Uxe7YqTp6IY3No9tmoLCiUjXf/fI82IrTRnF1PraVzU+VWymzLR1CmFw==",
-        "dependencies": {
-          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.21.0, 2.0.0)"
-        }
-      },
-      "OpenTelemetry.Instrumentation.EntityFrameworkCore": {
-        "type": "Transitive",
-        "resolved": "1.21.0-beta.2",
-        "contentHash": "SoJedykl/jcKLP9G3N2gH+VCqg0zVNia1SB4mQriZF3haoADA+lt+gdwsz5OuXUpuaC2Hy6Tq+j0fza9SDpemQ==",
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.21.0, 2.0.0)"
         }

@@ -25,7 +25,7 @@ yourself when you need database spans.
 ## Install
 
 ```bash
-dotnet add package Kinevor.Platform.Api --version 0.3.1
+dotnet add package Kinevor.Platform.Api --version 0.4.0
 ```
 
 The package references `Kinevor.Platform.Application` and the ASP.NET Core

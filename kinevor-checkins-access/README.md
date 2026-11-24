@@ -241,7 +241,7 @@ flutter run -d chrome `
   --dart-define=CHECKINS_API_BASE_URL=http://localhost:5086/api/v1
 ```
 
-On an Android emulator use `http://10.0.3.1:5086/api/v1`. The demo API allows the
+On an Android emulator use `http://10.0.4.0:5086/api/v1`. The demo API allows the
 Angular origin `http://localhost:4205`; add your host origin before running the
 Flutter web example from another port.
 

@@ -70,9 +70,9 @@ dotnet nuget add source https://nuget.pkg.github.com/georgevictorkamal/index.jso
 Then reference the packages:
 
 ```xml
-<PackageReference Include="Kinevor.Platform.Domain" Version="0.3.1" />
-<PackageReference Include="Kinevor.Platform.Application" Version="0.3.1" />
-<PackageReference Include="Kinevor.Platform.Api" Version="0.3.1" />
+<PackageReference Include="Kinevor.Platform.Domain" Version="0.4.0" />
+<PackageReference Include="Kinevor.Platform.Application" Version="0.4.0" />
+<PackageReference Include="Kinevor.Platform.Api" Version="0.4.0" />
 ```
 
 ## Consume The Angular Package (optional)

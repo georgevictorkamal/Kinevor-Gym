@@ -10,7 +10,7 @@ Trainer directory module for the Kinevor gym platform.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.Trainers --version 0.3.1
+dotnet add package Kinevor.Modules.Trainers --version 0.4.0
 ```
 
 ## Register

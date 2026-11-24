@@ -7,9 +7,9 @@ observable and easier to adopt over adding new product surface.
 
 No dates are promised. Items move when they are ready and when CI proves them.
 
-## Shipped — 0.3.1
+## Shipped — 0.4.0
 
-The 0.3.1 hardening release closed the reliability and adoption work started in
+The 0.4.0 hardening release closed the reliability and adoption work started in
 0.2.x:
 
 - **Identity** — account lockout after repeated failed sign-ins
