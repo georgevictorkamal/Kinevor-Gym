@@ -32,6 +32,24 @@ public sealed class UserAccountRepository(IdentityDbContext db) : IUserAccountRe
 
     /// <summary>Marks an account as modified.</summary>
     public void Update(UserAccount account) => db.UserAccounts.Update(account);
+
+    /// <summary>Reloads a tracked account after a concurrency conflict, including its concurrency token.</summary>
+    public async Task<bool> ReloadAsync(UserAccount account, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(account);
+
+        var current = await db.UserAccounts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(candidate => candidate.Id == account.Id, ct);
+        if (current is null)
+            return false;
+
+        var entry = db.Entry(account);
+        entry.CurrentValues.SetValues(current);
+        entry.OriginalValues.SetValues(current);
+        entry.State = EntityState.Unchanged;
+        return true;
+    }
 }
 
 /// <summary>EF Core refresh-token repository.</summary>

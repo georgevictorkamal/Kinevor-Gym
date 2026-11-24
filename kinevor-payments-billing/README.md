@@ -59,9 +59,10 @@ layers over a typed gateway/repository.
 - Payment recording with reference idempotency, invoice ownership checks,
   outstanding-balance checks and an `IPaymentGateway` port for card captures;
   cash and bank transfers record without a gateway call.
-- Full or partial refunds with reason and remaining-refundable validation.
-  Refunds reduce the invoice's paid balance and reopen it when it is no longer
-  settled.
+- Full or partial refunds with reason, remaining-refundable validation and a
+  caller reference that makes retries idempotent. Card refunds go through
+  `IPaymentGateway`; refunds reduce the invoice's paid balance and reopen it
+  when it is no longer settled.
 - Invoice lifecycle actions: mark paid, mark past-due overdue and void with a
   reason. Paid invoices cannot be voided; void invoices cannot be paid.
 - Member invoice summary, list, detail and self-service payment.
@@ -185,6 +186,11 @@ is the primary self-service member:
 | Maya Thompson | `11111111-1111-1111-1111-111111111111` | 178.95 | 52.95 | 2 |
 | Sofia Rossi | `33333333-3333-3333-3333-333333333333` | 10.00 | 10.00 | 1 |
 
+The demo uses `EnsureCreatedAsync`, not migrations. The payment and refund tables
+gained provider-reference columns, so an existing `payments-billing-demo.db` or
+the Docker `payments-data` volume must be deleted once before starting this
+version; the host recreates and reseeds it.
+
 The demo trusts demo role headers (Development and Demo only):
 
 | Header | Purpose | Example |
@@ -199,8 +205,8 @@ These headers are a demo adapter only. Never enable them in production.
 ### Optional Stripe test-mode gateway
 
 The module depends on `IPaymentGateway` and registers a simulated adapter that
-approves card captures. For a real test-mode integration, reference the
-non-packable sample project and register it after the module:
+approves card captures and refunds. For a real test-mode integration, reference
+the non-packable sample project and register it after the module:
 
 ```csharp
 services.AddStripeTestPaymentGateway(builder.Configuration);
@@ -217,11 +223,11 @@ Supply the key from user-secrets or the environment; never commit it:
 dotnet user-secrets set "Payments:Stripe:SecretKey" "sk_test_..." --project <host>
 ```
 
-The adapter calls Stripe's PaymentIntent API directly without a Stripe SDK,
-reuses the payment reference as the idempotency key and refuses any key that is
-not `sk_test_`. Cash and bank-transfer payments never reach the gateway. The
-sample is not packed or published; live mode, webhooks and provider-side refunds
-are out of scope.
+The adapter calls Stripe's PaymentIntent and Refund APIs directly without a
+Stripe SDK. Captures use the payment reference as the idempotency key; refunds
+use the refund reference. The adapter refuses any key that is not `sk_test_`.
+Cash and bank-transfer payments never reach the gateway. The sample is not packed
+or published; live mode, webhooks and reconciliation are out of scope.
 
 ### 3. Run the web demo
 
@@ -307,7 +313,7 @@ Copy-Item test\goldens\invoice_detail.png ..\..\..\docs\screenshots\mobile-invoi
 | Flutter analysis | `cd mobile\packages\kinevor_payments_billing; flutter analyze` |
 | Flutter tests | `cd mobile\packages\kinevor_payments_billing; flutter test` |
 
-The backend suite has 28 tests covering domain invariants, invoice endpoints,
+The backend suite has 32 tests covering domain invariants, invoice endpoints,
 payment idempotency, refunds, gateway adapters, optimistic concurrency, member
 ownership and authorization. The web suite has 13 Vitest tests across the
 gateway, facade and three screens. The Flutter suite has 15 tests covering

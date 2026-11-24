@@ -94,6 +94,81 @@ public class StripeTestGatewayTests
         Assert.Empty(handler.Requests);
     }
 
+    /// <summary>The adapter posts a refund against the original PaymentIntent.</summary>
+    [Fact]
+    public async Task RefundAsync_PostsRefund()
+    {
+        var handler = new StubHttpHandler(
+            HttpStatusCode.OK,
+            """{"id":"re_test_123","status":"succeeded"}""");
+        var gateway = CreateGateway(handler, "sk_test_example");
+
+        var result = await gateway.RefundAsync(new PaymentGatewayRefundRequest(
+            Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            "TXN-STRIPE-003",
+            "pi_test_123",
+            "RF-STRIPE-003",
+            4.56m,
+            "USD",
+            "Member request"));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal("re_test_123", result.ProviderRefundReference);
+        var request = Assert.Single(handler.Requests);
+        Assert.Equal("/v1/refunds", request.RequestUri!.AbsolutePath);
+        Assert.Equal("RF-STRIPE-003", request.Headers.GetValues("Idempotency-Key").Single());
+
+        var body = Assert.Single(handler.Bodies);
+        Assert.Contains("payment_intent=pi_test_123", body);
+        Assert.Contains("amount=456", body);
+        Assert.Contains("metadata%5Breference%5D=RF-STRIPE-003", body);
+        Assert.Contains("metadata%5Breason%5D=Member+request", body);
+    }
+
+    /// <summary>A refund without a provider PaymentIntent reference is refused locally.</summary>
+    [Fact]
+    public async Task RefundAsync_RequiresProviderReference()
+    {
+        var handler = new StubHttpHandler(
+            HttpStatusCode.OK,
+            """{"id":"re_test_123","status":"succeeded"}""");
+        var gateway = CreateGateway(handler, "sk_test_example");
+
+        var result = await gateway.RefundAsync(new PaymentGatewayRefundRequest(
+            Guid.NewGuid(),
+            "TXN-STRIPE-004",
+            " ",
+            "RF-STRIPE-004",
+            4.56m,
+            "USD",
+            "Member request"));
+
+        Assert.False(result.Succeeded);
+        Assert.Empty(handler.Requests);
+    }
+
+    /// <summary>Provider refund errors surface as a failed result.</summary>
+    [Fact]
+    public async Task RefundAsync_ReturnsProviderError()
+    {
+        var handler = new StubHttpHandler(
+            HttpStatusCode.BadRequest,
+            """{"error":{"message":"Refund exceeds the charge amount."}}""");
+        var gateway = CreateGateway(handler, "sk_test_example");
+
+        var result = await gateway.RefundAsync(new PaymentGatewayRefundRequest(
+            Guid.NewGuid(),
+            "TXN-STRIPE-005",
+            "pi_test_123",
+            "RF-STRIPE-005",
+            4.56m,
+            "USD",
+            "Member request"));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal("Refund exceeds the charge amount.", result.FailureReason);
+    }
+
     private static PaymentGatewayRequest Request() => new(
         Guid.NewGuid(),
         null,

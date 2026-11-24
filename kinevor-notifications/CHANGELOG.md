@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   preference and suppression rules and records failures on the notification.
   A pickup-directory mode captures messages locally without a server.
 
+### Changed
+
+- SMTP transport failures now store a generic member-facing reason and log the
+  provider exception, instead of exposing provider messages in the inbox.
+
+### Fixed
+
+- SMTP options reject credentials when STARTTLS is disabled and require the user
+  name and password to be configured together.
+
 ## [0.1.0] - 2026-10-20
 
 ### Added

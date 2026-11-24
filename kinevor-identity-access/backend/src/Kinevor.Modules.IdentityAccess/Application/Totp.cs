@@ -16,6 +16,15 @@ public static class Totp
 
     private const string Base32Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
+    /// <summary>Computes the UTC time step for an instant.</summary>
+    public static long ComputeStep(DateTime utcNow, int stepSeconds = StepSeconds)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(stepSeconds, 1);
+
+        var seconds = (long)Math.Floor((utcNow.ToUniversalTime() - DateTime.UnixEpoch).TotalSeconds);
+        return seconds / stepSeconds;
+    }
+
     /// <summary>Computes a TOTP code for the supplied UTC instant.</summary>
     public static string ComputeCode(
         string base32Secret,
@@ -24,15 +33,72 @@ public static class Totp
         int digits = Digits)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(base32Secret);
-        ArgumentOutOfRangeException.ThrowIfLessThan(stepSeconds, 1);
-        ArgumentOutOfRangeException.ThrowIfLessThan(digits, 6);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(digits, 8);
+        ValidateDigits(digits);
 
-        var seconds = (long)Math.Floor((utcNow.ToUniversalTime() - DateTime.UnixEpoch).TotalSeconds);
-        var counter = seconds / stepSeconds;
+        return ComputeCodeAtStep(base32Secret, ComputeStep(utcNow, stepSeconds), digits);
+    }
 
+    /// <summary>Verifies a code with a small drift window in both directions.</summary>
+    public static bool VerifyCode(
+        string base32Secret,
+        string code,
+        DateTime utcNow,
+        int stepSeconds = StepSeconds,
+        int digits = Digits,
+        int allowedDriftSteps = 1) =>
+        TryVerifyCode(base32Secret, code, utcNow, out _, stepSeconds, digits, allowedDriftSteps);
+
+    /// <summary>
+    /// Finds the newest time step whose code matches within the drift window. Callers persist
+    /// the matched step so an accepted code cannot be replayed in a later sign-in.
+    /// </summary>
+    public static bool TryVerifyCode(
+        string base32Secret,
+        string code,
+        DateTime utcNow,
+        out long matchedStep,
+        int stepSeconds = StepSeconds,
+        int digits = Digits,
+        int allowedDriftSteps = 1)
+    {
+        matchedStep = 0;
+
+        if (string.IsNullOrWhiteSpace(base32Secret) || string.IsNullOrWhiteSpace(code))
+            return false;
+
+        ValidateDigits(digits);
+        ArgumentOutOfRangeException.ThrowIfNegative(allowedDriftSteps);
+
+        var normalized = code.Trim().Replace(" ", string.Empty, StringComparison.Ordinal);
+        if (normalized.Length != digits || !normalized.All(char.IsAsciiDigit))
+            return false;
+
+        var currentStep = ComputeStep(utcNow, stepSeconds);
+        // Prefer the newest matching step so a reused code advances the replay watermark
+        // as far as possible.
+        for (var drift = allowedDriftSteps; drift >= -allowedDriftSteps; drift--)
+        {
+            var candidateStep = currentStep + drift;
+            if (candidateStep < 0)
+                continue;
+
+            var candidate = ComputeCodeAtStep(base32Secret, candidateStep, digits);
+            if (CryptographicOperations.FixedTimeEquals(
+                    Encoding.ASCII.GetBytes(candidate),
+                    Encoding.ASCII.GetBytes(normalized)))
+            {
+                matchedStep = candidateStep;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static string ComputeCodeAtStep(string base32Secret, long step, int digits)
+    {
         Span<byte> counterBytes = stackalloc byte[8];
-        System.Buffers.Binary.BinaryPrimitives.WriteInt64BigEndian(counterBytes, counter);
+        System.Buffers.Binary.BinaryPrimitives.WriteInt64BigEndian(counterBytes, step);
 
         var key = DecodeBase32(base32Secret);
         using var hmac = new HMACSHA1(key);
@@ -54,37 +120,10 @@ public static class Totp
         return (binary % modulus).ToString(CultureInfo.InvariantCulture).PadLeft(digits, '0');
     }
 
-    /// <summary>Verifies a code with a small drift window in both directions.</summary>
-    public static bool VerifyCode(
-        string base32Secret,
-        string code,
-        DateTime utcNow,
-        int stepSeconds = StepSeconds,
-        int digits = Digits,
-        int allowedDriftSteps = 1)
+    private static void ValidateDigits(int digits)
     {
-        if (string.IsNullOrWhiteSpace(code))
-            return false;
-
-        var normalized = code.Trim().Replace(" ", string.Empty, StringComparison.Ordinal);
-        if (normalized.Length != digits || !normalized.All(char.IsAsciiDigit))
-            return false;
-
-        ArgumentOutOfRangeException.ThrowIfNegative(allowedDriftSteps);
-
-        for (var drift = -allowedDriftSteps; drift <= allowedDriftSteps; drift++)
-        {
-            // DateTime arithmetic handles daylight saving only for local values; all values here are UTC.
-            var candidate = ComputeCode(base32Secret, utcNow.AddSeconds(drift * stepSeconds), stepSeconds, digits);
-            if (CryptographicOperations.FixedTimeEquals(
-                    Encoding.ASCII.GetBytes(candidate),
-                    Encoding.ASCII.GetBytes(normalized)))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        ArgumentOutOfRangeException.ThrowIfLessThan(digits, 6);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(digits, 8);
     }
 
     /// <summary>Creates a 160-bit Base32 secret suitable for authenticator apps.</summary>
@@ -102,11 +141,11 @@ public static class Totp
             + $"&algorithm=SHA1&digits={Digits}&period={StepSeconds}";
     }
 
-    /// <summary>Creates a formatted single-use recovery code.</summary>
+    /// <summary>Creates a formatted single-use recovery code with 80 bits of entropy.</summary>
     public static string GenerateRecoveryCode()
     {
-        var raw = EncodeBase32(RandomNumberGenerator.GetBytes(5));
-        return $"{raw[..4]}-{raw[4..]}";
+        var raw = EncodeBase32(RandomNumberGenerator.GetBytes(10));
+        return $"{raw[..4]}-{raw[4..8]}-{raw[8..12]}-{raw[12..]}";
     }
 
     /// <summary>Normalises and hashes a recovery code for storage.</summary>
@@ -189,6 +228,9 @@ public interface IMfaService
     /// <summary>Verifies a TOTP code at the supplied instant.</summary>
     bool VerifyCode(string secret, string code, DateTime utcNow);
 
+    /// <summary>Finds the newest matching TOTP step within the drift window.</summary>
+    bool TryVerifyCode(string secret, string code, DateTime utcNow, out long matchedStep);
+
     /// <summary>Creates a set of plaintext recovery codes; only hashes are stored.</summary>
     IReadOnlyList<string> GenerateRecoveryCodes(int count = 8);
 
@@ -211,6 +253,10 @@ public sealed class TotpMfaService : IMfaService
     /// <summary>Verifies a code with one step of drift in either direction.</summary>
     public bool VerifyCode(string secret, string code, DateTime utcNow) =>
         Totp.VerifyCode(secret, code, utcNow);
+
+    /// <summary>Finds the newest matching TOTP step within one step of drift.</summary>
+    public bool TryVerifyCode(string secret, string code, DateTime utcNow, out long matchedStep) =>
+        Totp.TryVerifyCode(secret, code, utcNow, out matchedStep);
 
     /// <summary>Generates single-use recovery codes.</summary>
     public IReadOnlyList<string> GenerateRecoveryCodes(int count = 8)

@@ -157,8 +157,8 @@ public sealed class Invoice : AggregateRoot
         return Result.Success();
     }
 
-    /// <summary>Reduces the settled amount after a payment refund and reopens the balance.</summary>
-    public Result ApplyRefund(decimal amount, DateTime now)
+    /// <summary>Validates a refund without changing the invoice.</summary>
+    public Result ValidateRefund(decimal amount)
     {
         if (Status == InvoiceStatus.Void)
             return Result.Failure(Error.Business("Invoice.Voided", "A void invoice cannot be refunded."));
@@ -167,6 +167,16 @@ public sealed class Invoice : AggregateRoot
         if (amount > AmountPaid)
             return Result.Failure(Error.Business("Invoice.RefundExceedsPaid",
                 $"Refund exceeds the amount paid of {Currency} {AmountPaid:F2}."));
+
+        return Result.Success();
+    }
+
+    /// <summary>Reduces the settled amount after a payment refund and reopens the balance.</summary>
+    public Result ApplyRefund(decimal amount, DateTime now)
+    {
+        var validation = ValidateRefund(amount);
+        if (validation.IsFailure)
+            return validation;
 
         AmountPaid = decimal.Round(AmountPaid - amount, 2, MidpointRounding.AwayFromZero);
         Status = AmountPaid >= Total

@@ -2,7 +2,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { AuthSession, IDENTITY_API_BASE_URL } from './auth.model';
+import { AuthSession, IDENTITY_API_BASE_URL, MfaRequiredError } from './auth.model';
 import { HttpIdentityAccessGateway } from './http-identity-access.gateway';
 
 const session: AuthSession = {
@@ -52,6 +52,37 @@ describe('HttpIdentityAccessGateway', () => {
     const result = await promise;
     expect(result.accessToken).toBe('access-token');
     expect(result.user.role).toBe('Admin');
+  });
+
+  it('raises MfaRequiredError when the API challenges for a second factor', async () => {
+    const promise = gateway.login({ email: 'admin@kinevor.demo', password: 'Kinevor!2026' });
+
+    const request = http.expectOne('http://api.test/api/v1/auth/login');
+    request.flush({
+      success: true,
+      data: { status: 'mfa_required' },
+      message: 'Second factor required.',
+    });
+
+    await expect(promise).rejects.toBeInstanceOf(MfaRequiredError);
+  });
+
+  it('forwards an authenticator code with the credentials', async () => {
+    const promise = gateway.login({
+      email: 'admin@kinevor.demo',
+      password: 'Kinevor!2026',
+      mfaCode: '123456',
+    });
+
+    const request = http.expectOne('http://api.test/api/v1/auth/login');
+    expect(request.request.body).toEqual({
+      email: 'admin@kinevor.demo',
+      password: 'Kinevor!2026',
+      mfaCode: '123456',
+    });
+    request.flush({ success: true, data: session });
+
+    await expect(promise).resolves.toMatchObject({ accessToken: 'access-token' });
   });
 
   it('sends the bearer token on session requests', async () => {

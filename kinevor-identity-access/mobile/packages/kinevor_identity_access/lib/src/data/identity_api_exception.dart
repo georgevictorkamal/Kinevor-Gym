@@ -12,3 +12,15 @@ class IdentityApiException implements Exception {
   @override
   String toString() => 'IdentityApiException($statusCode): $message';
 }
+
+/// The password was accepted but a second factor is required.
+///
+/// This is a normal login step, not a failure: resubmit the same credentials
+/// with an authenticator or recovery code.
+class MfaRequiredException implements Exception {
+  /// Creates a second-factor challenge.
+  const MfaRequiredException();
+
+  @override
+  String toString() => 'MfaRequiredException';
+}

@@ -19,7 +19,12 @@ public sealed class UserAccountConfiguration : IEntityTypeConfiguration<UserAcco
         builder.Property(account => account.DisplayName).HasMaxLength(120).IsRequired();
         builder.Property(account => account.Role).HasMaxLength(20).IsRequired();
         builder.Property(account => account.PasswordHash).HasMaxLength(500).IsRequired();
-        builder.Property(account => account.MfaSecret).HasMaxLength(200);
+        // Data Protection ciphertext is longer than the Base32 secret it wraps.
+        builder.Property(account => account.MfaSecret).HasMaxLength(500);
+        // Optimistic concurrency keeps parallel logins from overwriting each other's
+        // failure counters, recovery-code consumption or accepted TOTP step.
+        builder.Property(account => account.ConcurrencyStamp).IsConcurrencyToken();
+        builder.Property(account => account.LastAcceptedMfaStep);
         builder.Property(account => account.MfaRecoveryCodeHashes)
             .HasConversion(
                 hashes => JsonSerializer.Serialize(hashes, (JsonSerializerOptions?)null),

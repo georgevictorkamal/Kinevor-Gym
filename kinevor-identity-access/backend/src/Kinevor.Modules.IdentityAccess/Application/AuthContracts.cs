@@ -23,6 +23,35 @@ public record UserAccountDto(Guid Id, string Email, string DisplayName, string R
 /// <param name="User">Signed-in account.</param>
 public record AuthSessionDto(string AccessToken, string RefreshToken, DateTime ExpiresAt, UserAccountDto User);
 
+/// <summary>Outcome of a password login: a signed-in session or a second-factor challenge.</summary>
+public sealed record LoginResult
+{
+    /// <summary>Machine-readable status returned when a second factor is required.</summary>
+    public const string MfaRequiredStatus = "mfa_required";
+
+    private LoginResult(AuthSessionDto? session) => Session = session;
+
+    /// <summary>Issued session, or null when a second factor is required.</summary>
+    public AuthSessionDto? Session { get; }
+
+    /// <summary>Whether the caller must resubmit with an authenticator or recovery code.</summary>
+    public bool MfaRequired => Session is null;
+
+    /// <summary>Wraps a signed-in session.</summary>
+    public static LoginResult SignedIn(AuthSessionDto session) => new(session);
+
+    /// <summary>Requests a second factor without issuing tokens.</summary>
+    public static LoginResult Challenge() => new((AuthSessionDto?)null);
+}
+
+/// <summary>Second-factor challenge returned by the login endpoint.</summary>
+/// <param name="Status">Machine-readable status, always <c>mfa_required</c>.</param>
+public record MfaChallengeDto(string Status)
+{
+    /// <summary>Creates the standard challenge payload.</summary>
+    public static MfaChallengeDto Required() => new(LoginResult.MfaRequiredStatus);
+}
+
 /// <summary>Access token and expiry produced by the token service.</summary>
 /// <param name="Value">Serialized JWT.</param>
 /// <param name="ExpiresAt">UTC expiry.</param>
@@ -45,6 +74,9 @@ public interface IUserAccountRepository
 
     /// <summary>Marks an account as modified.</summary>
     void Update(UserAccount account);
+
+    /// <summary>Reloads a tracked account after an optimistic-concurrency conflict; false when it no longer exists.</summary>
+    Task<bool> ReloadAsync(UserAccount account, CancellationToken ct = default);
 }
 
 /// <summary>Persistence contract for refresh tokens.</summary>

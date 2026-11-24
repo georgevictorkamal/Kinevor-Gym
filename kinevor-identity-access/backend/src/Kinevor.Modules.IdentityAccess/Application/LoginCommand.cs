@@ -13,7 +13,7 @@ public record LoginCommand(
     string Email,
     string Password,
     string? MfaCode = null,
-    string? RecoveryCode = null) : IRequest<AuthSessionDto>;
+    string? RecoveryCode = null) : IRequest<LoginResult>;
 
 /// <summary>Handles <see cref="LoginCommand"/>.</summary>
 public class LoginHandler(
@@ -22,19 +22,21 @@ public class LoginHandler(
     IPasswordHasher passwordHasher,
     IAuthTokenService tokens,
     IMfaService mfa,
+    IMfaSecretProtector secretProtector,
     IIdentityUnitOfWork unitOfWork,
     TimeProvider timeProvider)
-    : IRequestHandler<LoginCommand, AuthSessionDto>
+    : IRequestHandler<LoginCommand, LoginResult>
 {
     private const string DummyPasswordHash =
         "600000.WYAavA/d4rooJPeQ4XOFJQ==.sSvFCVk0v1zH7QknuccrMJFpT4Df28j4KOHavBYynpE=";
 
     private const string InvalidCredentials = "Invalid e-mail or password.";
     private const int MaxFailedLoginAttempts = 5;
+    private const int MaxConcurrencyRetries = 3;
     private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
 
-    /// <summary>Verifies credentials and persists a refresh token.</summary>
-    public async Task<AuthSessionDto> Handle(LoginCommand command, CancellationToken ct)
+    /// <summary>Verifies credentials and either persists a refresh token or requests a second factor.</summary>
+    public async Task<LoginResult> Handle(LoginCommand command, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(command);
 
@@ -59,21 +61,26 @@ public class LoginHandler(
         if (!account.IsActive || !passwordValid)
         {
             if (account.IsActive)
-            {
-                account.RegisterFailedLogin(now, MaxFailedLoginAttempts, LockoutDuration);
-                users.Update(account);
-                await unitOfWork.SaveChangesAsync(ct);
-            }
+                await RegisterFailedLoginAsync(account, now, ct);
 
             throw new AuthenticationFailedException(InvalidCredentials);
         }
 
-        if (account.MfaEnabled && !VerifySecondFactor(account, command, now))
+        if (account.MfaEnabled)
         {
-            account.RegisterFailedLogin(now, MaxFailedLoginAttempts, LockoutDuration);
-            users.Update(account);
-            await unitOfWork.SaveChangesAsync(ct);
-            throw new AuthenticationFailedException(InvalidCredentials);
+            var hasMfaCode = !string.IsNullOrWhiteSpace(command.MfaCode);
+            var hasRecoveryCode = !string.IsNullOrWhiteSpace(command.RecoveryCode);
+
+            // A correct password without a factor is a challenge, not a failure. The
+            // client must resubmit with the code and must keep the password.
+            if (!hasMfaCode && !hasRecoveryCode)
+                return LoginResult.Challenge();
+
+            if (!TryVerifySecondFactor(account, command, now))
+            {
+                await RegisterFailedLoginAsync(account, now, ct);
+                throw new AuthenticationFailedException(InvalidCredentials);
+            }
         }
 
         if (passwordHasher.NeedsRehash(account.PasswordHash))
@@ -84,17 +91,24 @@ public class LoginHandler(
 
         var session = AuthSessionFactory.Issue(account, tokens, now);
         refreshTokens.Add(RefreshToken.Create(account.Id, tokens.HashRefreshToken(session.RefreshToken), now));
-        await unitOfWork.SaveChangesAsync(ct);
-        return session;
+
+        // A losing TOTP or recovery-code race must not be retried into a second
+        // success; exactly one concurrent second-factor use wins.
+        if (!await unitOfWork.TrySaveChangesAsync(ct))
+            throw new AuthenticationFailedException(InvalidCredentials);
+
+        return LoginResult.SignedIn(session);
     }
 
-    private bool VerifySecondFactor(UserAccount account, LoginCommand command, DateTime now)
+    private bool TryVerifySecondFactor(UserAccount account, LoginCommand command, DateTime now)
     {
-        if (string.IsNullOrWhiteSpace(account.MfaSecret))
+        var secret = MfaSecretAccess.TryUnprotect(secretProtector, account.MfaSecret);
+        if (secret is null)
             return false;
 
         if (!string.IsNullOrWhiteSpace(command.MfaCode)
-            && mfa.VerifyCode(account.MfaSecret, command.MfaCode, now))
+            && mfa.TryVerifyCode(secret, command.MfaCode, now, out var matchedStep)
+            && account.TryAcceptMfaStep(matchedStep))
         {
             return true;
         }
@@ -102,8 +116,30 @@ public class LoginHandler(
         if (string.IsNullOrWhiteSpace(command.RecoveryCode))
             return false;
 
-        var hash = mfa.HashRecoveryCode(command.RecoveryCode);
-        return account.ConsumeRecoveryCode(hash);
+        return account.ConsumeRecoveryCode(mfa.HashRecoveryCode(command.RecoveryCode));
+    }
+
+    private async Task RegisterFailedLoginAsync(UserAccount account, DateTime now, CancellationToken ct)
+    {
+        for (var attempt = 0; attempt <= MaxConcurrencyRetries; attempt++)
+        {
+            if (!account.IsActive || account.IsLockedOut(now))
+                return;
+
+            account.RegisterFailedLogin(now, MaxFailedLoginAttempts, LockoutDuration);
+            users.Update(account);
+
+            if (await unitOfWork.TrySaveChangesAsync(ct))
+                return;
+
+            if (attempt == MaxConcurrencyRetries)
+                return;
+
+            // Another request changed the account first. Reload before retrying so
+            // parallel failures each advance the counter instead of overwriting it.
+            if (!await users.ReloadAsync(account, ct))
+                return;
+        }
     }
 }
 

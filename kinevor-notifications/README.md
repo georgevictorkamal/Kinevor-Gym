@@ -242,6 +242,10 @@ Environment variables use the same keys with double underscores, for example
 `Notifications__Smtp__Host` and `Notifications__Smtp__Password`. Options are
 validated at startup. Push and in-app notifications keep the simulated path,
 and SMTP failures are recorded on the notification with a bounded reason.
+Members see a generic delivery failure; the provider exception and notification
+id are written to the host log so operators retain the diagnostic detail.
+Credentials are rejected unless `UseStartTls` is enabled, and the user name and
+password must be configured together.
 
 For local capture without a server, set `Notifications:Smtp:PickupDirectory` to
 a folder. The transport writes `.eml` files there instead of connecting to a
@@ -263,7 +267,7 @@ platform's secret manager in production.
 | Flutter tests | `cd mobile\packages\kinevor_notifications; flutter test` |
 | Flutter format | `cd mobile\packages\kinevor_notifications; dart format --output=none --set-exit-if-changed lib test example/lib` |
 
-The backend suite contains 30 domain and API tests covering lifecycle rules,
+The backend suite contains 32 domain and API tests covering lifecycle rules,
 member isolation, preferences, devices, templates, compose, broadcast,
 suppression failures, scheduled dispatch, SMTP delivery and role policies. The
 Flutter suite covers the HTTP client, all three screens and golden images.

@@ -82,6 +82,7 @@ public sealed class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(payment => payment.Description).HasMaxLength(200).IsRequired();
         builder.Property(payment => payment.Reference).HasMaxLength(80).IsRequired();
         builder.HasIndex(payment => payment.Reference).IsUnique();
+        builder.Property(payment => payment.ProviderReference).HasMaxLength(100);
         builder.Property(payment => payment.Notes).HasMaxLength(2000);
         builder.Property(payment => payment.RowVersion).IsConcurrencyToken();
         builder.HasIndex(payment => new { payment.MemberId, payment.PaidAt });
@@ -124,6 +125,8 @@ public sealed class PaymentRefundConfiguration : IEntityTypeConfiguration<Paymen
         builder.HasKey(refund => refund.Id);
         builder.Property(refund => refund.Id).ValueGeneratedNever();
         builder.Property(refund => refund.Reason).HasMaxLength(500).IsRequired();
+        builder.Property(refund => refund.Reference).HasMaxLength(80).IsRequired();
+        builder.Property(refund => refund.ProviderReference).HasMaxLength(100);
         builder.HasIndex(refund => refund.RefundedAt);
         builder.OwnsOne(refund => refund.Amount, money =>
         {

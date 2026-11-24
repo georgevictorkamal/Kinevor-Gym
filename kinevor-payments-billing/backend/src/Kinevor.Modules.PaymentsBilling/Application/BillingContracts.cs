@@ -81,7 +81,7 @@ public record PaymentSummaryDto(
     DateTime CreatedAt);
 
 /// <summary>One refund record belonging to a payment.</summary>
-public record RefundDto(Guid Id, decimal Amount, string Reason, DateTime RefundedAt);
+public record RefundDto(Guid Id, string Reference, decimal Amount, string Reason, DateTime RefundedAt);
 
 /// <summary>Full payment projection including refund history.</summary>
 public record PaymentDetailDto(

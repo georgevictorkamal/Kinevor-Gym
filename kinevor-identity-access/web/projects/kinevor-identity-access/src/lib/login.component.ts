@@ -76,39 +76,83 @@ import { IdentityAccessFacade } from './identity-access.facade';
             </div>
 
             <form (ngSubmit)="submit()" #form="ngForm" class="auth-form">
-              <mat-form-field appearance="outline">
-                <mat-label>E-mail address</mat-label>
-                <input
-                  matInput
-                  name="email"
-                  type="email"
-                  autocomplete="username"
-                  [(ngModel)]="email"
-                  required
-                />
-                <mat-icon matSuffix aria-hidden="true">mail</mat-icon>
-              </mat-form-field>
+              @if (!facade.mfaRequired()) {
+                <mat-form-field appearance="outline">
+                  <mat-label>E-mail address</mat-label>
+                  <input
+                    matInput
+                    name="email"
+                    type="email"
+                    autocomplete="username"
+                    [(ngModel)]="email"
+                    required
+                  />
+                  <mat-icon matSuffix aria-hidden="true">mail</mat-icon>
+                </mat-form-field>
 
-              <mat-form-field appearance="outline">
-                <mat-label>Password</mat-label>
-                <input
-                  matInput
-                  name="password"
-                  [type]="showPassword ? 'text' : 'password'"
-                  autocomplete="current-password"
-                  [(ngModel)]="password"
-                  required
-                />
-                <button
-                  mat-icon-button
-                  matSuffix
-                  type="button"
-                  (click)="showPassword = !showPassword"
-                  [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
-                >
-                  <mat-icon aria-hidden="true">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                <mat-form-field appearance="outline">
+                  <mat-label>Password</mat-label>
+                  <input
+                    matInput
+                    name="password"
+                    [type]="showPassword ? 'text' : 'password'"
+                    autocomplete="current-password"
+                    [(ngModel)]="password"
+                    required
+                  />
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="showPassword = !showPassword"
+                    [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+                  >
+                    <mat-icon aria-hidden="true">{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                </mat-form-field>
+              } @else {
+                <div class="mfa-head">
+                  <span class="eyebrow">Second factor</span>
+                  <h3>Confirm it's you</h3>
+                  <p>
+                    Enter the six-digit code from your authenticator app, or use one of your
+                    recovery codes.
+                  </p>
+                </div>
+
+                @if (!useRecoveryCode) {
+                  <mat-form-field appearance="outline">
+                    <mat-label>Authenticator code</mat-label>
+                    <input
+                      matInput
+                      name="mfaCode"
+                      inputmode="numeric"
+                      autocomplete="one-time-code"
+                      maxlength="6"
+                      pattern="[0-9]*"
+                      [(ngModel)]="mfaCode"
+                    />
+                    <mat-icon matSuffix aria-hidden="true">shield</mat-icon>
+                  </mat-form-field>
+                } @else {
+                  <mat-form-field appearance="outline">
+                    <mat-label>Recovery code</mat-label>
+                    <input
+                      matInput
+                      name="recoveryCode"
+                      autocomplete="off"
+                      autocapitalize="characters"
+                      [(ngModel)]="recoveryCode"
+                    />
+                    <mat-icon matSuffix aria-hidden="true">key</mat-icon>
+                  </mat-form-field>
+                }
+
+                <button type="button" class="text-button" (click)="toggleRecovery()">
+                  <mat-icon aria-hidden="true">{{ useRecoveryCode ? 'shield' : 'key' }}</mat-icon>
+                  {{ useRecoveryCode ? 'Use an authenticator code' : 'Use a recovery code' }}
                 </button>
-              </mat-form-field>
+              }
 
               @if (facade.error(); as error) {
                 <p class="form-error" role="alert"><mat-icon aria-hidden="true">error</mat-icon>{{ error }}</p>
@@ -119,14 +163,21 @@ import { IdentityAccessFacade } from './identity-access.facade';
                 color="primary"
                 type="submit"
                 class="submit"
-                [disabled]="facade.loading() || !email || !password"
+                [disabled]="facade.loading() || !canSubmit()"
               >
                 @if (facade.loading()) {
                   <mat-spinner diameter="20" class="btn-spinner" />
                 }
-                Sign in
-                <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+                {{ facade.mfaRequired() ? 'Verify and sign in' : 'Sign in' }}
+                <mat-icon aria-hidden="true">{{ facade.mfaRequired() ? 'verified_user' : 'arrow_forward' }}</mat-icon>
               </button>
+
+              @if (facade.mfaRequired()) {
+                <button type="button" class="text-button back" (click)="cancelMfa()">
+                  <mat-icon aria-hidden="true">arrow_back</mat-icon>
+                  Back to password
+                </button>
+              }
             </form>
 
             <div class="demo-accounts">
@@ -182,6 +233,13 @@ import { IdentityAccessFacade } from './identity-access.facade';
     .submit { width:100%; height:52px; margin-top:8px; font-size:15px; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
     .form-error { display:flex; align-items:center; gap:6px; color:var(--color-error); font-size:13px; margin:0 0 4px; }
     .form-error mat-icon { font-size:17px; width:17px; height:17px; }
+    .mfa-head { display:flex; flex-direction:column; gap:4px; margin:4px 0 16px; }
+    .mfa-head h3 { margin:0; font-size:20px; letter-spacing:-.02em; color:var(--color-text); }
+    .mfa-head p { margin:0; color:var(--color-text-muted); font-size:13px; line-height:1.55; }
+    .text-button { display:inline-flex; align-items:center; justify-content:flex-start; gap:6px; width:fit-content; padding:4px 0; border:0; background:none; color:var(--color-accent-text); font:inherit; font-size:13px; font-weight:600; cursor:pointer; }
+    .text-button mat-icon { font-size:17px; width:17px; height:17px; }
+    .text-button:hover { text-decoration:underline; }
+    .text-button.back { margin:4px auto 0; color:var(--color-text-muted); }
     .demo-accounts { margin-top:28px; padding-top:20px; border-top:1px solid var(--color-border); display:flex; flex-direction:column; gap:8px; }
     .demo-title { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--color-text-muted); margin-bottom:2px; }
     .demo-account { display:flex; align-items:center; gap:10px; width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--color-border); background:var(--color-surface); color:var(--color-text); cursor:pointer; font:inherit; text-align:start; transition:border-color .18s ease, background .18s ease; }
@@ -218,20 +276,68 @@ export class LoginComponent {
   email = 'admin@kinevor.demo';
   /** Current password input. */
   password = 'Kinevor!2026';
+  /** Current authenticator code. */
+  mfaCode = '';
+  /** Current recovery code. */
+  recoveryCode = '';
+  /** Whether the second-factor form accepts a recovery code. */
+  useRecoveryCode = false;
   /** Whether the password is rendered in clear text. */
   showPassword = false;
 
-  /** Submits credentials and navigates to the session view on success. */
-  async submit(): Promise<void> {
-    if (!this.email || !this.password || this.facade.loading()) return;
-
-    if (await this.facade.login(this.email.trim(), this.password)) {
-      await this.router.navigateByUrl('/session');
+  /** Whether the current step has enough input to submit. */
+  canSubmit(): boolean {
+    if (this.facade.mfaRequired()) {
+      return this.useRecoveryCode
+        ? this.recoveryCode.trim().length > 0
+        : /^\d{6}$/.test(this.mfaCode.trim());
     }
+
+    return Boolean(this.email && this.password);
+  }
+
+  /** Submits credentials or the second factor and navigates on success. */
+  async submit(): Promise<void> {
+    if (this.facade.loading() || !this.canSubmit()) return;
+
+    const verifyingSecondFactor = this.facade.mfaRequired();
+    const signedIn = await this.facade.login(
+      this.email.trim(),
+      this.password,
+      verifyingSecondFactor && !this.useRecoveryCode ? this.mfaCode.trim() : undefined,
+      verifyingSecondFactor && this.useRecoveryCode ? this.recoveryCode.trim() : undefined,
+    );
+
+    if (signedIn) {
+      await this.router.navigateByUrl('/session');
+      return;
+    }
+
+    if (verifyingSecondFactor) {
+      this.mfaCode = '';
+      this.recoveryCode = '';
+    }
+  }
+
+  /** Switches the second step between authenticator and recovery codes. */
+  toggleRecovery(): void {
+    this.useRecoveryCode = !this.useRecoveryCode;
+    this.mfaCode = '';
+    this.recoveryCode = '';
+    this.facade.clearError();
+  }
+
+  /** Returns to the password form from the second step. */
+  cancelMfa(): void {
+    this.mfaCode = '';
+    this.recoveryCode = '';
+    this.useRecoveryCode = false;
+    this.facade.cancelMfaChallenge();
   }
 
   /** Prefills the form with a seeded account. */
   useAccount(email: string): void {
+    this.cancelMfa();
     this.email = email;
     this.password = 'Kinevor!2026';
   }

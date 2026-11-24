@@ -8,18 +8,26 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kinevor.Modules.IdentityAccess.Api;
 
 /// <summary>Authentication endpoints for the identity module.</summary>
-[ApiController, Route("api/v1/auth")]
+[ApiController, Route("api/v1/auth"), Produces("application/json")]
 public class AuthController(ISender sender) : ControllerBase
 {
-    /// <summary>Authenticates an account and returns an access/refresh token pair.</summary>
+    /// <summary>
+    /// Authenticates an account and returns an access/refresh token pair. When the password is
+    /// valid but a second factor is enrolled, <c>data.status</c> is <c>mfa_required</c> instead.
+    /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponse<AuthSessionDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<AuthSessionDto>>> Login(
-        [FromBody] LoginCommand command, CancellationToken ct)
+    [ProducesResponseType(typeof(ApiResponse<MfaChallengeDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Login([FromBody] LoginCommand command, CancellationToken ct)
     {
-        var session = await sender.Send(command, ct);
-        return Ok(ApiResponse<AuthSessionDto>.Ok(session, "Signed in."));
+        var result = await sender.Send(command, ct);
+        if (result.Session is { } session)
+            return Ok(ApiResponse<AuthSessionDto>.Ok(session, "Signed in."));
+
+        return Ok(ApiResponse<MfaChallengeDto>.Ok(
+            MfaChallengeDto.Required(),
+            "Second factor required."));
     }
 
     /// <summary>Rotates a refresh token.</summary>

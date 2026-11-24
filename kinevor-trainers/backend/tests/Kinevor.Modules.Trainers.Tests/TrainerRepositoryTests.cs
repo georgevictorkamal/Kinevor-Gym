@@ -91,6 +91,22 @@ public sealed class TrainerRepositoryTests : IAsyncLifetime
         Assert.Contains("LOWER", command, StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>Search treats SQL wildcard characters as literal input.</summary>
+    [Fact]
+    public async Task Search_EscapesLikeWildcards()
+    {
+        await AddTrainer("Layla", "Hassan", "layla@kinevor.demo");
+        await AddTrainer("Omar", "Khaled", "omar@kinevor.demo");
+
+        var percent = await _repository.SearchAsync("layla%", 1, 10, onlyActive: false);
+        var underscore = await _repository.SearchAsync("_ayla", 1, 10, onlyActive: false);
+        var everyRecord = await _repository.SearchAsync("%", 1, 10, onlyActive: false);
+
+        Assert.Empty(percent.Items);
+        Assert.Empty(underscore.Items);
+        Assert.Empty(everyRecord.Items);
+    }
+
     /// <summary>Search can restrict results to active trainers.</summary>
     [Fact]
     public async Task Search_OnlyActiveFiltersStatus()

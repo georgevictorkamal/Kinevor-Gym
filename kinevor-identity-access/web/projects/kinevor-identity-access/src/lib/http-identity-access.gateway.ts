@@ -7,6 +7,9 @@ import {
   IDENTITY_API_BASE_URL,
   IdentityAccessGateway,
   LoginRequest,
+  LoginResponse,
+  MfaChallenge,
+  MfaRequiredError,
   UserAccount,
 } from './auth.model';
 
@@ -16,11 +19,16 @@ export class HttpIdentityAccessGateway implements IdentityAccessGateway {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = inject(IDENTITY_API_BASE_URL).replace(/\/$/, '');
 
-  /** Exchanges credentials for a token pair. */
+  /** Exchanges credentials for a token pair, or asks the caller for a second factor. */
   async login(request: LoginRequest): Promise<AuthSession> {
     const response = await firstValueFrom(
-      this.http.post<ApiEnvelope<AuthSession>>(`${this.baseUrl}/auth/login`, request),
+      this.http.post<ApiEnvelope<LoginResponse>>(`${this.baseUrl}/auth/login`, request),
     );
+
+    if (isMfaChallenge(response.data)) {
+      throw new MfaRequiredError();
+    }
+
     return response.data;
   }
 
@@ -52,4 +60,9 @@ export class HttpIdentityAccessGateway implements IdentityAccessGateway {
   private bearer(token: string): HttpHeaders {
     return new HttpHeaders({ Authorization: `Bearer ${token}` });
   }
+}
+
+/** Narrows a login body to the second-factor challenge. */
+function isMfaChallenge(data: LoginResponse): data is MfaChallenge {
+  return 'status' in data && data.status === 'mfa_required';
 }

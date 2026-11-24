@@ -43,6 +43,30 @@ void main() {
     );
   });
 
+  testWidgets('login second-factor golden', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: KinevorIdentityTheme.dark(),
+        home: LoginScreen(
+          repository: FakeIdentityAccessRepository(requireMfa: true),
+          onSignedIn: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    await expectLater(
+      find.byType(LoginScreen),
+      matchesGoldenFile('goldens/login-mfa.png'),
+    );
+  });
+
   testWidgets('session golden', (tester) async {
     await tester.binding.setSurfaceSize(const Size(390, 844));
     addTearDown(() => tester.binding.setSurfaceSize(null));

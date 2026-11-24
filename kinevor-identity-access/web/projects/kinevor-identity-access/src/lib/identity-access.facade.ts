@@ -4,6 +4,7 @@ import {
   AUTH_SESSION_STORAGE_KEY,
   AuthSession,
   IDENTITY_ACCESS_GATEWAY,
+  MfaRequiredError,
   UserAccount,
 } from './auth.model';
 
@@ -15,6 +16,7 @@ export class IdentityAccessFacade {
   private readonly sessionState = signal<AuthSession | null>(this.restore());
   private readonly loadingState = signal(false);
   private readonly errorState = signal<string | null>(null);
+  private readonly mfaRequiredState = signal(false);
 
   /** Current session, or null after logout/expiry. */
   readonly session = this.sessionState.asReadonly();
@@ -24,6 +26,8 @@ export class IdentityAccessFacade {
   readonly loading = this.loadingState.asReadonly();
   /** Human-readable failure from the last operation. */
   readonly error = this.errorState.asReadonly();
+  /** Whether the API requires an authenticator or recovery code for this login. */
+  readonly mfaRequired = this.mfaRequiredState.asReadonly();
   /** Whether a stored session is available. */
   readonly isAuthenticated = computed(() => this.sessionState() !== null);
 
@@ -31,17 +35,35 @@ export class IdentityAccessFacade {
   async login(email: string, password: string, mfaCode?: string, recoveryCode?: string): Promise<boolean> {
     this.loadingState.set(true);
     this.errorState.set(null);
+    const secondFactorAttempt = Boolean(mfaCode || recoveryCode);
 
     try {
       const session = await this.gateway.login({ email, password, mfaCode, recoveryCode });
+      this.mfaRequiredState.set(false);
       this.store(session);
       return true;
     } catch (error) {
-      this.errorState.set(this.messageFor(error));
+      if (error instanceof MfaRequiredError) {
+        this.mfaRequiredState.set(true);
+        return false;
+      }
+
+      this.errorState.set(this.messageFor(error, secondFactorAttempt));
       return false;
     } finally {
       this.loadingState.set(false);
     }
+  }
+
+  /** Returns from the second-factor step to the password form. */
+  cancelMfaChallenge(): void {
+    this.mfaRequiredState.set(false);
+    this.errorState.set(null);
+  }
+
+  /** Clears the last failure without changing the current step. */
+  clearError(): void {
+    this.errorState.set(null);
   }
 
   /** Refreshes the signed-in account from the API. */
@@ -98,10 +120,11 @@ export class IdentityAccessFacade {
     }
   }
 
-  /** Clears the session and persisted copy. */
+  /** Clears the session, second-factor step and persisted copy. */
   clear(): void {
     this.sessionState.set(null);
     this.errorState.set(null);
+    this.mfaRequiredState.set(false);
     try {
       localStorage.removeItem(AUTH_SESSION_STORAGE_KEY);
     } catch {
@@ -129,10 +152,14 @@ export class IdentityAccessFacade {
     }
   }
 
-  private messageFor(error: unknown): string {
+  private messageFor(error: unknown, secondFactorAttempt = false): string {
     if (error instanceof HttpErrorResponse) {
       if (error.status === 0) return 'The identity API is not reachable. Start the demo host on port 5082.';
-      if (error.status === 401) return 'Invalid e-mail or password.';
+      if (error.status === 401) {
+        return secondFactorAttempt
+          ? 'That code is invalid or has already been used.'
+          : 'Invalid e-mail or password.';
+      }
       return (error.error as { message?: string } | null)?.message ?? 'The request failed. Try again.';
     }
 

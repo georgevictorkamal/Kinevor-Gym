@@ -76,6 +76,7 @@ export interface PaymentSummary {
 
 export interface Refund {
   readonly id: string;
+  readonly reference: string;
   readonly amount: number;
   readonly reason: string;
   readonly refundedAt: string;

@@ -69,7 +69,7 @@ public class PaymentsController(ISender sender) : ControllerBase
         [FromBody] RefundPaymentRequest request,
         CancellationToken ct)
     {
-        var result = await sender.Send(new RefundPaymentCommand(id, request.Amount, request.Reason), ct);
+        var result = await sender.Send(new RefundPaymentCommand(id, request.Amount, request.Reason, request.Reference), ct);
         return Ok(ApiResponse<PaymentDetailDto>.Ok(result, "Refund recorded."));
     }
 }
@@ -87,4 +87,7 @@ public record RecordPaymentRequest(
     string? Notes = null);
 
 /// <summary>Refund request body.</summary>
-public record RefundPaymentRequest(decimal Amount, string Reason);
+/// <param name="Amount">Amount to return.</param>
+/// <param name="Reason">Staff-supplied reason.</param>
+/// <param name="Reference">Optional caller reference; retries with the same value are idempotent.</param>
+public record RefundPaymentRequest(decimal Amount, string Reason, string? Reference = null);

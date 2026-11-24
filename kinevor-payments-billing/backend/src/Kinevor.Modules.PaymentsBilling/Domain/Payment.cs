@@ -19,14 +19,28 @@ public sealed class PaymentRefund : Entity
     /// <summary>Reason recorded by staff.</summary>
     public string Reason { get; private set; } = string.Empty;
 
+    /// <summary>Caller refund reference, unique per payment and used for idempotency.</summary>
+    public string Reference { get; private set; } = string.Empty;
+
+    /// <summary>Provider refund id, when the refund went through a gateway.</summary>
+    public string? ProviderReference { get; private set; }
+
     /// <summary>UTC time the refund was issued.</summary>
     public DateTime RefundedAt { get; private set; }
 
-    internal static PaymentRefund Create(Guid paymentId, Money amount, string reason, DateTime now) => new()
+    internal static PaymentRefund Create(
+        Guid paymentId,
+        Money amount,
+        string reason,
+        DateTime now,
+        string? reference = null,
+        string? providerReference = null) => new()
     {
         PaymentId = paymentId,
         Amount = amount,
         Reason = reason.Trim(),
+        Reference = string.IsNullOrWhiteSpace(reference) ? string.Empty : reference.Trim().ToUpperInvariant(),
+        ProviderReference = string.IsNullOrWhiteSpace(providerReference) ? null : providerReference.Trim(),
         RefundedAt = now,
     };
 }
@@ -68,6 +82,9 @@ public sealed class Payment : AggregateRoot
     /// <summary>Simulated gateway transaction reference, unique per payment.</summary>
     public string Reference { get; private set; } = string.Empty;
 
+    /// <summary>Provider transaction id returned by the gateway, when one was used.</summary>
+    public string? ProviderReference { get; private set; }
+
     /// <summary>Optional staff notes.</summary>
     public string? Notes { get; private set; }
 
@@ -101,7 +118,8 @@ public sealed class Payment : AggregateRoot
         PaymentMethod method,
         string reference,
         DateTime now,
-        string? notes = null)
+        string? notes = null,
+        string? providerReference = null)
     {
         if (memberId == Guid.Empty)
             return Result.Failure<Payment>(Error.Validation("MemberId", "Member id is required."));
@@ -115,6 +133,8 @@ public sealed class Payment : AggregateRoot
             return Result.Failure<Payment>(Error.Validation("Reference", "Payment reference is required."));
         if (reference.Trim().Length > 80)
             return Result.Failure<Payment>(Error.Validation("Reference", "Payment reference cannot exceed 80 characters."));
+        if (providerReference is not null && providerReference.Trim().Length > 100)
+            return Result.Failure<Payment>(Error.Validation("ProviderReference", "Provider reference cannot exceed 100 characters."));
 
         var moneyResult = Money.Create(amount, currency);
         if (moneyResult.IsFailure)
@@ -134,13 +154,14 @@ public sealed class Payment : AggregateRoot
             Method = method,
             Status = PaymentStatus.Paid,
             Reference = reference.Trim().ToUpperInvariant(),
+            ProviderReference = string.IsNullOrWhiteSpace(providerReference) ? null : providerReference.Trim(),
             Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim(),
             PaidAt = now,
         });
     }
 
-    /// <summary>Issues a full or partial refund and updates the status.</summary>
-    public Result Refund(Money amount, string reason, DateTime now)
+    /// <summary>Validates a refund without changing the aggregate.</summary>
+    public Result ValidateRefund(Money amount, string reason, string? reference = null)
     {
         ArgumentNullException.ThrowIfNull(amount);
 
@@ -155,8 +176,34 @@ public sealed class Payment : AggregateRoot
                 $"Refund exceeds the remaining refundable amount of {Amount.Currency} {RefundableAmount.Amount:F2}."));
         if (string.IsNullOrWhiteSpace(reason))
             return Result.Failure(Error.Validation("Reason", "A refund reason is required."));
+        if (reason.Trim().Length > 500)
+            return Result.Failure(Error.Validation("Reason", "A refund reason cannot exceed 500 characters."));
+        if (!string.IsNullOrWhiteSpace(reference))
+        {
+            var normalized = reference.Trim();
+            if (normalized.Length > 80)
+                return Result.Failure(Error.Validation("Reference", "Refund reference cannot exceed 80 characters."));
+            if (Refunds.Any(refund => string.Equals(refund.Reference, normalized, StringComparison.OrdinalIgnoreCase)))
+                return Result.Failure(Error.Business("Payment.DuplicateRefundReference",
+                    $"Refund reference '{normalized.ToUpperInvariant()}' was already used for this payment."));
+        }
 
-        Refunds.Add(PaymentRefund.Create(Id, amount, reason, now));
+        return Result.Success();
+    }
+
+    /// <summary>Issues a full or partial refund and updates the status.</summary>
+    public Result Refund(
+        Money amount,
+        string reason,
+        DateTime now,
+        string? reference = null,
+        string? providerReference = null)
+    {
+        var validation = ValidateRefund(amount, reason, reference);
+        if (validation.IsFailure)
+            return validation;
+
+        Refunds.Add(PaymentRefund.Create(Id, amount, reason, now, reference, providerReference));
         RefundedAmount = Money.Of(RefundedAmount.Amount + amount.Amount, Amount.Currency);
         RefundedAt = now;
         Status = RefundedAmount.Amount >= Amount.Amount ? PaymentStatus.Refunded : PaymentStatus.PartiallyRefunded;

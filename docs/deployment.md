@@ -138,6 +138,7 @@ variables use double underscores for nesting.
 | `Cors__AllowedOrigins__0…N` | all APIs | Exact browser origins allowed to call the API |
 | `Jwt__SigningKey` | identity | At least 32 characters; a random key is generated when omitted |
 | `Jwt__Issuer`, `Jwt__Audience` | identity | Token issuer and audience, defaults `kinevor.identity` / `kinevor.api` |
+| `DataProtection__KeysPath` | identity | Directory for the Data Protection key ring used to encrypt TOTP secrets; `/data/keys` in Compose |
 | `RateLimiting__PermitLimit` | public site | Requests per window, default `600` |
 | `RateLimiting__WindowSeconds` | public site | Window length, default `60` |
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -196,44 +197,33 @@ public class IdentityApiTests
         await LoginAsync(client, "staff@kinevor.demo", "Kinevor!2026");
     }
 
-    /// <summary>MFA enrolment, TOTP login and single-use recovery codes work end to end.</summary>
+    /// <summary>
+    /// MFA enrolment, challenge, replay rejection, TOTP login and single-use recovery
+    /// codes work end to end. The challenge is a 200 and does not count as a failure.
+    /// </summary>
     [Fact]
-    public async Task Mfa_EnrolConfirmLoginAndRecoveryCode()
+    public async Task Mfa_EnrolChallengeReplayLoginAndRecoveryCode()
     {
         using var factory = new TestWebApplicationFactory();
         using var adminClient = factory.CreateClient();
 
-        var session = await LoginAsync(adminClient, "admin@kinevor.demo", "Kinevor!2026");
-        adminClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+        var (secret, recoveryCodes) = await EnrolMfaAsync(factory, adminClient);
+        var confirmationCode = Totp.ComputeCode(secret, factory.Clock.GetUtcNow().UtcDateTime);
 
-        var enrolResponse = await adminClient.PostAsync("/api/v1/auth/mfa/enrol", null);
-        Assert.Equal(HttpStatusCode.OK, enrolResponse.StatusCode);
-        using var enrolDocument = JsonDocument.Parse(await enrolResponse.Content.ReadAsStringAsync());
-        var enrolment = enrolDocument.RootElement.GetProperty("data");
-        var secret = enrolment.GetProperty("secret").GetString()!;
-        Assert.StartsWith("otpauth://totp/", enrolment.GetProperty("otpAuthUri").GetString());
+        // Five correct-password challenges would lock the account if they counted as failures.
+        for (var attempt = 0; attempt < 5; attempt++)
+            await AssertMfaRequiredAsync(factory, "admin@kinevor.demo", "Kinevor!2026");
 
-        var confirmResponse = await adminClient.PostAsJsonAsync("/api/v1/auth/mfa/confirm", new
-        {
-            code = Totp.ComputeCode(secret, DateTime.UtcNow),
-        });
-        Assert.Equal(HttpStatusCode.OK, confirmResponse.StatusCode);
-        using var confirmDocument = JsonDocument.Parse(await confirmResponse.Content.ReadAsStringAsync());
-        var recoveryCodes = confirmDocument.RootElement.GetProperty("data")
-            .GetProperty("recoveryCodes")
-            .EnumerateArray()
-            .Select(item => item.GetString()!)
-            .ToList();
-        Assert.Equal(8, recoveryCodes.Count);
+        using var replayClient = factory.CreateClient();
+        var replay = await PostLoginAsync(
+            replayClient, "admin@kinevor.demo", "Kinevor!2026", mfaCode: confirmationCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, replay.StatusCode);
 
-        using var withoutCode = factory.CreateClient();
-        var missing = await PostLoginAsync(withoutCode, "admin@kinevor.demo", "Kinevor!2026");
-        Assert.Equal(HttpStatusCode.Unauthorized, missing.StatusCode);
-
+        factory.Clock.UtcNow = factory.Clock.UtcNow.AddSeconds(Totp.StepSeconds);
         using var withTotp = factory.CreateClient();
         var totpLogin = await PostLoginAsync(
             withTotp, "admin@kinevor.demo", "Kinevor!2026",
-            mfaCode: Totp.ComputeCode(secret, DateTime.UtcNow));
+            mfaCode: Totp.ComputeCode(secret, factory.Clock.GetUtcNow().UtcDateTime));
         Assert.Equal(HttpStatusCode.OK, totpLogin.StatusCode);
 
         using var withRecovery = factory.CreateClient();
@@ -249,6 +239,55 @@ public class IdentityApiTests
         Assert.Equal(HttpStatusCode.Unauthorized, reused.StatusCode);
     }
 
+    /// <summary>A wrong password for an MFA account stays indistinguishable from an unknown account.</summary>
+    [Fact]
+    public async Task Login_WrongPasswordForMfaAccountRemainsGeneric()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = factory.CreateClient();
+        await EnrolMfaAsync(factory, client);
+
+        var wrong = await PostLoginAsync(client, "admin@kinevor.demo", "not-the-password");
+        var unknown = await PostLoginAsync(client, "nobody@kinevor.demo", "Kinevor!2026");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, wrong.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, unknown.StatusCode);
+        Assert.Equal(
+            await unknown.Content.ReadAsStringAsync(),
+            await wrong.Content.ReadAsStringAsync());
+    }
+
+    /// <summary>A wrong TOTP code counts toward the lockout, unlike a missing-code challenge.</summary>
+    [Fact]
+    public async Task Mfa_WrongCodeLocksAccount()
+    {
+        using var factory = new TestWebApplicationFactory();
+        using var client = factory.CreateClient();
+        var (secret, _) = await EnrolMfaAsync(factory, client);
+
+        var now = factory.Clock.GetUtcNow().UtcDateTime;
+        var invalidCode = FindInvalidCode(secret, now);
+        for (var attempt = 0; attempt < 5; attempt++)
+        {
+            var failure = await PostLoginAsync(
+                client, "admin@kinevor.demo", "Kinevor!2026", mfaCode: invalidCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, failure.StatusCode);
+        }
+
+        // Move to a fresh TOTP step so the correct code is not a replay; the lockout must still win.
+        factory.Clock.UtcNow = factory.Clock.UtcNow.AddSeconds(Totp.StepSeconds);
+        var locked = await PostLoginAsync(
+            client, "admin@kinevor.demo", "Kinevor!2026",
+            mfaCode: Totp.ComputeCode(secret, factory.Clock.GetUtcNow().UtcDateTime));
+        Assert.Equal(HttpStatusCode.Unauthorized, locked.StatusCode);
+
+        factory.Clock.UtcNow = factory.Clock.UtcNow.AddMinutes(16);
+        var afterLock = await PostLoginAsync(
+            client, "admin@kinevor.demo", "Kinevor!2026",
+            mfaCode: Totp.ComputeCode(secret, factory.Clock.GetUtcNow().UtcDateTime));
+        Assert.Equal(HttpStatusCode.OK, afterLock.StatusCode);
+    }
+
     /// <summary>MFA endpoints require an authenticated caller.</summary>
     [Fact]
     public async Task MfaEnrolment_RequiresAuthentication()
@@ -259,6 +298,63 @@ public class IdentityApiTests
         var response = await client.PostAsync("/api/v1/auth/mfa/enrol", null);
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    private static async Task<(string Secret, IReadOnlyList<string> RecoveryCodes)> EnrolMfaAsync(
+        TestWebApplicationFactory factory,
+        HttpClient client)
+    {
+        var session = await LoginAsync(client, "admin@kinevor.demo", "Kinevor!2026");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
+
+        var enrolResponse = await client.PostAsync("/api/v1/auth/mfa/enrol", null);
+        Assert.Equal(HttpStatusCode.OK, enrolResponse.StatusCode);
+        using var enrolDocument = JsonDocument.Parse(await enrolResponse.Content.ReadAsStringAsync());
+        var enrolment = enrolDocument.RootElement.GetProperty("data");
+        var secret = enrolment.GetProperty("secret").GetString()!;
+        Assert.StartsWith("otpauth://totp/", enrolment.GetProperty("otpAuthUri").GetString());
+
+        var confirmResponse = await client.PostAsJsonAsync("/api/v1/auth/mfa/confirm", new
+        {
+            code = Totp.ComputeCode(secret, factory.Clock.GetUtcNow().UtcDateTime),
+        });
+        Assert.Equal(HttpStatusCode.OK, confirmResponse.StatusCode);
+        using var confirmDocument = JsonDocument.Parse(await confirmResponse.Content.ReadAsStringAsync());
+        var recoveryCodes = confirmDocument.RootElement.GetProperty("data")
+            .GetProperty("recoveryCodes")
+            .EnumerateArray()
+            .Select(item => item.GetString()!)
+            .ToList();
+        Assert.Equal(8, recoveryCodes.Count);
+        return (secret, recoveryCodes);
+    }
+
+    private static async Task AssertMfaRequiredAsync(
+        TestWebApplicationFactory factory,
+        string email,
+        string password)
+    {
+        using var client = factory.CreateClient();
+        var response = await PostLoginAsync(client, email, password);
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        Assert.True(document.RootElement.GetProperty("success").GetBoolean());
+        var data = document.RootElement.GetProperty("data");
+        Assert.Equal(LoginResult.MfaRequiredStatus, data.GetProperty("status").GetString());
+        Assert.False(data.TryGetProperty("accessToken", out _));
+    }
+
+    private static string FindInvalidCode(string secret, DateTime now)
+    {
+        for (var candidate = 0; candidate < 1_000_000; candidate++)
+        {
+            var code = candidate.ToString("D6", CultureInfo.InvariantCulture);
+            if (!Totp.VerifyCode(secret, code, now))
+                return code;
+        }
+
+        throw new InvalidOperationException("Could not find an invalid TOTP code.");
     }
 
     private static Task<HttpResponseMessage> PostLoginAsync(

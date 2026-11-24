@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using Kinevor.Modules.Notifications.Domain;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Kinevor.Modules.Notifications.Application;
@@ -77,8 +78,15 @@ public sealed class SmtpEmailTransport(IOptions<SmtpNotificationOptions> options
 public sealed class SmtpNotificationDelivery(
     NotificationDeliveryPolicy policy,
     IEmailTransport transport,
-    NotificationDeliverySimulator fallback) : INotificationDeliverySimulator
+    NotificationDeliverySimulator fallback,
+    ILogger<SmtpNotificationDelivery> logger) : INotificationDeliverySimulator
 {
+    /// <summary>
+    /// Member-facing reason recorded when the transport fails. Provider messages can contain
+    /// internal host names or mailbox details, so they stay in the log instead.
+    /// </summary>
+    public const string DeliveryFailedReason = "E-mail delivery failed. Please try again later.";
+
     /// <summary>Delivers the notification and records the outcome.</summary>
     public async Task<NotificationDelivery> DeliverAsync(Notification notification, CancellationToken ct = default)
     {
@@ -103,10 +111,11 @@ public sealed class SmtpNotificationDelivery(
         }
         catch (Exception exception)
         {
-            var reason = string.IsNullOrWhiteSpace(exception.Message)
-                ? $"SMTP delivery failed ({exception.GetType().Name})."
-                : $"SMTP delivery failed: {exception.Message}";
-            return policy.MarkFailed(notification, reason, decision.Now);
+            logger.LogError(
+                exception,
+                "SMTP delivery failed for notification {NotificationId}.",
+                notification.Id);
+            return policy.MarkFailed(notification, DeliveryFailedReason, decision.Now);
         }
 
         return policy.MarkSent(notification, decision.Now);

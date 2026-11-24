@@ -14,8 +14,13 @@ builder.Services.AddKinevorOpenTelemetry(builder.Configuration);
 ```
 
 Set `OpenTelemetry:Enabled=true`, optionally `OpenTelemetry:ServiceName`, and the
-standard `OTEL_EXPORTER_OTLP_*` environment variables. ASP.NET Core, `HttpClient`
-and EF Core are instrumented. The method is a no-op when the flag is absent.
+standard `OTEL_EXPORTER_OTLP_*` environment variables. ASP.NET Core and
+`HttpClient` are instrumented. The method is a no-op when the flag is absent.
+
+EF Core instrumentation is not included because its dependency is still
+prerelease. Reference `OpenTelemetry.Instrumentation.EntityFrameworkCore` in the
+host and add `AddEntityFrameworkCoreInstrumentation()` to the tracing pipeline
+yourself when you need database spans.
 
 ## Install
 

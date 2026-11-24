@@ -51,9 +51,16 @@ public sealed class SmtpNotificationOptions
             error = $"{SectionName}:TimeoutSeconds must be positive.";
         else if (string.IsNullOrWhiteSpace(FromAddress))
             error = $"{SectionName}:FromAddress is required.";
+        else if (HasCredentials && (string.IsNullOrWhiteSpace(UserName) || string.IsNullOrWhiteSpace(Password)))
+            error = $"{SectionName}:UserName and Password must be configured together.";
+        else if (HasCredentials && !UseStartTls)
+            error = $"{SectionName}:UseStartTls must be enabled when credentials are configured.";
         else
             error = null;
 
         return error is null;
     }
+
+    private bool HasCredentials =>
+        !string.IsNullOrWhiteSpace(UserName) || !string.IsNullOrWhiteSpace(Password);
 }

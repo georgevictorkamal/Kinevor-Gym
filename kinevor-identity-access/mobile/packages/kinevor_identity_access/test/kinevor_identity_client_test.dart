@@ -81,6 +81,67 @@ void main() {
     expect(account.mfaEnabled, isFalse);
   });
 
+  test('a second-factor challenge raises MfaRequiredException', () async {
+    final client = KinevorIdentityClient(
+      baseUrl: Uri.parse('http://localhost:5082/api/v1'),
+      httpClient: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'success': true,
+            'data': {'status': 'mfa_required'},
+            'message': 'Second factor required.',
+          }),
+          200,
+        ),
+      ),
+    );
+
+    await expectLater(
+      client.login(email: 'admin@kinevor.demo', password: 'Kinevor!2026'),
+      throwsA(isA<MfaRequiredException>()),
+    );
+  });
+
+  test('login forwards the second factor with the credentials', () async {
+    late http.Request captured;
+    final client = KinevorIdentityClient(
+      baseUrl: Uri.parse('http://localhost:5082/api/v1'),
+      httpClient: MockClient((request) async {
+        captured = request;
+        return http.Response(
+          jsonEncode({
+            'success': true,
+            'data': {
+              'accessToken': 'access-1',
+              'refreshToken': 'refresh-1',
+              'expiresAt': '2026-10-20T18:45:00Z',
+              'user': {
+                'id': 'account-1',
+                'email': 'admin@kinevor.demo',
+                'displayName': 'Amara Obi',
+                'role': 'Admin',
+                'mfaEnabled': true,
+              },
+            },
+          }),
+          200,
+        );
+      }),
+    );
+
+    await client.login(
+      email: 'admin@kinevor.demo',
+      password: 'Kinevor!2026',
+      mfaCode: '123456',
+    );
+
+    expect(jsonDecode(captured.body), {
+      'email': 'admin@kinevor.demo',
+      'password': 'Kinevor!2026',
+      'mfaCode': '123456',
+    });
+  });
+
   test('failed login surfaces the API message', () async {
     final client = KinevorIdentityClient(
       baseUrl: Uri.parse('http://localhost:5082/api/v1'),

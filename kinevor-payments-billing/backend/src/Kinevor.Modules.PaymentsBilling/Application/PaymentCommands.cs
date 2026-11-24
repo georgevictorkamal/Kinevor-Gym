@@ -71,6 +71,7 @@ public class RecordPaymentHandler(
         var description = string.IsNullOrWhiteSpace(command.Description)
             ? invoice is null ? "Payment" : $"Payment for {invoice.Number}"
             : command.Description.Trim();
+        string? providerReference = null;
 
         if (command.Method == PaymentMethod.Card)
         {
@@ -86,6 +87,7 @@ public class RecordPaymentHandler(
                 ct);
             if (!capture.Succeeded)
                 throw new DomainException(capture.FailureReason ?? "The payment gateway declined the card payment.");
+            providerReference = capture.ProviderReference;
         }
 
         var result = Payment.Record(
@@ -99,7 +101,8 @@ public class RecordPaymentHandler(
             command.Method,
             reference,
             now,
-            command.Notes);
+            command.Notes,
+            providerReference);
 
         if (result.IsFailure)
             throw new DomainException(result.Error.Message);
@@ -122,16 +125,21 @@ public class RecordPaymentHandler(
 }
 
 /// <summary>Refunds all or part of a captured payment.</summary>
-public record RefundPaymentCommand(Guid PaymentId, decimal Amount, string Reason) : IRequest<PaymentDetailDto>;
+public record RefundPaymentCommand(
+    Guid PaymentId,
+    decimal Amount,
+    string Reason,
+    string? Reference = null) : IRequest<PaymentDetailDto>;
 
-/// <summary>Handles <see cref="RefundPaymentCommand"/>.</summary>
+/// <summary>Handles <see cref="RefundPaymentCommand"/> with reference-level idempotency.</summary>
 public class RefundPaymentHandler(
     IPaymentRepository payments,
     IInvoiceRepository invoices,
+    IPaymentGateway gateway,
     IPaymentsBillingUnitOfWork unitOfWork,
     TimeProvider clock) : IRequestHandler<RefundPaymentCommand, PaymentDetailDto>
 {
-    /// <summary>Validates the refund, updates the linked invoice balance and persists both.</summary>
+    /// <summary>Validates the refund, calls the gateway for card payments and persists both ledgers.</summary>
     public async Task<PaymentDetailDto> Handle(RefundPaymentCommand command, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -142,15 +150,61 @@ public class RefundPaymentHandler(
         if (money.IsFailure)
             throw new DomainException(money.Error.Message);
 
+        var now = clock.GetUtcNow().UtcDateTime;
+        var reference = NormalizeReference(command.Reference, now);
+
+        var existing = payment.Refunds.FirstOrDefault(refund =>
+            string.Equals(refund.Reference, reference, StringComparison.OrdinalIgnoreCase));
+        if (existing is not null)
+        {
+            if (existing.Amount.Amount != command.Amount)
+                throw new ConflictException(
+                    $"Refund reference '{reference}' was already used with a different amount.");
+            return BillingMapper.ToDetail(payment);
+        }
+
+        var validation = payment.ValidateRefund(money.Value, command.Reason, reference);
+        if (validation.IsFailure)
+            throw new DomainException(validation.Error.Message);
+
         Invoice? invoice = null;
         if (payment.InvoiceId is { } invoiceId)
         {
             invoice = await invoices.GetByIdAsync(invoiceId, ct)
                 ?? throw new NotFoundException("Invoice", invoiceId);
+            var invoiceValidation = invoice.ValidateRefund(command.Amount);
+            if (invoiceValidation.IsFailure)
+                throw new DomainException(invoiceValidation.Error.Message);
         }
 
-        var now = clock.GetUtcNow().UtcDateTime;
-        var result = payment.Refund(money.Value, command.Reason, now);
+        string? providerRefundReference = null;
+        if (payment.Method == PaymentMethod.Card)
+        {
+            if (string.IsNullOrWhiteSpace(payment.ProviderReference))
+                throw new DomainException(
+                    "The card payment has no provider reference, so it cannot be refunded through the gateway.");
+
+            var providerRefund = await gateway.RefundAsync(
+                new PaymentGatewayRefundRequest(
+                    payment.Id,
+                    payment.Reference,
+                    payment.ProviderReference,
+                    reference,
+                    command.Amount,
+                    payment.Amount.Currency,
+                    command.Reason.Trim()),
+                ct);
+            if (!providerRefund.Succeeded)
+                throw new DomainException(providerRefund.FailureReason ?? "The payment gateway declined the refund.");
+            providerRefundReference = providerRefund.ProviderRefundReference;
+        }
+
+        var result = payment.Refund(
+            money.Value,
+            command.Reason,
+            now,
+            reference,
+            providerRefundReference);
         if (result.IsFailure)
             throw new DomainException(result.Error.Message);
 
@@ -164,4 +218,9 @@ public class RefundPaymentHandler(
         await unitOfWork.SaveChangesAsync(ct);
         return BillingMapper.ToDetail(payment);
     }
+
+    private static string NormalizeReference(string? reference, DateTime now) =>
+        string.IsNullOrWhiteSpace(reference)
+            ? $"RF-{now:yyyyMMdd}-{Convert.ToHexString(RandomNumberGenerator.GetBytes(6))}"
+            : reference.Trim().ToUpperInvariant();
 }

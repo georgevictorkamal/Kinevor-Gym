@@ -199,13 +199,27 @@ public class BillingApiTests
             $"INV-{DateTime.UtcNow.Year}-000001");
 
         using var partial = StaffRequest(HttpMethod.Post, $"/api/v1/billing/payments/{paymentId}/refund");
-        partial.Content = JsonContent.Create(new { amount = 14.45m, reason = "Price adjustment" });
+        partial.Content = JsonContent.Create(new { amount = 14.45m, reason = "Price adjustment", reference = "RF-API-PARTIAL" });
         var partialResponse = await client.SendAsync(partial);
         Assert.Equal(HttpStatusCode.OK, partialResponse.StatusCode);
         using var partialDocument = JsonDocument.Parse(await partialResponse.Content.ReadAsStringAsync());
         var partialData = partialDocument.RootElement.GetProperty("data");
         Assert.Equal("PartiallyRefunded", partialData.GetProperty("status").GetString());
         Assert.Equal(14.45m, partialData.GetProperty("refundedAmount").GetDecimal());
+
+        using var retry = StaffRequest(HttpMethod.Post, $"/api/v1/billing/payments/{paymentId}/refund");
+        retry.Content = JsonContent.Create(new { amount = 14.45m, reason = "Price adjustment", reference = "RF-API-PARTIAL" });
+        var retryResponse = await client.SendAsync(retry);
+        Assert.Equal(HttpStatusCode.OK, retryResponse.StatusCode);
+        using var retryDocument = JsonDocument.Parse(await retryResponse.Content.ReadAsStringAsync());
+        var retryData = retryDocument.RootElement.GetProperty("data");
+        Assert.Equal(14.45m, retryData.GetProperty("refundedAmount").GetDecimal());
+        Assert.Equal(1, retryData.GetProperty("refunds").GetArrayLength());
+        Assert.Equal("RF-API-PARTIAL", retryData.GetProperty("refunds")[0].GetProperty("reference").GetString());
+
+        var gatewayRefund = Assert.Single(factory.Gateway.Refunds);
+        Assert.Equal("RF-API-PARTIAL", gatewayRefund.RefundReference);
+        Assert.Equal("pi_demo_maya_001", gatewayRefund.ProviderReference);
 
         using var partialInvoice = StaffRequest(HttpMethod.Get, $"/api/v1/billing/invoices/{invoiceId}");
         var partialInvoiceResponse = await client.SendAsync(partialInvoice);
@@ -217,11 +231,11 @@ public class BillingApiTests
         Assert.Equal(14.45m, partialInvoiceData.GetProperty("outstandingAmount").GetDecimal());
 
         using var over = StaffRequest(HttpMethod.Post, $"/api/v1/billing/payments/{paymentId}/refund");
-        over.Content = JsonContent.Create(new { amount = 100.01m, reason = "Too much" });
+        over.Content = JsonContent.Create(new { amount = 100.01m, reason = "Too much", reference = "RF-API-OVER" });
         Assert.Equal(HttpStatusCode.BadRequest, (await client.SendAsync(over)).StatusCode);
 
         using var full = StaffRequest(HttpMethod.Post, $"/api/v1/billing/payments/{paymentId}/refund");
-        full.Content = JsonContent.Create(new { amount = 100m, reason = "Full refund" });
+        full.Content = JsonContent.Create(new { amount = 100m, reason = "Full refund", reference = "RF-API-FULL" });
         var fullResponse = await client.SendAsync(full);
         using var fullDocument = JsonDocument.Parse(await fullResponse.Content.ReadAsStringAsync());
         var fullData = fullDocument.RootElement.GetProperty("data");
