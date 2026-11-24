@@ -5,7 +5,7 @@ Member management module for the Kinevor gym platform.
 ## Install
 
 ```powershell
-dotnet add package Kinevor.Modules.Members --version 0.3.1
+dotnet add package Kinevor.Modules.Members --version 0.4.0
 ```
 
 ## What it provides

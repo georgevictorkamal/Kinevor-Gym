@@ -84,7 +84,7 @@ skip the build:
 npm run demo:images
 
 # Pin a specific release
-KINEVOR_VERSION=0.3.1 npm run demo:images
+KINEVOR_VERSION=0.4.0 npm run demo:images
 ```
 
 Ports, environment and volumes still come from `docker-compose.yml`, so

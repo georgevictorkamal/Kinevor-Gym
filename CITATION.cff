@@ -9,8 +9,8 @@ authors:
 repository-code: "https://github.com/georgevictorkamal/Kinevor-Gym"
 url: "https://github.com/georgevictorkamal/Kinevor-Gym"
 license: MIT
-version: 0.3.1
-date-released: "2026-11-20"
+version: 0.4.0
+date-released: "2026-11-24"
 keywords:
   - gym-management
   - dotnet

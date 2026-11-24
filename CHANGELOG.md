@@ -3,7 +3,7 @@
 All notable changes to Kinevor are documented here. The repository uses a single
 `0.x` line while the platform contracts and module packages evolve together.
 
-## Unreleased
+## 0.4.0 – 2026-11-25
 
 ### Added
 

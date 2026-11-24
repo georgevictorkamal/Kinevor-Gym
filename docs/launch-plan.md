@@ -6,7 +6,7 @@ your own voice before posting.
 ## 1. Before you announce (one afternoon)
 
 - [ ] Record a 30 to 45 second tour with `node scripts/record-demo.mjs`, convert it to a GIF and add it to the top of the README. Playwright is already in the repo, so a scripted run is repeatable.
-- [ ] Cut `v0.3.1` by pushing an annotated tag; the release and demo-image workflows run from the tag (`git tag -a v0.3.1 -m "Kinevor v0.3.1"` then `git push origin v0.3.1`).
+- [ ] Cut `v0.4.0` by pushing an annotated tag; the release and demo-image workflows run from the tag (`git tag -a v0.4.0 -m "Kinevor v0.4.0"` then `git push origin v0.4.0`).
 - [ ] Enable GitHub Discussions (Settings, General, Features). The default Q&A, Ideas and Show and tell categories pick up the forms in `.github/DISCUSSION_TEMPLATE/`.
 - [ ] Run `gh auth login` once, then `node scripts/seed-starter-issues.mjs` (dry run) and `node scripts/seed-starter-issues.mjs --apply` to publish the starter issues and labels.
 - [ ] Pin the repository on your GitHub profile and add it to LinkedIn "Featured".
