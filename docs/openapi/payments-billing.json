@@ -1788,6 +1788,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "reference": {
+            "type": "string",
+            "nullable": true
+          },
           "amount": {
             "type": "number",
             "format": "double"
@@ -1811,6 +1815,10 @@
             "format": "double"
           },
           "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "reference": {
             "type": "string",
             "nullable": true
           }

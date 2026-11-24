@@ -266,7 +266,8 @@ job. Modules do not need a published registry to build.
 - **Search runs in the database.** Name and e-mail filters use `LIKE` over
   lowercased columns; count, ordering and paging are SQL too. The e-mail is
   persisted in an indexed `Email` column and exposed as a validated value
-  object, so large directories never load into memory.
+  object, so large directories never load into memory. User input escapes `%`,
+  `_` and `\`, so wildcard characters are matched literally.
 - **Visual contract in tests.** Golden tests and Playwright screenshots make
   typography, spacing and icon regressions visible.
 

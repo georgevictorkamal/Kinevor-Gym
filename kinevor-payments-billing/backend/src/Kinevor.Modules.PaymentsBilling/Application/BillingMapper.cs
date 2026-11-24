@@ -95,6 +95,7 @@ internal static class BillingMapper
             .OrderByDescending(refund => refund.RefundedAt)
             .Select(refund => new RefundDto(
                 refund.Id,
+                refund.Reference,
                 refund.Amount.Amount,
                 refund.Reason,
                 refund.RefundedAt))

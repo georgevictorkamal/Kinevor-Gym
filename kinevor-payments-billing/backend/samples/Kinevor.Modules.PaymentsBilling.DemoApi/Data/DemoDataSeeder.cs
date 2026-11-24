@@ -75,7 +75,8 @@ public static class DemoDataSeeder
         await db.SaveChangesAsync(ct);
 
         var mayaCard = RecordPayment(
-            mayaPaid, "Card", "TXN-SEED-MAYA-001", mayaPaid.Total, now.AddDays(-45), "Membership and PT");
+            mayaPaid, "Card", "TXN-SEED-MAYA-001", mayaPaid.Total, now.AddDays(-45), "Membership and PT",
+            "pi_demo_maya_001");
         var mayaCash = RecordPayment(
             mayaOverdue, "Cash", "TXN-SEED-MAYA-002", 30m, now.AddDays(-8), "Part payment at front desk");
         var danielTransfer = RecordPayment(
@@ -84,7 +85,11 @@ public static class DemoDataSeeder
         db.Payments.AddRange(mayaCard, mayaCash, danielTransfer);
 
         var refundAmount = Money.Of(10m, BillingDefaultsCurrency);
-        var refund = danielTransfer.Refund(refundAmount, "Goodwill credit for a missed class", now.AddDays(-6));
+        var refund = danielTransfer.Refund(
+            refundAmount,
+            "Goodwill credit for a missed class",
+            now.AddDays(-6),
+            "RF-SEED-SOFIA-001");
         if (refund.IsFailure)
             throw new InvalidOperationException(refund.Error.Message);
 
@@ -121,7 +126,8 @@ public static class DemoDataSeeder
         string reference,
         decimal amount,
         DateTime paidAt,
-        string description)
+        string description,
+        string? providerReference = null)
     {
         var applied = invoice.ApplyPayment(amount, paidAt);
         if (applied.IsFailure)
@@ -137,7 +143,8 @@ public static class DemoDataSeeder
             invoice.Currency,
             Enum.Parse<PaymentMethod>(method),
             reference,
-            paidAt);
+            paidAt,
+            providerReference: providerReference);
         if (result.IsFailure)
             throw new InvalidOperationException(result.Error.Message);
         return result.Value;

@@ -20,9 +20,11 @@ public static class OpenTelemetryExtensions
     public const string ServiceNameKey = "OpenTelemetry:ServiceName";
 
     /// <summary>
-    /// Adds ASP.NET Core, HTTP client and EF Core instrumentation plus the OTLP exporter.
+    /// Adds ASP.NET Core and HTTP client instrumentation plus the OTLP exporter.
     /// The exporter reads <c>OTEL_EXPORTER_OTLP_ENDPOINT</c>, <c>OTEL_EXPORTER_OTLP_HEADERS</c>
     /// and <c>OTEL_EXPORTER_OTLP_PROTOCOL</c> from the environment, so no endpoint is hard-coded.
+    /// EF Core instrumentation is intentionally not a dependency of this stable package; hosts
+    /// that want it reference the prerelease package and register it themselves.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <param name="configuration">Host configuration read for the enable flag and service name.</param>
@@ -45,8 +47,7 @@ public static class OpenTelemetryExtensions
             .ConfigureResource(resource => resource.AddService(serviceName))
             .WithTracing(tracing => tracing
                 .AddAspNetCoreInstrumentation()
-                .AddHttpClientInstrumentation()
-                .AddEntityFrameworkCoreInstrumentation())
+                .AddHttpClientInstrumentation())
             .WithMetrics(metrics => metrics
                 .AddAspNetCoreInstrumentation()
                 .AddHttpClientInstrumentation())

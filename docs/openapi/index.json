@@ -19,7 +19,7 @@
       "service": "kinevor-identity-access",
       "title": "Kinevor Identity & Access Module API",
       "version": "v1",
-      "paths": 6,
+      "paths": 9,
       "file": "docs/openapi/identity-access.json"
     },
     {

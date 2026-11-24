@@ -193,6 +193,22 @@ public class BillingDomainTests
         Assert.True(payment.Refund(Money.Of(10m), " ", Now).IsFailure);
     }
 
+    /// <summary>Refund references make retries idempotent and cannot be reused.</summary>
+    [Fact]
+    public void Payment_RefundReferenceIsSingleUse()
+    {
+        var payment = NewPayment(100m);
+
+        var first = payment.Refund(Money.Of(10m), "Goodwill", Now, "RF-DOMAIN-001", "re_domain_001");
+        var duplicate = payment.Refund(Money.Of(10m), "Goodwill", Now, "rf-domain-001");
+
+        Assert.True(first.IsSuccess);
+        Assert.True(duplicate.IsFailure);
+        Assert.Equal("Payment.DuplicateRefundReference", duplicate.Error.Code);
+        Assert.Single(payment.Refunds);
+        Assert.Equal("re_domain_001", payment.Refunds[0].ProviderReference);
+    }
+
     /// <summary>Money rounds to minor units and rejects cross-currency arithmetic.</summary>
     [Fact]
     public void Money_RoundsAndGuardsCurrency()

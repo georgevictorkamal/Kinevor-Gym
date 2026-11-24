@@ -1,6 +1,8 @@
 using System.Net.Mail;
 using Kinevor.Modules.Notifications.Application;
 using Kinevor.Modules.Notifications.Domain;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -65,20 +67,26 @@ public class SmtpDeliveryTests
         Assert.Contains("Disabled by member preference", notification.FailureReason);
     }
 
-    /// <summary>Transport exceptions become a bounded failure reason instead of escaping dispatch.</summary>
+    /// <summary>Transport exceptions become a generic member-facing reason and a detailed log entry.</summary>
     [Fact]
-    public async Task DeliverAsync_RecordsTransportFailure()
+    public async Task DeliverAsync_HidesTransportDetailsFromMembers()
     {
-        var transport = new CapturingEmailTransport { Failure = new SmtpException("Mailbox unavailable.") };
+        var failure = new SmtpException("Mailbox unavailable on internal-relay-07.");
+        var transport = new CapturingEmailTransport { Failure = failure };
+        var logger = new CapturingLogger<SmtpNotificationDelivery>();
         var notification = EmailNotification("maya@example.com");
-        var delivery = CreateDelivery(transport);
+        var delivery = CreateDelivery(transport, logger: logger);
 
         var result = await delivery.DeliverAsync(notification);
 
         Assert.False(result.Delivered);
         Assert.Equal(NotificationStatus.Failed, notification.Status);
-        Assert.Contains("SMTP delivery failed: Mailbox unavailable.", notification.FailureReason);
-        Assert.True(notification.FailureReason!.Length <= 500);
+        Assert.Equal(SmtpNotificationDelivery.DeliveryFailedReason, notification.FailureReason);
+        Assert.DoesNotContain("internal-relay-07", notification.FailureReason);
+        var entry = Assert.Single(logger.Entries);
+        Assert.Equal(LogLevel.Error, entry.Level);
+        Assert.Same(failure, entry.Exception);
+        Assert.Contains(notification.Id.ToString(), entry.Message);
     }
 
     /// <summary>The real SMTP transport can capture a message in a pickup directory.</summary>
@@ -135,6 +143,46 @@ public class SmtpDeliveryTests
         Assert.Null(error);
     }
 
+    /// <summary>SMTP credentials are rejected unless STARTTLS protects them.</summary>
+    [Fact]
+    public void Options_RejectCleartextCredentials()
+    {
+        var cleartext = new SmtpNotificationOptions
+        {
+            Host = "smtp.example.com",
+            FromAddress = "gym@example.com",
+            UserName = "smtp-user",
+            Password = "smtp-password",
+            UseStartTls = false,
+        };
+
+        Assert.False(cleartext.IsValid(out var error));
+        Assert.Contains("UseStartTls", error);
+
+        cleartext.UseStartTls = true;
+        Assert.True(cleartext.IsValid(out _));
+    }
+
+    /// <summary>SMTP credentials require both halves of the pair.</summary>
+    [Fact]
+    public void Options_RequireCompleteCredentialPair()
+    {
+        var incomplete = new SmtpNotificationOptions
+        {
+            Host = "smtp.example.com",
+            FromAddress = "gym@example.com",
+            UserName = "smtp-user",
+        };
+
+        Assert.False(incomplete.IsValid(out var error));
+        Assert.Contains("Password", error);
+
+        incomplete.UserName = null;
+        incomplete.Password = "smtp-password";
+        Assert.False(incomplete.IsValid(out var passwordOnly));
+        Assert.Contains("UserName", passwordOnly);
+    }
+
     private static Notification EmailNotification(
         string recipient,
         Guid? memberId = null) =>
@@ -149,7 +197,8 @@ public class SmtpDeliveryTests
     private static SmtpNotificationDelivery CreateDelivery(
         IEmailTransport transport,
         NotificationPreference? preference = null,
-        EmailSuppression? suppression = null)
+        EmailSuppression? suppression = null,
+        ILogger<SmtpNotificationDelivery>? logger = null)
     {
         var policy = new NotificationDeliveryPolicy(
             new FakePreferenceRepository(preference),
@@ -159,7 +208,25 @@ public class SmtpDeliveryTests
         return new SmtpNotificationDelivery(
             policy,
             transport,
-            new NotificationDeliverySimulator(policy));
+            new NotificationDeliverySimulator(policy),
+            logger ?? NullLogger<SmtpNotificationDelivery>.Instance);
+    }
+
+    private sealed class CapturingLogger<T> : ILogger<T>
+    {
+        public List<(LogLevel Level, Exception? Exception, string Message)> Entries { get; } = [];
+
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+
+        public bool IsEnabled(LogLevel logLevel) => true;
+
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception? exception,
+            Func<TState, Exception?, string> formatter) =>
+            Entries.Add((logLevel, exception, formatter(state, exception)));
     }
 
     private sealed class CapturingEmailTransport : IEmailTransport

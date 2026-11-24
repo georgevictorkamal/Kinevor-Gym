@@ -29,7 +29,7 @@ defaults.
 | Persistence | SQLite; members applies a migrations baseline, other demos use `EnsureCreatedAsync()` | PostgreSQL (or another managed database) plus EF Core migrations |
 | Rate limiting | In-memory fixed window in `RateLimitingExtensions` | Edge/WAF control or a distributed limiter shared by replicas |
 | Secrets | `appsettings.json`, user secrets, random JWT key | Secret manager or managed identity; stable, rotatable signing keys |
-| Payments | Simulated invoices and refunds behind a gateway port; Stripe sample is test-mode only | Provider integration with idempotency, webhooks and reconciliation |
+| Payments | Simulated invoices and refunds behind a gateway port; Stripe sample is test-mode only | Provider integration with webhooks, reconciliation and a documented PCI scope |
 | Notifications | Delivery records plus an optional SMTP adapter | Provider with retries, bounce/suppression handling and templates |
 | Observability | `/health` liveness endpoint and opt-in OpenTelemetry | Readiness probes, structured logs, traces, metrics and alerts |
 | Database topology | One SQLite file per service | One database (or schema) per service; no cross-service joins |
@@ -136,8 +136,10 @@ dotnet ef migrations add InitialCreate \
    models a screen needs instead.
 
 Classes-and-bookings uses a `Guid` row version marked `IsConcurrencyToken()`,
-which works on PostgreSQL. Review generated column types, indexes and unique
-constraints rather than assuming the SQLite schema maps one-to-one.
+which works on PostgreSQL. Identity now uses the same pattern for `UserAccount`,
+so parallel sign-ins cannot overwrite failure counters or accept the same TOTP
+step. Review generated column types, indexes and unique constraints rather than
+assuming the SQLite schema maps one-to-one.
 
 ## 3. Replace in-memory rate limiting
 
@@ -157,6 +159,23 @@ Before exposing a service:
   fixed-window limiter keeps its counters in memory per process.
 - Apply tighter limits to login, token refresh and write endpoints than to
   public read endpoints.
+
+### Per-account lockout is a demo trade-off
+
+Identity locks an account for fifteen minutes after five consecutive failed
+sign-ins. The counter is per account and persisted, which is deliberately simple
+for the demo but lets anyone who knows an e-mail keep that account locked
+indefinitely by triggering five failures in every window. Production hosts
+should add per-IP and per-device limits, progressive delays or a CAPTCHA, notify
+the account owner, and provide an out-of-band recovery path. Do not remove the
+per-account counter without replacing it with an equivalent credential-stuffing
+defence.
+
+Identity also persists the newest accepted TOTP step and rejects replays, and it
+encrypts the TOTP secret with ASP.NET Core Data Protection before storing it.
+The demo keeps the key ring on the identity data volume; production hosts must
+persist it in a managed key service, back it up and plan rotation. Losing the key
+ring makes every enrolled secret unreadable.
 
 ## 4. Configure the edge and CORS
 
@@ -188,9 +207,10 @@ Move the following out of `appsettings*.json` and into a managed secret store:
 - any SMTP, push or webhook secrets.
 
 Prefer managed identities or workload identities over long-lived credentials.
-Give each service its own least-privilege database account. Persist ASP.NET Core
-Data Protection keys if you add cookies or antiforgery tokens; ephemeral keys
-break sessions after a restart.
+Give each service its own least-privilege database account. Identity already uses
+ASP.NET Core Data Protection for TOTP secrets, and other hosts need it if they
+add cookies or antiforgery tokens. Persist the key ring in a managed store and
+back it up; ephemeral keys break sessions and MFA enrolment after a restart.
 
 ## 6. Observability and health
 
@@ -208,11 +228,12 @@ or any dependency. Add:
 
 ## 7. Payments and notifications
 
-The payments module records simulated invoices and refunds. Card capture goes
-through an `IPaymentGateway` port; the default adapter is simulated and the
-Stripe sample is test-mode only. A real provider integration needs:
+The payments module records simulated invoices and routes card captures and
+refunds through an `IPaymentGateway` port; the default adapter is simulated and
+the Stripe sample is test-mode only. Capture and refund references act as
+idempotency keys, and card refunds target the stored provider transaction. A real
+provider integration still needs:
 
-- idempotency keys on every create/refund command;
 - signature verification for webhooks and replay protection;
 - an outbox or equivalent reliable publish path for events;
 - reconciliation against the provider's ledger;

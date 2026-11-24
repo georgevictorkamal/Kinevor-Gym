@@ -24,10 +24,11 @@ public class BeginMfaEnrolmentHandler(
     IUserAccountRepository users,
     ICurrentUser currentUser,
     IMfaService mfa,
+    IMfaSecretProtector secretProtector,
     IIdentityUnitOfWork unitOfWork)
     : IRequestHandler<BeginMfaEnrolmentCommand, MfaEnrolmentDto>
 {
-    /// <summary>Generates a secret and stores it as pending until a code is confirmed.</summary>
+    /// <summary>Generates a secret and stores it encrypted as pending until a code is confirmed.</summary>
     public async Task<MfaEnrolmentDto> Handle(BeginMfaEnrolmentCommand command, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(command);
@@ -37,9 +38,10 @@ public class BeginMfaEnrolmentHandler(
             throw new ConflictException("MFA is already enabled. Disable it before enrolling again.");
 
         var secret = mfa.GenerateSecret();
-        account.BeginMfaEnrolment(secret);
+        account.BeginMfaEnrolment(secretProtector.Protect(secret));
         users.Update(account);
-        await unitOfWork.SaveChangesAsync(ct);
+        if (!await unitOfWork.TrySaveChangesAsync(ct))
+            throw new ConflictException("MFA enrolment changed. Reload and retry.");
 
         return new MfaEnrolmentDto(secret, mfa.BuildOtpAuthUri(account, secret));
     }
@@ -54,6 +56,7 @@ public class ConfirmMfaHandler(
     IUserAccountRepository users,
     ICurrentUser currentUser,
     IMfaService mfa,
+    IMfaSecretProtector secretProtector,
     IIdentityUnitOfWork unitOfWork,
     TimeProvider timeProvider)
     : IRequestHandler<ConfirmMfaCommand, MfaRecoveryCodesDto>
@@ -69,14 +72,21 @@ public class ConfirmMfaHandler(
         if (string.IsNullOrWhiteSpace(account.MfaSecret))
             throw new DomainException("Start MFA enrolment before confirming it.");
 
+        var secret = MfaSecretAccess.TryUnprotect(secretProtector, account.MfaSecret);
         var now = timeProvider.GetUtcNow().UtcDateTime;
-        if (!mfa.VerifyCode(account.MfaSecret, command.Code, now))
+        if (secret is null
+            || !mfa.TryVerifyCode(secret, command.Code, now, out var matchedStep)
+            || !account.TryAcceptMfaStep(matchedStep))
+        {
             throw new AuthenticationFailedException("Invalid verification code.");
+        }
 
         var recoveryCodes = mfa.GenerateRecoveryCodes();
         account.ConfirmMfa(recoveryCodes.Select(mfa.HashRecoveryCode));
         users.Update(account);
-        await unitOfWork.SaveChangesAsync(ct);
+        if (!await unitOfWork.TrySaveChangesAsync(ct))
+            throw new ConflictException("MFA enrolment changed. Reload and retry.");
+
         return new MfaRecoveryCodesDto(recoveryCodes);
     }
 }
@@ -90,6 +100,7 @@ public class DisableMfaHandler(
     IUserAccountRepository users,
     ICurrentUser currentUser,
     IMfaService mfa,
+    IMfaSecretProtector secretProtector,
     IIdentityUnitOfWork unitOfWork,
     TimeProvider timeProvider)
     : IRequestHandler<DisableMfaCommand, Result>
@@ -103,9 +114,11 @@ public class DisableMfaHandler(
         if (!account.MfaEnabled)
             throw new DomainException("MFA is not enabled.");
 
+        var secret = MfaSecretAccess.TryUnprotect(secretProtector, account.MfaSecret);
         var now = timeProvider.GetUtcNow().UtcDateTime;
-        var totpValid = !string.IsNullOrWhiteSpace(account.MfaSecret)
-            && mfa.VerifyCode(account.MfaSecret, command.Code, now);
+        var totpValid = secret is not null
+            && mfa.TryVerifyCode(secret, command.Code, now, out var matchedStep)
+            && account.TryAcceptMfaStep(matchedStep);
         var recoveryValid = !totpValid
             && account.ConsumeRecoveryCode(mfa.HashRecoveryCode(command.Code));
 
@@ -114,7 +127,9 @@ public class DisableMfaHandler(
 
         account.DisableMfa();
         users.Update(account);
-        await unitOfWork.SaveChangesAsync(ct);
+        if (!await unitOfWork.TrySaveChangesAsync(ct))
+            throw new ConflictException("MFA state changed. Reload and retry.");
+
         return Result.Success();
     }
 }

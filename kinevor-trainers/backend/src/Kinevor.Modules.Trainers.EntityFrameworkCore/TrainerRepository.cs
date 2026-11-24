@@ -66,11 +66,11 @@ public sealed class TrainerRepository(TrainersDbContext db) : ITrainerRepository
         if (!string.IsNullOrWhiteSpace(search))
         {
             var term = search.Trim().ToLowerInvariant();
-            var pattern = $"%{term}%";
+            var pattern = $"%{EscapeLike(term)}%";
             query = query.Where(t =>
-                EF.Functions.Like(t.FirstName.ToLower(), pattern)
-                || EF.Functions.Like(t.LastName.ToLower(), pattern)
-                || EF.Functions.Like(t.EmailAddress.ToLower(), pattern));
+                EF.Functions.Like(t.FirstName.ToLower(), pattern, LikeEscapeCharacter)
+                || EF.Functions.Like(t.LastName.ToLower(), pattern, LikeEscapeCharacter)
+                || EF.Functions.Like(t.EmailAddress.ToLower(), pattern, LikeEscapeCharacter));
         }
 
         var total = await query.CountAsync(ct);
@@ -83,6 +83,13 @@ public sealed class TrainerRepository(TrainersDbContext db) : ITrainerRepository
 
         return (items, total);
     }
+
+    private const string LikeEscapeCharacter = "\\";
+
+    private static string EscapeLike(string value) => value
+        .Replace("\\", "\\\\", StringComparison.Ordinal)
+        .Replace("%", "\\%", StringComparison.Ordinal)
+        .Replace("_", "\\_", StringComparison.Ordinal);
 
     private IQueryable<Trainer> Apply(ISpecification<Trainer> spec)
     {

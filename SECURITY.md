@@ -39,9 +39,12 @@ The repository is a reference implementation. The following are
   Configure a managed key if you need stable sessions.
 - **SQLite** — services use local SQLite files for zero-setup demos. They are not
   hardened for multi-tenant or production workloads.
-- **Simulated payments** — no card data is collected and no payment provider is
-  called.
-- **Simulated notifications** — no real e-mail or push provider is called.
+- **Simulated payments** — demos record simulated payments by default. The
+  optional Stripe sample is test-mode only, requires an `sk_test_` key and never
+  collects card data.
+- **Simulated notifications** — delivery is recorded by default. The optional
+  SMTP adapter contacts a real server only when it is configured; no push
+  provider is included.
 - **Per-instance rate limiting** — the identity host allows 60 requests per
   minute per IP; the public site defaults to 600 and is configurable. Limiting is
   in-memory, per process and not a WAF, bot defence or distributed quota.
@@ -77,6 +80,9 @@ If you adapt this code for a real environment:
 - Remove the demo header middleware, seeded accounts and Swagger exposure.
 - Store connection strings, JWT keys and provider credentials in a secret
   manager, never in source or `.env` files committed to Git.
+- Persist the identity Data Protection key ring in a managed key service and
+  back it up; it encrypts stored TOTP secrets, and losing it locks out every
+  MFA-enrolled account.
 - Use a production database with migrations, backups and least-privilege
   credentials.
 - Restrict CORS to the real client origins.

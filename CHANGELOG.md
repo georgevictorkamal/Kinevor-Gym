@@ -5,15 +5,54 @@ All notable changes to Kinevor are documented here. The repository uses a single
 
 ## Unreleased
 
+### Added
+
+- The Angular and Flutter identity packages now show an authenticator-code or
+  recovery-code step when login returns `mfa_required`. The Flutter package adds
+  a second-step golden image.
+- Card refunds now call `IPaymentGateway.RefundAsync` before the refund is
+  stored, using a unique refund reference as the provider idempotency key. A
+  repeated reference returns the original result instead of refunding twice.
+
 ### Changed
 
+- `Kinevor.Platform.Api` no longer depends on the prerelease
+  `OpenTelemetry.Instrumentation.EntityFrameworkCore` package. ASP.NET Core and
+  `HttpClient` instrumentation are still built in; hosts that want EF Core spans
+  reference the beta package and register it themselves. The stable package no
+  longer suppresses `NU5104`.
+- Identity login now returns `200` with `data.status = "mfa_required"` for a
+  valid password on an MFA account. Previously the API returned `401` and
+  counted the missing code as a failed attempt.
+- Identity accounts carry an EF Core concurrency token (`ConcurrencyStamp`) and
+  the newest accepted TOTP step (`LastAcceptedMfaStep`). The demo database and
+  the Docker `identity-data` volume must be recreated once.
+- Payments store the provider capture reference and a unique refund reference.
+  The payments demo database and the Docker `payments-data` volume must be
+  recreated once.
 - Upgraded the pinned Flutter toolchain from 3.47.8 to 3.50.1 (Dart 3.14)
-  across CI, the devcontainer and the mobile packages. All 128 Flutter tests
-  pass, and every package and example is formatted and analyzes cleanly.
+  across CI, the devcontainer and the mobile packages. All Flutter tests pass,
+  and every package and example is formatted and analyzes cleanly.
 - Migrated the mobile packages from the deprecated
   `package:flutter/material.dart` import to the standalone `material_ui`
   package. This raises the package compatibility floor to Dart 3.13 /
   Flutter 3.47, the version that `material_ui` requires.
+
+### Fixed
+
+- TOTP codes, recovery codes and failed-attempt counters are now replay-safe
+  under parallel requests. A second request that loses the concurrency race
+  receives the generic `401` rather than a second session.
+- Recovery codes now carry 80 bits of entropy in a `XXXX-XXXX-XXXX-XXXX` format,
+  so storing only their SHA-256 hash is sufficient.
+- TOTP secrets are now encrypted at rest with ASP.NET Core Data Protection. The
+  demo keeps the key ring on the identity data volume; production hosts must
+  persist it in a managed key service and back it up.
+- SMTP delivery failures now record a generic member-facing reason and log the
+  provider exception separately; SMTP credentials are rejected unless STARTTLS
+  is enabled.
+- Trainer search escapes `%`, `_` and `\` in user input, so wildcard characters
+  are matched literally instead of broadening the query.
 
 ## 0.3.1 — 2026-11-21
 

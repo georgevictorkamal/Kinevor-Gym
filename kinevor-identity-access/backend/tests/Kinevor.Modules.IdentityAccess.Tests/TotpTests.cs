@@ -35,6 +35,32 @@ public class TotpTests
         Assert.False(Totp.VerifyCode(RfcSecret, code, now.AddSeconds(90)));
     }
 
+    /// <summary>Verification reports the newest matched step for replay protection.</summary>
+    [Fact]
+    public void TryVerifyCode_ReturnsNewestMatchedStep()
+    {
+        var now = DateTime.UtcNow;
+        var currentStep = Totp.ComputeStep(now);
+
+        Assert.True(Totp.TryVerifyCode(
+            RfcSecret, Totp.ComputeCode(RfcSecret, now), now, out var current));
+        Assert.Equal(currentStep, current);
+
+        var next = now.AddSeconds(Totp.StepSeconds);
+        Assert.True(Totp.TryVerifyCode(
+            RfcSecret, Totp.ComputeCode(RfcSecret, next), now, out var nextStep));
+        Assert.Equal(currentStep + 1, nextStep);
+    }
+
+    /// <summary>A malformed code is rejected without producing a step.</summary>
+    [Fact]
+    public void TryVerifyCode_RejectsMalformedCode()
+    {
+        Assert.False(Totp.TryVerifyCode(RfcSecret, "12345", DateTime.UtcNow, out var step));
+        Assert.Equal(0, step);
+        Assert.False(Totp.TryVerifyCode(RfcSecret, "abcdef", DateTime.UtcNow, out _));
+    }
+
     /// <summary>Recovery-code hashes ignore case, spaces and formatting dashes.</summary>
     [Fact]
     public void RecoveryCode_HashIsNormalised()
@@ -56,13 +82,14 @@ public class TotpTests
         Assert.Contains("issuer=Kinevor", uri);
     }
 
-    /// <summary>Generated recovery codes are unique and use the expected format.</summary>
+    /// <summary>Generated recovery codes carry 80 bits of entropy and use the expected format.</summary>
     [Fact]
     public void RecoveryCodes_AreUniqueAndFormatted()
     {
         var codes = Enumerable.Range(0, 16).Select(_ => Totp.GenerateRecoveryCode()).ToList();
 
         Assert.Equal(codes.Count, codes.Distinct(StringComparer.Ordinal).Count());
-        Assert.All(codes, code => Assert.Matches("^[A-Z2-7]{4}-[A-Z2-7]{4}$", code));
+        Assert.All(codes, code => Assert.Matches("^[A-Z2-7]{4}(-[A-Z2-7]{4}){3}$", code));
+        Assert.All(codes, code => Assert.Equal(16, code.Count(char.IsAsciiLetterOrDigit)));
     }
 }

@@ -6,10 +6,17 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- `AddKinevorOpenTelemetry()` in `Kinevor.Platform.Api`: opt-in ASP.NET Core,
-  `HttpClient` and EF Core traces and metrics with an OTLP exporter configured
-  through standard `OTEL_EXPORTER_OTLP_*` variables.
+- `AddKinevorOpenTelemetry()` in `Kinevor.Platform.Api`: opt-in ASP.NET Core and
+  `HttpClient` traces and metrics with an OTLP exporter configured through
+  standard `OTEL_EXPORTER_OTLP_*` variables.
 - French (`fr`) UI catalogue with full key parity and a language registry entry.
+
+### Changed
+
+- `Kinevor.Platform.Api` no longer depends on the prerelease
+  `OpenTelemetry.Instrumentation.EntityFrameworkCore` package. EF Core traces are
+  an explicit host opt-in, so the stable package has no prerelease dependencies
+  and no `NU5104` suppression.
 
 ## 0.1.1 - 2026-11-05
 

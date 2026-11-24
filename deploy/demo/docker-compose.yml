@@ -61,6 +61,7 @@ services:
     environment:
       <<: *api-environment
       ConnectionStrings__Identity: Data Source=/data/identity-demo.db
+      DataProtection__KeysPath: /data/keys
       Cors__AllowedOrigins__0: http://localhost:4201
       Cors__AllowedOrigins__1: http://127.0.0.1:4201
     ports:

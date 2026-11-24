@@ -30,6 +30,9 @@ class KinevorIdentityClient {
   final Map<String, String> _headers;
 
   /// Exchanges credentials for a token pair.
+  ///
+  /// Throws [MfaRequiredException] when the password is valid but the account
+  /// has a second factor; call again with [mfaCode] or [recoveryCode].
   Future<AuthSession> login({
     required String email,
     required String password,
@@ -43,6 +46,9 @@ class KinevorIdentityClient {
       'recoveryCode': ?recoveryCode,
     };
     final data = await _send('POST', 'auth/login', body: body);
+    if (data['status'] == 'mfa_required') {
+      throw const MfaRequiredException();
+    }
     return AuthSession.fromJson(data);
   }
 

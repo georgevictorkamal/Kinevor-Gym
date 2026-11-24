@@ -87,7 +87,7 @@ Silicon, `npm run demo:up` builds natively instead. See the
 - **Executable architecture.** 24 repository checks cover module independence, version alignment, i18n parity, OpenAPI snapshots and release guardrails.
 - **Secure by default.** Demo hosts refuse to start outside Development or Demo, Docker ports are loopback-only, the image fails closed, there is no committed signing key, and CI is SHA-pinned with CodeQL and Dependabot.
 - **Verifiable releases.** Tagged releases ship an SBOM and build provenance attestation.
-- **Tested end to end.** 526 automated tests: 253 .NET, 99 Angular, 128 Flutter and 46 Playwright with axe accessibility checks.
+- **Tested end to end.** 555 automated tests: 270 .NET, 104 Angular, 135 Flutter and 46 Playwright with axe accessibility checks.
 
 ![Kinevor public website](docs/screenshots/public-web.png)
 
@@ -132,8 +132,8 @@ domain to UI.
 <tr>
 <td>
 
-### ✅ 526 Automated Tests
-253 .NET + 99 Angular + 128 Flutter unit tests plus 46 Playwright end-to-end
+### ✅ 555 Automated Tests
+270 .NET + 104 Angular + 135 Flutter unit tests plus 46 Playwright end-to-end
 checks covering domain rules, HTTP endpoints, gateways, components, screen
 states, accessibility and responsive layouts — all passing in CI.
 
@@ -174,7 +174,7 @@ Material 3 and golden tests) and API (ASP.NET Core 10 with MediatR CQRS).
 | **Backend** | 10 ASP.NET Core 10 APIs, EF Core 10, SQLite, MediatR |
 | **Web** | 9 Angular 22 libraries with runnable demos |
 | **Mobile** | 9 Flutter packages with runnable examples |
-| **Automated tests** | **526** — 253 .NET · 99 Angular · 128 Flutter · 46 Playwright |
+| **Automated tests** | **555** — 270 .NET · 104 Angular · 135 Flutter · 46 Playwright |
 | **Screenshots** | 57 captured from the running applications |
 | **CI** | Hygiene, backend/web/mobile matrices, coverage, E2E, CodeQL, dependency review, Scorecard |
 
@@ -353,11 +353,11 @@ See [SECURITY.md](SECURITY.md) for details.
 
 | Suite | Tests | Result |
 | --- | ---: | --- |
-| .NET — platform + 10 module APIs | 253 | ✅ passed |
-| Angular — 9 module libraries | 99 | ✅ passed |
-| Flutter — 9 packages | 128 | ✅ passed |
+| .NET — platform + 10 module APIs | 270 | ✅ passed |
+| Angular — 9 module libraries | 104 | ✅ passed |
+| Flutter — 9 packages | 135 | ✅ passed |
 | Playwright E2E — public site + members | 46 | ✅ passed |
-| **Total** | **526** | **✅ all passed** |
+| **Total** | **555** | **✅ all passed** |
 
 .NET tests run with `coverlet.collector`; CI publishes a Cobertura report per
 service. Playwright runs every audited route at 1440×1040 and 390×844, checks
@@ -452,7 +452,8 @@ This is a portfolio reference implementation, deliberately scoped:
 
 - Services are independent and **not orchestrated** — no API gateway, message bus
   or cross-service transaction
-- Payments are simulated; notifications do not call an external provider
+- Payments and notifications are simulated by default; the opt-in Stripe
+  test-mode and SMTP adapters need your own provider account
 - SQLite is used for zero-setup demos, not for production scale
 - Demo auth headers are limited to the `Development` and `Demo` environments;
   hosts refuse to start in any other environment

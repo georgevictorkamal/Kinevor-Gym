@@ -26,6 +26,22 @@ export interface LoginRequest {
   readonly recoveryCode?: string;
 }
 
+/** Successful login body returned when a valid password still needs a second factor. */
+export interface MfaChallenge {
+  readonly status: 'mfa_required';
+}
+
+/** Successful login body: an issued session or a second-factor challenge. */
+export type LoginResponse = AuthSession | MfaChallenge;
+
+/** Raised by the gateway when the API asks for an authenticator or recovery code. */
+export class MfaRequiredError extends Error {
+  constructor() {
+    super('A second factor is required.');
+    this.name = 'MfaRequiredError';
+  }
+}
+
 /** API envelope used by every Kinevor endpoint. */
 export interface ApiEnvelope<T> {
   readonly success: boolean;

@@ -50,7 +50,14 @@ Flutter clients are thin presentation layers over a typed gateway/repository.
 - Per-account lockout after five consecutive failures for fifteen minutes, with the
   same response and PBKDF2 cost for unknown, locked and wrong-password attempts.
 - Optional TOTP multi-factor authentication (RFC 6238) with authenticator-app
-  enrolment and eight single-use recovery codes stored as hashes.
+  enrolment, encrypted secrets and eight single-use recovery codes stored as
+  hashes.
+- Replay-safe second factors: an accepted TOTP time step is persisted and can
+  never be used again, recovery codes are consumed atomically, and optimistic
+  concurrency prevents parallel logins from accepting the same factor twice.
+- Clear login challenge contract: a correct password on an MFA account returns
+  `200` with `data.status = "mfa_required"`; a missing code is not a failed
+  attempt, while a wrong code counts toward the lockout.
 - HS256 JWT access tokens with configurable issuer, audience and lifetime.
 - Opaque refresh tokens stored as SHA-256 hashes, rotated on every exchange and
   revoked on logout.
@@ -69,7 +76,7 @@ Flutter clients are thin presentation layers over a typed gateway/repository.
 
 | Method | Route | Policy | Used by |
 | --- | --- | --- | --- |
-| `POST` | `/api/v1/auth/login` | anonymous | Web and Flutter login; optional `mfaCode` or `recoveryCode` |
+| `POST` | `/api/v1/auth/login` | anonymous | Web and Flutter login; returns a session or an MFA challenge; optional `mfaCode` or `recoveryCode` |
 | `POST` | `/api/v1/auth/refresh` | anonymous | Session rotation |
 | `POST` | `/api/v1/auth/logout` | anonymous | Web and Flutter sign-out |
 | `GET` | `/api/v1/auth/session` | authenticated | Session screen, route guard |
@@ -90,6 +97,24 @@ resets on success and after the window expires. Unknown, locked and
 wrong-password attempts all return the same `401` message and run one PBKDF2
 verification, so callers cannot enumerate accounts or lock state.
 
+A correct password on an account with MFA returns `200` and a challenge instead
+of tokens:
+
+```json
+{ "success": true, "data": { "status": "mfa_required" }, "message": "Second factor required." }
+```
+
+The client resubmits the same credentials with `mfaCode` or `recoveryCode`. A
+missing code does not increment the failure counter; a wrong or already-used
+code does. Only a valid second factor issues tokens, so the challenge cannot be
+mistaken for a signed-in session.
+
+The demo lockout is intentionally simple and can be held indefinitely: someone
+who knows an account's e-mail can keep it locked by triggering five failures in
+each fifteen-minute window. A production host should pair the counter with
+per-IP and per-device rate limiting, a CAPTCHA or progressive delay, and a
+notification to the account owner.
+
 MFA enrolment is two steps:
 
 ```text
@@ -102,9 +127,19 @@ enables MFA and returns eight recovery codes **once**. Later logins send
 `mfaCode` (six digits) or `recoveryCode` (single use) alongside the password.
 `POST /api/v1/auth/mfa/disable` accepts either factor.
 
-The demo stores the TOTP secret as plain text in SQLite so the flow is easy to
-inspect. Production hosts must encrypt it with a managed key and treat recovery
-codes like passwords.
+Accepted TOTP steps are recorded on the account (`LastAcceptedMfaStep`), so a
+code observed on the wire cannot be replayed, even within its drift window.
+Every account mutation also advances `ConcurrencyStamp`, an EF Core concurrency
+token. Parallel sign-ins therefore cannot overwrite the failed-attempt counter,
+consume the same recovery code twice, or accept the same TOTP step: exactly one
+writer wins and the others receive the generic `401`.
+
+The module encrypts the TOTP secret with ASP.NET Core Data Protection before it
+is written to SQLite. The demo persists its key ring under the host's data
+directory (`DataProtection:KeysPath`, `/data/keys` in Compose), so enrolled
+accounts survive a restart. Production hosts must store the key ring in a
+managed key service, back it up and plan rotation; losing the keys makes every
+enrolled secret unreadable. Recovery codes are already stored as SHA-256 hashes.
 
 ## Screenshots
 
@@ -164,6 +199,11 @@ database and seeds four accounts on first run:
 | Staff | `staff@kinevor.demo` | `Kinevor!2026` |
 | Trainer | `trainer@kinevor.demo` | `Kinevor!2026` |
 | Member | `member@kinevor.demo` | `Kinevor!2026` |
+
+The identity demo uses `EnsureCreatedAsync`, not migrations. The account table
+now has `ConcurrencyStamp` and `LastAcceptedMfaStep` columns, so an existing
+`identity-demo.db` or the Docker `identity-data` volume must be deleted once
+before starting this version; the host recreates and reseeds it.
 
 The demo host generates an ephemeral signing key when `Jwt:SigningKey` is not
 configured, so tokens do not survive a restart. Supply `Jwt:SigningKey` (at
@@ -249,9 +289,10 @@ flutter test --update-goldens test\identity_golden_test.dart
 | Flutter tests | `cd mobile\packages\kinevor_identity_access; flutter test` |
 
 The backend suite covers domain invariants, password hashing, lockout, TOTP
-vectors, recovery-code reuse, refresh rotation and API behavior against the demo host. The web suite covers the HTTP gateway
-and facade with Vitest. The Flutter suite covers the client, login/session
-widgets and golden images.
+vectors, replay protection, recovery-code reuse, refresh rotation, parallel
+account writes and API behavior against the demo host. The web suite covers the
+HTTP gateway and facade with Vitest. The Flutter suite covers the client,
+login/session widgets, second-factor step and golden images.
 
 ## Packages
 
@@ -297,12 +338,18 @@ job. Modules do not need a published registry to build.
 - **Host-owned sessions.** The Angular facade persists to storage and the Flutter
   package returns sessions to the host. Neither package assumes a global state
   container.
-- **Constant-shape login errors.** Invalid e-mail, wrong password, locked account
-  and missing second factor return the same message so callers cannot enumerate
-  accounts or infer lock/MFA state.
-- **MFA secrets are demo-only.** TOTP secrets and recovery-code hashes live in
-  the module database. A production host needs envelope encryption for the
-  secret; recovery codes are already stored as SHA-256 hashes.
+- **Constant-shape password errors.** Invalid e-mail, wrong password and locked
+  account return the same message so callers cannot enumerate accounts or infer
+  lock state. A valid password on an MFA account returns an explicit challenge;
+  only someone who already knows the password can observe MFA enrolment.
+- **Replay-safe second factors.** Accepted TOTP steps, consumed recovery codes
+  and failed-attempt counters advance an EF Core concurrency token, so parallel
+  requests cannot reuse a code or overwrite each other's state.
+- **MFA secrets are encrypted at rest.** TOTP secrets are protected with ASP.NET
+  Core Data Protection before they reach the database; recovery codes are stored
+  as SHA-256 hashes. A production host must persist the Data Protection key ring
+  in a managed key service and back it up, or enrolled accounts become
+  unreadable.
 - **No committed signing key.** The demo host generates an ephemeral key when
   configuration does not provide one; a production host must use a managed
   secret.
@@ -353,7 +400,8 @@ These demo hosts refuse to start outside Development and Demo and use SQLite. Fo
 host, issue a strong random signing key, serve the API over HTTPS, restrict CORS
 to known origins, and keep refresh tokens out of logs. Swagger and seeded
 credentials are available in Development only. Do not commit connection
-strings, PATs or `.env` files. Encrypt `UserAccount.MfaSecret` at rest before
+strings, PATs or `.env` files. `UserAccount.MfaSecret` is already encrypted at
+rest; persist its Data Protection key ring in a managed key service before
 enabling MFA outside the demo.
 
 ## License

@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   keys.
 - Added refund and concurrency coverage for full, partial and repeated refunds
   and stale invoice writes.
+- Card refunds call `IPaymentGateway.RefundAsync` before the refund is stored.
+  Refund references are unique per payment, so a retried refund returns the
+  original result instead of calling the provider twice.
+- Payments store the provider capture reference so a card refund can target the
+  original transaction. The demo uses `EnsureCreatedAsync`, so an existing
+  `payments-billing-demo.db` or the Docker `payments-data` volume must be
+  recreated once.
 
 ### Changed
 

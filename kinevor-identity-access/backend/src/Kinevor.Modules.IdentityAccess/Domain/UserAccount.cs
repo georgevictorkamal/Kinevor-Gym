@@ -24,11 +24,17 @@ public sealed class UserAccount : AggregateRoot
     /// <summary>Whether a second factor is enrolled.</summary>
     public bool MfaEnabled { get; private set; }
 
-    /// <summary>Base32 TOTP secret. Stored as-is for the demo; production hosts must encrypt it at rest.</summary>
+    /// <summary>Encrypted Base32 TOTP secret; the application layer protects it at rest.</summary>
     public string? MfaSecret { get; private set; }
 
     /// <summary>SHA-256 hashes of single-use MFA recovery codes.</summary>
     public List<string> MfaRecoveryCodeHashes { get; private set; } = [];
+
+    /// <summary>UTC TOTP time step most recently accepted for sign-in or MFA management.</summary>
+    public long? LastAcceptedMfaStep { get; private set; }
+
+    /// <summary>Optimistic-concurrency token advanced by every account mutation.</summary>
+    public Guid ConcurrencyStamp { get; private set; } = Guid.NewGuid();
 
     /// <summary>Consecutive failed sign-in attempts since the last success or lock expiry.</summary>
     public int FailedLoginAttempts { get; private set; }
@@ -77,6 +83,7 @@ public sealed class UserAccount : AggregateRoot
         LastLoginAt = now;
         FailedLoginAttempts = 0;
         LockoutEndsAt = null;
+        Touch();
     }
 
     /// <summary>Whether sign-in is currently locked.</summary>
@@ -97,6 +104,7 @@ public sealed class UserAccount : AggregateRoot
         FailedLoginAttempts++;
         if (FailedLoginAttempts >= maxAttempts)
             LockoutEndsAt = now.Add(lockoutDuration);
+        Touch();
     }
 
     /// <summary>Starts MFA enrolment without enabling it until a first code is confirmed.</summary>
@@ -107,13 +115,31 @@ public sealed class UserAccount : AggregateRoot
         MfaSecret = secret.Trim();
         MfaEnabled = false;
         MfaRecoveryCodeHashes = [];
+        LastAcceptedMfaStep = null;
+        Touch();
+    }
+
+    /// <summary>Accepts a TOTP time step once; returns false when it is at or before the last accepted step.</summary>
+    public bool TryAcceptMfaStep(long step)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(step);
+
+        if (LastAcceptedMfaStep is { } lastAccepted && step <= lastAccepted)
+            return false;
+
+        LastAcceptedMfaStep = step;
+        Touch();
+        return true;
     }
 
     /// <summary>Enables MFA with a fresh set of hashed recovery codes.</summary>
+    /// <param name="recoveryCodeHashes">Hashes of the new single-use recovery codes.</param>
     public void ConfirmMfa(IEnumerable<string> recoveryCodeHashes)
     {
         if (string.IsNullOrWhiteSpace(MfaSecret))
             throw new InvalidOperationException("Start MFA enrolment before confirming it.");
+        if (LastAcceptedMfaStep is null)
+            throw new InvalidOperationException("Accept a verification step before confirming MFA.");
 
         var hashes = recoveryCodeHashes.Where(hash => !string.IsNullOrWhiteSpace(hash)).ToList();
         if (hashes.Count == 0)
@@ -121,6 +147,7 @@ public sealed class UserAccount : AggregateRoot
 
         MfaEnabled = true;
         MfaRecoveryCodeHashes = hashes;
+        Touch();
     }
 
     /// <summary>Consumes a recovery code once; returns false when it is unknown or already used.</summary>
@@ -135,22 +162,35 @@ public sealed class UserAccount : AggregateRoot
         MfaRecoveryCodeHashes = MfaRecoveryCodeHashes
             .Where(candidate => !string.Equals(candidate, hash, StringComparison.Ordinal))
             .ToList();
+        Touch();
         return true;
     }
 
-    /// <summary>Disables MFA and clears the secret and recovery codes.</summary>
+    /// <summary>Disables MFA and clears the secret, recovery codes and accepted TOTP step.</summary>
     public void DisableMfa()
     {
         MfaEnabled = false;
         MfaSecret = null;
         MfaRecoveryCodeHashes = [];
+        LastAcceptedMfaStep = null;
+        Touch();
     }
 
     /// <summary>Replaces the encoded password hash (used when rehashing to a higher iteration count).</summary>
-    public void UpdatePasswordHash(string passwordHash) => PasswordHash = passwordHash;
+    public void UpdatePasswordHash(string passwordHash)
+    {
+        PasswordHash = passwordHash;
+        Touch();
+    }
 
     /// <summary>Enables or disables sign-in.</summary>
-    public void SetActive(bool active) => IsActive = active;
+    public void SetActive(bool active)
+    {
+        IsActive = active;
+        Touch();
+    }
+
+    private void Touch() => ConcurrencyStamp = Guid.NewGuid();
 
     private static readonly HashSet<string> AllowedRoles =
         new(StringComparer.Ordinal) { "Admin", "Staff", "Trainer", "Member" };

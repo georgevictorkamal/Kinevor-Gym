@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Kinevor.Modules.IdentityAccess.Api;
+using Kinevor.Modules.IdentityAccess.DemoApi;
 using Kinevor.Modules.IdentityAccess.DemoApi.Authorization;
 using Kinevor.Modules.IdentityAccess.DemoApi.Data;
 using Kinevor.Modules.IdentityAccess.DemoApi.Middleware;
@@ -10,6 +11,7 @@ using Kinevor.Modules.IdentityAccess.EntityFrameworkCore;
 using Kinevor.Platform.Api;
 using Kinevor.Platform.Application.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -17,6 +19,16 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Identity")
     ?? "Data Source=identity-demo.db";
+
+// MFA secrets are encrypted with Data Protection. The Compose stack points this
+// at the identity-data volume so enrolled accounts survive a container restart.
+var dataProtectionKeys = builder.Configuration["DataProtection:KeysPath"];
+if (!string.IsNullOrWhiteSpace(dataProtectionKeys))
+{
+    builder.Services
+        .AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeys));
+}
 
 builder.Services.AddDbContext<IdentityDbContext>(options => options.UseSqlite(connectionString));
 builder.Services.AddIdentityAccessModule();
@@ -89,6 +101,7 @@ builder.Services.AddSwaggerGen(options =>
             },
         }] = Array.Empty<string>(),
     });
+    options.OperationFilter<LoginResponseOperationFilter>();
 });
 
 var allowedOrigins = builder.Configuration.GetAllowedOrigins("http://localhost:4201");

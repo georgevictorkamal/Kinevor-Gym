@@ -2,13 +2,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kinevor_identity_access/kinevor_identity_access.dart';
 
 class FakeIdentityAccessRepository implements IdentityAccessRepository {
-  FakeIdentityAccessRepository({this.failure});
+  FakeIdentityAccessRepository({
+    this.failure,
+    this.requireMfa = false,
+    this.validMfaCode = '123456',
+    this.validRecoveryCode = 'RECOVERY-CODE',
+  });
 
   final Object? failure;
+  final bool requireMfa;
+  final String validMfaCode;
+  final String validRecoveryCode;
   int loginCalls = 0;
   int refreshCalls = 0;
   int logoutCalls = 0;
   String? lastEmail;
+  String? lastMfaCode;
+  String? lastRecoveryCode;
 
   @override
   Future<AuthSession> login(
@@ -19,7 +29,22 @@ class FakeIdentityAccessRepository implements IdentityAccessRepository {
   }) async {
     loginCalls++;
     lastEmail = email;
+    lastMfaCode = mfaCode;
+    lastRecoveryCode = recoveryCode;
     if (failure != null) throw failure!;
+    if (requireMfa) {
+      final totpValid = mfaCode == validMfaCode;
+      final recoveryValid = recoveryCode == validRecoveryCode;
+      if (!totpValid && !recoveryValid) {
+        if (mfaCode == null && recoveryCode == null) {
+          throw const MfaRequiredException();
+        }
+        throw const IdentityApiException(
+          'Invalid e-mail or password.',
+          statusCode: 401,
+        );
+      }
+    }
     return sampleSession;
   }
 

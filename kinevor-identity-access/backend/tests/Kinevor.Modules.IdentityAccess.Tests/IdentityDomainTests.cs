@@ -97,6 +97,7 @@ public class IdentityDomainTests
 
         account.BeginMfaEnrolment("secret");
         Assert.False(account.MfaEnabled);
+        Assert.True(account.TryAcceptMfaStep(100));
 
         account.ConfirmMfa([hash]);
         Assert.True(account.MfaEnabled);
@@ -106,7 +107,45 @@ public class IdentityDomainTests
         account.DisableMfa();
         Assert.False(account.MfaEnabled);
         Assert.Null(account.MfaSecret);
+        Assert.Null(account.LastAcceptedMfaStep);
         Assert.Empty(account.MfaRecoveryCodeHashes);
+    }
+
+    /// <summary>A TOTP step can be accepted once and never moves backwards.</summary>
+    [Fact]
+    public void MfaStep_RejectsReplayAndOlderSteps()
+    {
+        var account = CreateAccount();
+        var hash = Totp.HashRecoveryCode("ABCD-EFGH");
+
+        account.BeginMfaEnrolment("secret");
+        Assert.True(account.TryAcceptMfaStep(100));
+        account.ConfirmMfa([hash]);
+
+        Assert.False(account.TryAcceptMfaStep(100));
+        Assert.False(account.TryAcceptMfaStep(99));
+        Assert.Equal(100, account.LastAcceptedMfaStep);
+
+        Assert.True(account.TryAcceptMfaStep(101));
+        Assert.Equal(101, account.LastAcceptedMfaStep);
+
+        account.DisableMfa();
+        Assert.Null(account.LastAcceptedMfaStep);
+    }
+
+    /// <summary>Every account mutation advances the optimistic-concurrency stamp.</summary>
+    [Fact]
+    public void Mutations_AdvanceConcurrencyStamp()
+    {
+        var account = CreateAccount();
+        var initial = account.ConcurrencyStamp;
+
+        account.RegisterFailedLogin(DateTime.UtcNow, 5, TimeSpan.FromMinutes(15));
+        var afterFailure = account.ConcurrencyStamp;
+        Assert.NotEqual(initial, afterFailure);
+
+        account.RecordSuccessfulLogin(DateTime.UtcNow);
+        Assert.NotEqual(afterFailure, account.ConcurrencyStamp);
     }
 
     private static UserAccount CreateAccount()

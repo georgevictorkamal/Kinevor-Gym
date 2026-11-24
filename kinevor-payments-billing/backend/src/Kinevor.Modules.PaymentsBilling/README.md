@@ -32,8 +32,8 @@ builder.Services
 
 `AddPaymentsBillingModule` registers the MediatR handlers, `TimeProvider` and the
 simulated `IPaymentGateway` adapter. Replace the gateway registration to capture
-card payments through a provider; the repository ships a non-packable Stripe
-test-mode sample. The host must also register `ICurrentUser`, `IBranchContext`,
+and refund card payments through a provider; the repository ships a non-packable
+Stripe test-mode sample. The host must also register `ICurrentUser`, `IBranchContext`,
 authorization policies, authentication and the repository implementations. The
 companion `Kinevor.Modules.PaymentsBilling.EntityFrameworkCore` package supplies
 EF Core repositories and the unit of work.
@@ -56,8 +56,10 @@ EF Core repositories and the unit of work.
   idempotency, ownership checks and outstanding-balance validation. Card
   captures go through `IPaymentGateway`; the default adapter is simulated.
 - Refunds are recorded against the captured payment, enforce the remaining
-  refundable amount and reduce the linked invoice's paid balance. A refunded
-  invoice reopens as open or overdue when it is no longer settled.
+  refundable amount, reduce the linked invoice's paid balance and use a
+  caller-supplied reference for idempotent retries. Card refunds go through
+  `IPaymentGateway`; a refunded invoice reopens as open or overdue when it is no
+  longer settled.
 - Invoice lifecycle transitions cover mark-paid, mark-overdue and void.
 - Member queries bind the authenticated member id into every lookup.
 

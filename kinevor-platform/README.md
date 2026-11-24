@@ -159,11 +159,26 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
 export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
 ```
 
-The extension adds ASP.NET Core, `HttpClient` and EF Core instrumentation, plus
-the OTLP trace and metric exporters. Without `OpenTelemetry:Enabled` it registers
-nothing, so demos and tests keep their current behavior. EF Core instrumentation
-is currently a beta package; the platform suppresses `NU5104` for that one
-dependency.
+The extension adds ASP.NET Core and `HttpClient` instrumentation, plus the OTLP
+trace and metric exporters. Without `OpenTelemetry:Enabled` it registers nothing,
+so demos and tests keep their current behavior.
+
+EF Core instrumentation is not part of this stable package because its
+`OpenTelemetry.Instrumentation.EntityFrameworkCore` dependency is still
+prerelease. Hosts that want database traces reference that package themselves and
+register it after the platform extension, for example:
+
+```csharp
+using OpenTelemetry.Trace;
+
+builder.Services.AddKinevorOpenTelemetry(builder.Configuration);
+
+if (builder.Configuration.GetValue<bool>("OpenTelemetry:Enabled"))
+{
+    builder.Services.AddOpenTelemetry()
+        .WithTracing(tracing => tracing.AddEntityFrameworkCoreInstrumentation());
+}
+```
 
 ## Security
 

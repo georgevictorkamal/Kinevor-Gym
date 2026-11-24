@@ -8,6 +8,17 @@ class IdentityAccessStrings {
     this.password = 'Password',
     this.signIn = 'Sign in',
     this.signingIn = 'Signing in…',
+    this.confirmItsYou = "Confirm it's you",
+    this.secondFactorPrompt =
+        'Enter the six-digit code from your authenticator app, or use one of '
+        'your recovery codes.',
+    this.authenticatorCode = 'Authenticator code',
+    this.recoveryCode = 'Recovery code',
+    this.useRecoveryCode = 'Use a recovery code',
+    this.useAuthenticatorCode = 'Use an authenticator code',
+    this.verifyAndSignIn = 'Verify and sign in',
+    this.backToPassword = 'Back to password',
+    this.invalidSecondFactor = 'That code is invalid or has already been used.',
     this.demoAccounts = 'Seeded demo accounts',
     this.demoPassword = 'Password: Kinevor!2026',
     this.sessionTitle = 'Your session',
@@ -45,6 +56,33 @@ class IdentityAccessStrings {
 
   /// Login action while busy.
   final String signingIn;
+
+  /// Second-step headline.
+  final String confirmItsYou;
+
+  /// Second-step supporting copy.
+  final String secondFactorPrompt;
+
+  /// Authenticator-code field label.
+  final String authenticatorCode;
+
+  /// Recovery-code field label.
+  final String recoveryCode;
+
+  /// Switch to the recovery-code field.
+  final String useRecoveryCode;
+
+  /// Switch back to the authenticator-code field.
+  final String useAuthenticatorCode;
+
+  /// Second-step submit action.
+  final String verifyAndSignIn;
+
+  /// Return to the password form.
+  final String backToPassword;
+
+  /// Failure shown for a rejected second factor.
+  final String invalidSecondFactor;
 
   /// Demo accounts section title.
   final String demoAccounts;
